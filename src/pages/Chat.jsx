@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import MessageBubble from '@/components/chat/MessageBubble';
 import ChatInput from '@/components/chat/ChatInput';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNotifications } from '@/components/notifications/NotificationManager';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -15,6 +16,13 @@ export default function Chat() {
   const messagesEndRef = useRef(null);
   const queryClient = useQueryClient();
   const [isTyping, setIsTyping] = useState(false);
+
+  const { data: user } = useQuery({
+    queryKey: ['user'],
+    queryFn: () => base44.auth.me()
+  });
+
+  useNotifications(user);
   
   const { data: character } = useQuery({
     queryKey: ['character', characterId],

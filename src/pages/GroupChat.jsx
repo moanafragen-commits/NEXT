@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from 'framer-motion';
 import AddUserModal from '@/components/groupchat/AddUserModal';
+import { useNotifications } from '@/components/notifications/NotificationManager';
 
 export default function GroupChat() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -26,6 +27,8 @@ export default function GroupChat() {
     queryKey: ['user'],
     queryFn: () => base44.auth.me()
   });
+
+  useNotifications(user);
 
   const { data: group } = useQuery({
     queryKey: ['group', groupId],
@@ -71,6 +74,32 @@ export default function GroupChat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
+
+  useEffect(() => {
+    if (!user || !messages.length) return;
+
+    const markAsRead = async () => {
+      const unreadMessages = messages.filter(m => m.sender_id !== user.email);
+      const reads = await base44.entities.MessageRead.filter({ user_email: user.email, message_type: 'group' });
+      const readIds = new Set(reads.map(r => r.message_id));
+      
+      const toMark = unreadMessages.filter(m => !readIds.has(m.id));
+      
+      for (const msg of toMark) {
+        await base44.entities.MessageRead.create({
+          message_id: msg.id,
+          message_type: 'group',
+          user_email: user.email
+        });
+      }
+      
+      if (toMark.length > 0) {
+        queryClient.invalidateQueries({ queryKey: ['unread-group-messages'] });
+      }
+    };
+
+    markAsRead();
+  }, [messages, user, queryClient]);
 
   const addMembersMutation = useMutation({
     mutationFn: async () => {

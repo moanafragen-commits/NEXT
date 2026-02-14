@@ -6,6 +6,7 @@ import { createPageUrl } from '@/utils';
 import { ArrowLeft, Send, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNotifications } from '@/components/notifications/NotificationManager';
 
 export default function UserChat() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -18,6 +19,8 @@ export default function UserChat() {
     queryKey: ['user'],
     queryFn: () => base44.auth.me()
   });
+
+  useNotifications(user);
 
   const { data: recipient } = useQuery({
     queryKey: ['recipient', recipientEmail],
@@ -53,6 +56,32 @@ export default function UserChat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    if (!user || !messages.length) return;
+
+    const markAsRead = async () => {
+      const unreadMessages = messages.filter(m => m.sender_email === recipientEmail);
+      const reads = await base44.entities.MessageRead.filter({ user_email: user.email, message_type: 'user' });
+      const readIds = new Set(reads.map(r => r.message_id));
+      
+      const toMark = unreadMessages.filter(m => !readIds.has(m.id));
+      
+      for (const msg of toMark) {
+        await base44.entities.MessageRead.create({
+          message_id: msg.id,
+          message_type: 'user',
+          user_email: user.email
+        });
+      }
+      
+      if (toMark.length > 0) {
+        queryClient.invalidateQueries({ queryKey: ['unread-user-messages'] });
+      }
+    };
+
+    markAsRead();
+  }, [messages, user, recipientEmail, queryClient]);
 
   const sendMessageMutation = useMutation({
     mutationFn: async (content) => {

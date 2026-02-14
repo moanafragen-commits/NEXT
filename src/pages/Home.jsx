@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Plus, Search, MessageCircle, Settings, MoreVertical, Send, X, Loader2, Users, User } from 'lucide-react';
+import { Plus, Search, MessageCircle, Settings, MoreVertical, Send, X, Loader2, Users, User, Bell, BellOff } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import CharacterCard from '@/components/chat/CharacterCard';
 import CreateCharacterModal from '@/components/chat/CreateCharacterModal';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNotifications } from '@/components/notifications/NotificationManager';
+import UnreadBadge from '@/components/notifications/UnreadBadge';
 
 export default function Home() {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -18,6 +20,43 @@ export default function Home() {
   const [chatMessage, setChatMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const queryClient = useQueryClient();
+
+  const { data: user } = useQuery({
+    queryKey: ['user'],
+    queryFn: () => base44.auth.me()
+  });
+
+  const { permission, requestPermission } = useNotifications(user);
+
+  const { data: unreadUserMessages = 0 } = useQuery({
+    queryKey: ['unread-user-messages'],
+    queryFn: async () => {
+      const messages = await base44.entities.UserMessage.filter({ recipient_email: user.email }, '-created_date', 100);
+      const reads = await base44.entities.MessageRead.filter({ user_email: user.email, message_type: 'user' });
+      const readIds = new Set(reads.map(r => r.message_id));
+      return messages.filter(m => !readIds.has(m.id)).length;
+    },
+    enabled: !!user
+  });
+
+  const { data: unreadGroupMessages = 0 } = useQuery({
+    queryKey: ['unread-group-messages'],
+    queryFn: async () => {
+      const memberships = await base44.entities.GroupChatMember.filter({ member_type: 'user', member_id: user.email });
+      const groupIds = memberships.map(m => m.group_id);
+      
+      let totalUnread = 0;
+      for (const groupId of groupIds) {
+        const messages = await base44.entities.GroupChatMessage.filter({ group_id: groupId }, '-created_date', 50);
+        const reads = await base44.entities.MessageRead.filter({ user_email: user.email, message_type: 'group' });
+        const readIds = new Set(reads.map(r => r.message_id));
+        totalUnread += messages.filter(m => m.sender_id !== user.email && !readIds.has(m.id)).length;
+      }
+      return totalUnread;
+    },
+    enabled: !!user,
+    refetchInterval: 30000
+  });
   
   const { data: characters = [], isLoading } = useQuery({
     queryKey: ['characters'],
@@ -119,20 +158,34 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="text-gray-400 hover:text-white hover:bg-white/10"
+                className="text-gray-400 hover:text-white hover:bg-white/10 relative"
               >
                 <User className="w-5 h-5" />
+                <UnreadBadge count={unreadUserMessages} />
               </Button>
             </Link>
             <Link to={createPageUrl('GroupChats')}>
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="text-gray-400 hover:text-white hover:bg-white/10"
+                className="text-gray-400 hover:text-white hover:bg-white/10 relative"
               >
                 <Users className="w-5 h-5" />
+                <UnreadBadge count={unreadGroupMessages} />
               </Button>
             </Link>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => {
+                if (permission === 'default') {
+                  requestPermission();
+                }
+              }}
+              className="text-gray-400 hover:text-white hover:bg-white/10"
+            >
+              {permission === 'granted' ? <Bell className="w-5 h-5" /> : <BellOff className="w-5 h-5" />}
+            </Button>
             <Button 
               variant="ghost" 
               size="icon"
