@@ -31,6 +31,12 @@ export default function Chat() {
     enabled: !!characterId
   });
   
+  const { data: memories = [] } = useQuery({
+    queryKey: ['memories', characterId],
+    queryFn: () => base44.entities.CharacterMemory.filter({ character_id: characterId }, '-importance', 20),
+    enabled: !!characterId
+  });
+  
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -66,9 +72,12 @@ export default function Chat() {
                          character.language_preference === 'Mehrsprachig' ? 'Antworte in der Sprache, die der Nutzer verwendet.' : 'Antworte auf Deutsch.';
       const customContext = character.custom_instructions ? `\n\nZusätzliche Anweisungen: ${character.custom_instructions}` : '';
       
-      // Get AI response
+      // Build memory context
+      const memoryContext = memories.length > 0 ? `\n\nWas du über den Nutzer weißt (aus früheren Gesprächen):\n${memories.map(m => `- ${m.content}`).join('\n')}` : '';
+      
+      // Get AI response with memory extraction
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}
+        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}${memoryContext}
 
 ${styleContext} ${lengthContext} ${langContext}${customContext}
 
@@ -77,16 +86,45 @@ ${history.map(h => `${h.role === 'user' ? 'Nutzer' : character.name}: ${h.conten
 
 Nutzer: ${content}
 
-Antworte als ${character.name}. Bleibe in deiner Rolle.`,
+Antworte als ${character.name}. Bleibe in deiner Rolle. Nutze dein Wissen über den Nutzer, um die Konversation persönlicher zu gestalten.
+
+Extrahiere außerdem wichtige neue Informationen über den Nutzer (Name, Vorlieben, Fakten, Emotionen, Ereignisse) die du dir merken solltest.`,
         response_json_schema: {
           type: "object",
           properties: {
-            response: { type: "string" }
+            response: { type: "string" },
+            new_memories: { 
+              type: "array", 
+              items: {
+                type: "object",
+                properties: {
+                  content: { type: "string", description: "Die zu merkende Information" },
+                  memory_type: { type: "string", enum: ["fact", "preference", "event", "emotion", "relationship"] },
+                  importance: { type: "number", description: "Wichtigkeit 1-10" }
+                }
+              },
+              description: "Neue wichtige Informationen über den Nutzer (leer lassen wenn keine neuen Infos)"
+            }
           }
         }
       });
       
       setIsTyping(false);
+      
+      // Save new memories
+      if (response.new_memories && response.new_memories.length > 0) {
+        for (const memory of response.new_memories) {
+          if (memory.content && memory.importance >= 5) {
+            await base44.entities.CharacterMemory.create({
+              character_id: characterId,
+              content: memory.content,
+              memory_type: memory.memory_type || 'fact',
+              importance: memory.importance || 5
+            });
+          }
+        }
+        queryClient.invalidateQueries({ queryKey: ['memories', characterId] });
+      }
       
       // Save AI response
       await base44.entities.ChatMessage.create({
