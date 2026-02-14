@@ -71,6 +71,18 @@ export default function Home() {
   const getLastMessage = (characterId) => {
     return messages.find(m => m.character_id === characterId);
   };
+
+  const deleteCharacterMutation = useMutation({
+    mutationFn: async (characterId) => {
+      await base44.entities.Character.delete(characterId);
+      const messages = await base44.entities.ChatMessage.filter({ character_id: characterId });
+      await Promise.all(messages.map(m => base44.entities.ChatMessage.delete(m.id)));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['characters'] });
+      queryClient.invalidateQueries({ queryKey: ['all-messages'] });
+    }
+  });
   
   const filteredCharacters = characters.filter(c => 
     c.name.toLowerCase().includes(searchQuery.toLowerCase())
