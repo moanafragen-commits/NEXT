@@ -57,16 +57,27 @@ export default function Chat() {
         content: m.content
       }));
       
+      // Build character context
+      const bioContext = character.biography ? `\n\nHintergrundgeschichte:\n${character.biography}` : '';
+      const styleContext = character.writing_style ? `Schreibstil: ${character.writing_style}.` : '';
+      const lengthContext = character.response_length === 'kurz' ? 'Halte dich kurz (1-2 Sätze).' : 
+                           character.response_length === 'ausführlich' ? 'Antworte ausführlich und detailliert.' : '';
+      const langContext = character.language_preference === 'Englisch' ? 'Antworte auf Englisch.' :
+                         character.language_preference === 'Mehrsprachig' ? 'Antworte in der Sprache, die der Nutzer verwendet.' : 'Antworte auf Deutsch.';
+      const customContext = character.custom_instructions ? `\n\nZusätzliche Anweisungen: ${character.custom_instructions}` : '';
+      
       // Get AI response
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Du bist ${character.name}. ${character.personality}
+        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}
+
+${styleContext} ${lengthContext} ${langContext}${customContext}
 
 Bisheriger Chatverlauf:
 ${history.map(h => `${h.role === 'user' ? 'Nutzer' : character.name}: ${h.content}`).join('\n')}
 
 Nutzer: ${content}
 
-Antworte als ${character.name}. Bleibe in deiner Rolle. Antworte auf Deutsch, außer der Nutzer spricht eine andere Sprache.`,
+Antworte als ${character.name}. Bleibe in deiner Rolle.`,
         response_json_schema: {
           type: "object",
           properties: {
@@ -116,10 +127,10 @@ Antworte als ${character.name}. Bleibe in deiner Rolle. Antworte auf Deutsch, au
             className="w-10 h-10 rounded-full object-cover"
           />
           
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <h2 className="font-semibold text-white">{character.name}</h2>
-            <p className="text-xs text-emerald-400">
-              {isTyping ? 'schreibt...' : 'online'}
+            <p className="text-xs text-gray-400 truncate">
+              {isTyping ? <span className="text-emerald-400">schreibt...</span> : (character.status || 'online')}
             </p>
           </div>
           

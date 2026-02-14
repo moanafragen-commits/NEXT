@@ -29,7 +29,7 @@ export default function CharacterCard({ character, lastMessage, onClick }) {
           )}
         </div>
         <p className="text-sm text-gray-400 truncate mt-0.5">
-          {lastMessage?.content || character.greeting || character.personality?.slice(0, 50) + '...'}
+          {lastMessage?.content || character.status || character.greeting || character.personality?.slice(0, 50) + '...'}
         </p>
       </div>
     </div>
