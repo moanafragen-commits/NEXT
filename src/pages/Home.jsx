@@ -256,12 +256,16 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <div onClick={() => setSelectedCharacter(character)} className="cursor-pointer">
-                  <CharacterCard 
-                    character={character}
-                    lastMessage={getLastMessage(character.id)}
-                  />
-                </div>
+                <CharacterCard 
+                  character={character}
+                  lastMessage={getLastMessage(character.id)}
+                  onClick={() => setSelectedCharacter(character)}
+                  onDelete={(id) => {
+                    if (confirm('Charakter und alle Nachrichten löschen?')) {
+                      deleteCharacterMutation.mutate(id);
+                    }
+                  }}
+                />
               </motion.div>
             ))}
           </AnimatePresence>
