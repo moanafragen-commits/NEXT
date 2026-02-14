@@ -3,17 +3,20 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, UserPlus, Settings, Send, Loader2 } from 'lucide-react';
+import { ArrowLeft, UserPlus, Settings, Send, Loader2, Users as UsersIcon, Bot } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from 'framer-motion';
+import AddUserModal from '@/components/groupchat/AddUserModal';
 
 export default function GroupChat() {
   const urlParams = new URLSearchParams(window.location.search);
   const groupId = urlParams.get('groupId');
   const [message, setMessage] = useState('');
   const [showAddMember, setShowAddMember] = useState(false);
+  const [showAddUser, setShowAddUser] = useState(false);
   const [selectedCharacters, setSelectedCharacters] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
@@ -44,6 +47,11 @@ export default function GroupChat() {
     queryFn: () => base44.entities.Character.list('-created_date')
   });
 
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ['all-users'],
+    queryFn: () => base44.entities.User.list()
+  });
+
   const { data: messages = [] } = useQuery({
     queryKey: ['group-messages', groupId],
     queryFn: () => base44.entities.GroupChatMessage.filter({ group_id: groupId }, 'created_date', 100),
@@ -51,6 +59,7 @@ export default function GroupChat() {
   });
 
   const characterMembers = members.filter(m => m.member_type === 'character');
+  const userMembers = members.filter(m => m.member_type === 'user');
   const availableCharacters = characters.filter(c => 
     !characterMembers.some(m => m.member_id === c.id)
   );
@@ -78,6 +87,23 @@ export default function GroupChat() {
       queryClient.invalidateQueries({ queryKey: ['group-members', groupId] });
       setShowAddMember(false);
       setSelectedCharacters([]);
+    }
+  });
+
+  const addUsersMutation = useMutation({
+    mutationFn: async (userEmails) => {
+      const promises = userEmails.map(email =>
+        base44.entities.GroupChatMember.create({
+          group_id: groupId,
+          member_type: 'user',
+          member_id: email
+        })
+      );
+      await Promise.all(promises);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['group-members', groupId] });
+      setShowAddUser(false);
     }
   });
 
@@ -173,12 +199,23 @@ Gib 1-3 Antworten zurück (nicht alle müssen immer antworten). Die Charaktere s
 
   const getMessageSender = (msg) => {
     if (msg.sender_type === 'user') {
-      return { name: 'Du', avatar: null };
+      const isCurrentUser = msg.sender_id === user?.email;
+      if (isCurrentUser) {
+        return { name: 'Du', avatar: null, isCurrentUser: true };
+      }
+      const sender = allUsers.find(u => u.email === msg.sender_id);
+      return {
+        name: sender?.full_name || sender?.email || 'Nutzer',
+        avatar: null,
+        isCurrentUser: false,
+        initials: sender?.full_name?.[0] || sender?.email?.[0]?.toUpperCase()
+      };
     }
     const char = characters.find(c => c.id === msg.sender_id);
     return {
       name: char?.name || 'Unbekannt',
-      avatar: char?.avatar_url || `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${char?.name}`
+      avatar: char?.avatar_url || `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${char?.name}`,
+      isCurrentUser: false
     };
   };
 
@@ -206,16 +243,26 @@ Gib 1-3 Antworten zurück (nicht alle müssen immer antworten). Die Charaktere s
           
           <div className="flex-1">
             <h2 className="font-semibold">{group.name}</h2>
-            <p className="text-xs text-gray-400">{characterMembers.length} Charaktere</p>
+            <p className="text-xs text-gray-400">
+              {userMembers.length} Nutzer, {characterMembers.length} AI
+            </p>
           </div>
           
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => setShowAddUser(true)}
+            className="text-gray-400 hover:text-white hover:bg-white/10"
+          >
+            <UsersIcon className="w-5 h-5" />
+          </Button>
           <Button 
             variant="ghost" 
             size="icon"
             onClick={() => setShowAddMember(true)}
             className="text-gray-400 hover:text-white hover:bg-white/10"
           >
-            <UserPlus className="w-5 h-5" />
+            <Bot className="w-5 h-5" />
           </Button>
         </div>
       </header>
@@ -224,28 +271,34 @@ Gib 1-3 Antworten zurück (nicht alle müssen immer antworten). Die Charaktere s
         <AnimatePresence>
           {messages.map((msg) => {
             const sender = getMessageSender(msg);
-            const isUser = msg.sender_type === 'user';
+            const isCurrentUser = sender.isCurrentUser;
             
             return (
               <motion.div
                 key={msg.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`flex gap-2 ${isUser ? 'justify-end' : 'justify-start'}`}
+                className={`flex gap-2 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
               >
-                {!isUser && sender.avatar && (
-                  <img
-                    src={sender.avatar}
-                    alt={sender.name}
-                    className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                  />
+                {!isCurrentUser && (
+                  sender.avatar ? (
+                    <img
+                      src={sender.avatar}
+                      alt={sender.name}
+                      className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      {sender.initials}
+                    </div>
+                  )
                 )}
-                <div className={`max-w-[75%] ${isUser ? 'items-end' : 'items-start'} flex flex-col`}>
-                  {!isUser && (
+                <div className={`max-w-[75%] ${isCurrentUser ? 'items-end' : 'items-start'} flex flex-col`}>
+                  {!isCurrentUser && (
                     <span className="text-xs text-gray-400 mb-1 ml-1">{sender.name}</span>
                   )}
                   <div className={`rounded-2xl px-4 py-2.5 ${
-                    isUser
+                    isCurrentUser
                       ? 'bg-emerald-600 text-white rounded-br-md'
                       : 'bg-[#262626] text-gray-100 rounded-bl-md'
                   }`}>
@@ -313,7 +366,7 @@ Gib 1-3 Antworten zurück (nicht alle müssen immer antworten). Die Charaktere s
       <Dialog open={showAddMember} onOpenChange={setShowAddMember}>
         <DialogContent className="bg-[#1a1a1a] border-white/10 text-white">
           <DialogHeader>
-            <DialogTitle>Charaktere hinzufügen</DialogTitle>
+            <DialogTitle>AI-Charaktere hinzufügen</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 max-h-96 overflow-y-auto py-4">
             {availableCharacters.map((char) => (
@@ -358,6 +411,13 @@ Gib 1-3 Antworten zurück (nicht alle müssen immer antworten). Die Charaktere s
           </div>
         </DialogContent>
       </Dialog>
+
+      <AddUserModal
+        open={showAddUser}
+        onClose={() => setShowAddUser(false)}
+        onAdd={(userEmails) => addUsersMutation.mutate(userEmails)}
+        groupId={groupId}
+      />
     </div>
   );
 }

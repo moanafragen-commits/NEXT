@@ -56,6 +56,8 @@ import Characters from './pages/Characters';
 import ChatView from './pages/ChatView';
 import GroupChats from './pages/GroupChats';
 import GroupChat from './pages/GroupChat';
+import UserChats from './pages/UserChats';
+import UserChat from './pages/UserChat';
 
 
 export const PAGES = {
@@ -68,6 +70,8 @@ export const PAGES = {
     "ChatView": ChatView,
     "GroupChats": GroupChats,
     "GroupChat": GroupChat,
+    "UserChats": UserChats,
+    "UserChat": UserChat,
 }
 
 export const pagesConfig = {
