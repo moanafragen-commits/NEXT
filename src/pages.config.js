@@ -54,6 +54,8 @@ import Landing from './pages/Landing';
 import Feed from './pages/Feed';
 import Characters from './pages/Characters';
 import ChatView from './pages/ChatView';
+import GroupChats from './pages/GroupChats';
+import GroupChat from './pages/GroupChat';
 
 
 export const PAGES = {
@@ -64,6 +66,8 @@ export const PAGES = {
     "Feed": Feed,
     "Characters": Characters,
     "ChatView": ChatView,
+    "GroupChats": GroupChats,
+    "GroupChat": GroupChat,
 }
 
 export const pagesConfig = {
