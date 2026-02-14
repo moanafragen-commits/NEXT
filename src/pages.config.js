@@ -50,12 +50,20 @@
 import Home from './pages/Home';
 import Chat from './pages/Chat';
 import CharacterInfo from './pages/CharacterInfo';
+import Landing from './pages/Landing';
+import Feed from './pages/Feed';
+import Characters from './pages/Characters';
+import ChatView from './pages/ChatView';
 
 
 export const PAGES = {
     "Home": Home,
     "Chat": Chat,
     "CharacterInfo": CharacterInfo,
+    "Landing": Landing,
+    "Feed": Feed,
+    "Characters": Characters,
+    "ChatView": ChatView,
 }
 
 export const pagesConfig = {
