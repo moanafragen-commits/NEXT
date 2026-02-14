@@ -47,32 +47,32 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import Home from './pages/Home';
-import Chat from './pages/Chat';
 import CharacterInfo from './pages/CharacterInfo';
-import Landing from './pages/Landing';
-import Feed from './pages/Feed';
 import Characters from './pages/Characters';
+import Chat from './pages/Chat';
 import ChatView from './pages/ChatView';
-import GroupChats from './pages/GroupChats';
+import Feed from './pages/Feed';
 import GroupChat from './pages/GroupChat';
-import UserChats from './pages/UserChats';
+import GroupChats from './pages/GroupChats';
+import Home from './pages/Home';
+import Landing from './pages/Landing';
 import UserChat from './pages/UserChat';
+import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
 
 
 export const PAGES = {
-    "Home": Home,
-    "Chat": Chat,
     "CharacterInfo": CharacterInfo,
-    "Landing": Landing,
-    "Feed": Feed,
     "Characters": Characters,
+    "Chat": Chat,
     "ChatView": ChatView,
-    "GroupChats": GroupChats,
+    "Feed": Feed,
     "GroupChat": GroupChat,
-    "UserChats": UserChats,
+    "GroupChats": GroupChats,
+    "Home": Home,
+    "Landing": Landing,
     "UserChat": UserChat,
+    "UserChats": UserChats,
     "UserProfile": UserProfile,
 }
 

@@ -3,16 +3,37 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Camera, Loader2, Save } from 'lucide-react';
+import { ArrowLeft, Camera, Loader2, Save, Clock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from 'framer-motion';
+
+const PREDEFINED_STATUSES = [
+  { label: 'Online', value: 'online', emoji: '🟢' },
+  { label: 'Beschäftigt', value: 'beschäftigt', emoji: '🔴' },
+  { label: 'Abwesend', value: 'abwesend', emoji: '🟡' },
+  { label: 'In einem Meeting', value: 'in einem Meeting', emoji: '📅' },
+  { label: 'Nicht stören', value: 'nicht stören', emoji: '🔕' },
+  { label: 'Gleich zurück', value: 'gleich zurück', emoji: '⏰' }
+];
+
+const TIME_OPTIONS = [
+  { label: 'Nie', value: null },
+  { label: '30 Minuten', value: 30 },
+  { label: '1 Stunde', value: 60 },
+  { label: '2 Stunden', value: 120 },
+  { label: '4 Stunden', value: 240 },
+  { label: '8 Stunden', value: 480 },
+  { label: 'Heute', value: 'today' }
+];
 
 export default function UserProfile() {
   const queryClient = useQueryClient();
   const [uploading, setUploading] = useState(false);
+  const [customStatusMode, setCustomStatusMode] = useState(false);
 
   const { data: user, isLoading } = useQuery({
     queryKey: ['user'],
@@ -25,6 +46,8 @@ export default function UserProfile() {
     bio: '',
     status: ''
   });
+  
+  const [statusExpiry, setStatusExpiry] = useState(null);
 
   React.useEffect(() => {
     if (user) {
@@ -34,6 +57,10 @@ export default function UserProfile() {
         bio: user.bio || '',
         status: user.status || 'online'
       });
+      
+      // Check if status is custom or predefined
+      const isPredefined = PREDEFINED_STATUSES.some(s => s.value === user.status);
+      setCustomStatusMode(!isPredefined && user.status !== 'online');
     }
   }, [user]);
 
@@ -64,7 +91,31 @@ export default function UserProfile() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateProfileMutation.mutate(formData);
+    
+    let status_expires_at = null;
+    if (statusExpiry) {
+      const now = new Date();
+      if (statusExpiry === 'today') {
+        status_expires_at = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).toISOString();
+      } else {
+        status_expires_at = new Date(now.getTime() + statusExpiry * 60000).toISOString();
+      }
+    }
+    
+    updateProfileMutation.mutate({
+      ...formData,
+      status_expires_at
+    });
+  };
+  
+  const handleStatusSelect = (value) => {
+    if (value === 'custom') {
+      setCustomStatusMode(true);
+      setFormData(prev => ({ ...prev, status: '' }));
+    } else {
+      setCustomStatusMode(false);
+      setFormData(prev => ({ ...prev, status: value }));
+    }
   };
 
   const displayAvatar = formData.avatar_url || 
@@ -147,15 +198,75 @@ export default function UserProfile() {
           </div>
 
           {/* Status */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Label htmlFor="status">Status</Label>
-            <Input
-              id="status"
-              value={formData.status}
-              onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
-              placeholder="Was machst du gerade?"
-              className="bg-[#262626] border-white/10 text-white placeholder-gray-500 focus-visible:ring-emerald-500/50"
-            />
+            
+            {!customStatusMode ? (
+              <Select value={formData.status} onValueChange={handleStatusSelect}>
+                <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                  <SelectValue placeholder="Status auswählen" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a1a1a] border-white/10">
+                  {PREDEFINED_STATUSES.map((status) => (
+                    <SelectItem 
+                      key={status.value} 
+                      value={status.value}
+                      className="text-white hover:bg-white/10"
+                    >
+                      <span className="mr-2">{status.emoji}</span>
+                      {status.label}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="custom" className="text-emerald-400 hover:bg-white/10">
+                    ✏️ Benutzerdefiniert
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="space-y-2">
+                <Input
+                  id="status"
+                  value={formData.status}
+                  onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
+                  placeholder="Was machst du gerade?"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 focus-visible:ring-emerald-500/50"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setCustomStatusMode(false);
+                    setFormData(prev => ({ ...prev, status: 'online' }));
+                  }}
+                  className="text-gray-400 hover:text-white text-xs"
+                >
+                  Zurück zur Auswahl
+                </Button>
+              </div>
+            )}
+            
+            {/* Auto-Reset Timer */}
+            <div className="flex items-center gap-2 pt-2">
+              <Clock className="w-4 h-4 text-gray-400" />
+              <Label className="text-sm text-gray-400">Status zurücksetzen nach:</Label>
+            </div>
+            <Select value={statusExpiry?.toString() || 'null'} onValueChange={(v) => setStatusExpiry(v === 'null' ? null : v)}>
+              <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                <SelectValue placeholder="Nie" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#1a1a1a] border-white/10">
+                {TIME_OPTIONS.map((option) => (
+                  <SelectItem 
+                    key={option.label} 
+                    value={option.value?.toString() || 'null'}
+                    className="text-white hover:bg-white/10"
+                  >
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Bio */}
