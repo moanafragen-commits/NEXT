@@ -304,28 +304,33 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
 
               {/* Input */}
               <div className="p-4 border-t border-white/5">
-                <div className="flex gap-2">
-                  <Textarea
-                    value={chatMessage}
-                    onChange={(e) => setChatMessage(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }
-                    }}
-                    placeholder="Nachricht schreiben..."
-                    className="bg-[#262626] border-0 text-white resize-none placeholder-gray-500"
-                    rows={3}
-                    disabled={isTyping}
-                  />
-                  <Button
-                    onClick={handleSendMessage}
-                    disabled={!chatMessage.trim() || isTyping}
-                    className="bg-emerald-600 hover:bg-emerald-500 self-end"
-                  >
-                    {isTyping ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                  </Button>
+                <div className="flex items-end gap-2">
+                  <div className="flex-1 relative">
+                    <input
+                      type="text"
+                      value={chatMessage}
+                      onChange={(e) => setChatMessage(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSendMessage();
+                        }
+                      }}
+                      placeholder="Nachricht schreiben..."
+                      className="w-full bg-[#262626] text-white rounded-full px-5 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 placeholder-gray-500"
+                      disabled={isTyping}
+                    />
+                  </div>
+                  {chatMessage.trim() && (
+                    <Button
+                      onClick={handleSendMessage}
+                      disabled={isTyping}
+                      size="icon"
+                      className="h-11 w-11 rounded-full bg-emerald-600 hover:bg-emerald-500 flex-shrink-0"
+                    >
+                      {isTyping ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                    </Button>
+                  )}
                 </div>
               </div>
             </motion.div>
