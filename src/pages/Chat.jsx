@@ -251,10 +251,12 @@ Extrahiere außerdem wichtige neue Informationen über den Nutzer (Name, Vorlieb
       </main>
       
       {/* Input */}
-      <ChatInput 
-        onSend={(content) => sendMessageMutation.mutate(content)}
-        isLoading={sendMessageMutation.isPending || isTyping}
-      />
+      <div className="sticky bottom-0 bg-[#1a1a1a] border-t border-white/5 p-4">
+        <ChatInput 
+          onSend={(content) => sendMessageMutation.mutate(content)}
+          isLoading={sendMessageMutation.isPending || isTyping}
+        />
+      </div>
     </div>
   );
 }
