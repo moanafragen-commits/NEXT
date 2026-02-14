@@ -84,13 +84,15 @@ export default function Home() {
 
   const sendMessageMutation = useMutation({
     mutationFn: async (content) => {
+      const charId = selectedCharacter.id;
+      
       await base44.entities.ChatMessage.create({
-        character_id: selectedCharacter.id,
+        character_id: charId,
         role: 'user',
         content
       });
       
-      queryClient.invalidateQueries({ queryKey: ['messages', selectedCharacter.id] });
+      await queryClient.invalidateQueries({ queryKey: ['messages', charId] });
       setIsTyping(true);
       
       const history = chatMessages.slice(-10).map(m => ({
@@ -126,21 +128,26 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
         }
       });
       
-      setIsTyping(false);
-      
       await base44.entities.ChatMessage.create({
-        character_id: selectedCharacter.id,
+        character_id: charId,
         role: 'assistant',
         content: response.response
       });
       
-      queryClient.invalidateQueries({ queryKey: ['messages', selectedCharacter.id] });
+      return { charId };
+    },
+    onSuccess: ({ charId }) => {
+      setIsTyping(false);
+      queryClient.invalidateQueries({ queryKey: ['messages', charId] });
       queryClient.invalidateQueries({ queryKey: ['all-messages'] });
+    },
+    onError: () => {
+      setIsTyping(false);
     }
   });
 
   const handleSendMessage = () => {
-    if (!chatMessage.trim() || isTyping) return;
+    if (!chatMessage.trim() || isTyping || sendMessageMutation.isPending) return;
     sendMessageMutation.mutate(chatMessage);
     setChatMessage('');
   };
@@ -397,11 +404,11 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
                   {chatMessage.trim() && (
                     <Button
                       onClick={handleSendMessage}
-                      disabled={isTyping}
+                      disabled={isTyping || sendMessageMutation.isPending}
                       size="icon"
                       className="h-11 w-11 rounded-full bg-emerald-600 hover:bg-emerald-500 flex-shrink-0"
                     >
-                      {isTyping ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                      {isTyping || sendMessageMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
                     </Button>
                   )}
                 </div>
