@@ -57,11 +57,13 @@ export default function AddUserModal({ open, onClose, onAdd, groupId }) {
                 checked={selectedUsers.includes(user.email)}
                 className="border-white/20"
               />
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-bold">
-                {user.full_name?.[0] || user.email[0].toUpperCase()}
-              </div>
+              <img
+                src={user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`}
+                alt={user.display_name || user.full_name || user.email}
+                className="w-10 h-10 rounded-full object-cover"
+              />
               <div className="flex-1">
-                <h4 className="font-medium">{user.full_name || user.email}</h4>
+                <h4 className="font-medium">{user.display_name || user.full_name || user.email}</h4>
                 <p className="text-xs text-gray-400">{user.email}</p>
               </div>
             </div>

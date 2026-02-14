@@ -234,10 +234,9 @@ Gib 1-3 Antworten zurück (nicht alle müssen immer antworten). Die Charaktere s
       }
       const sender = allUsers.find(u => u.email === msg.sender_id);
       return {
-        name: sender?.full_name || sender?.email || 'Nutzer',
-        avatar: null,
-        isCurrentUser: false,
-        initials: sender?.full_name?.[0] || sender?.email?.[0]?.toUpperCase()
+        name: sender?.display_name || sender?.full_name || sender?.email || 'Nutzer',
+        avatar: sender?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${sender?.email}`,
+        isCurrentUser: false
       };
     }
     const char = characters.find(c => c.id === msg.sender_id);
@@ -310,17 +309,11 @@ Gib 1-3 Antworten zurück (nicht alle müssen immer antworten). Die Charaktere s
                 className={`flex gap-2 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
               >
                 {!isCurrentUser && (
-                  sender.avatar ? (
-                    <img
-                      src={sender.avatar}
-                      alt={sender.name}
-                      className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-bold flex-shrink-0">
-                      {sender.initials}
-                    </div>
-                  )
+                  <img
+                    src={sender.avatar}
+                    alt={sender.name}
+                    className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                  />
                 )}
                 <div className={`max-w-[75%] ${isCurrentUser ? 'items-end' : 'items-start'} flex flex-col`}>
                   {!isCurrentUser && (

@@ -58,6 +58,7 @@ import GroupChats from './pages/GroupChats';
 import GroupChat from './pages/GroupChat';
 import UserChats from './pages/UserChats';
 import UserChat from './pages/UserChat';
+import UserProfile from './pages/UserProfile';
 
 
 export const PAGES = {
@@ -72,6 +73,7 @@ export const PAGES = {
     "GroupChat": GroupChat,
     "UserChats": UserChats,
     "UserChat": UserChat,
+    "UserProfile": UserProfile,
 }
 
 export const pagesConfig = {

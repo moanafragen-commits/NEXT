@@ -186,13 +186,15 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
             >
               {permission === 'granted' ? <Bell className="w-5 h-5" /> : <BellOff className="w-5 h-5" />}
             </Button>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="text-gray-400 hover:text-white hover:bg-white/10"
-            >
-              <Settings className="w-5 h-5" />
-            </Button>
+            <Link to={createPageUrl('UserProfile')}>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="text-gray-400 hover:text-white hover:bg-white/10"
+              >
+                <Settings className="w-5 h-5" />
+              </Button>
+            </Link>
             <Button 
               variant="ghost" 
               size="icon"

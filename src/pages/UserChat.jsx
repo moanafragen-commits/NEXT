@@ -120,13 +120,15 @@ export default function UserChat() {
             </Button>
           </Link>
           
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-lg font-bold">
-            {recipient.full_name?.[0] || recipient.email[0].toUpperCase()}
-          </div>
+          <img
+            src={recipient.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${recipient.email}`}
+            alt={recipient.display_name || recipient.full_name || recipient.email}
+            className="w-10 h-10 rounded-full object-cover"
+          />
           
           <div className="flex-1">
-            <h2 className="font-semibold">{recipient.full_name || recipient.email}</h2>
-            <p className="text-xs text-gray-400">online</p>
+            <h2 className="font-semibold">{recipient.display_name || recipient.full_name || recipient.email}</h2>
+            <p className="text-xs text-gray-400">{recipient.status || 'online'}</p>
           </div>
         </div>
       </header>
@@ -144,9 +146,11 @@ export default function UserChat() {
                 className={`flex gap-2 ${isOwn ? 'justify-end' : 'justify-start'}`}
               >
                 {!isOwn && (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-bold flex-shrink-0">
-                    {recipient.full_name?.[0] || recipient.email[0].toUpperCase()}
-                  </div>
+                  <img
+                    src={recipient.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${recipient.email}`}
+                    alt={recipient.display_name || recipient.full_name || recipient.email}
+                    className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                  />
                 )}
                 <div className={`rounded-2xl px-4 py-2.5 max-w-[75%] ${
                   isOwn
