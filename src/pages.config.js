@@ -49,11 +49,13 @@
  */
 import Home from './pages/Home';
 import Chat from './pages/Chat';
+import CharacterInfo from './pages/CharacterInfo';
 
 
 export const PAGES = {
     "Home": Home,
     "Chat": Chat,
+    "CharacterInfo": CharacterInfo,
 }
 
 export const pagesConfig = {

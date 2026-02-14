@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Phone, Video, MoreVertical, Loader2 } from 'lucide-react';
+import { ArrowLeft, Phone, Video, MoreVertical, Loader2, Info } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import MessageBubble from '@/components/chat/MessageBubble';
 import ChatInput from '@/components/chat/ChatInput';
@@ -75,9 +75,13 @@ export default function Chat() {
       // Build memory context
       const memoryContext = memories.length > 0 ? `\n\nWas du über den Nutzer weißt (aus früheren Gesprächen):\n${memories.map(m => `- ${m.content}`).join('\n')}` : '';
       
+      // Current date and time
+      const now = new Date();
+      const dateTimeContext = `\n\nAktuelles Datum: ${now.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\nAktuelle Uhrzeit: ${now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
+      
       // Get AI response with memory extraction
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}${memoryContext}
+        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}${memoryContext}${dateTimeContext}
 
 ${styleContext} ${lengthContext} ${langContext}${customContext}
 
@@ -172,15 +176,11 @@ Extrahiere außerdem wichtige neue Informationen über den Nutzer (Name, Vorlieb
             </p>
           </div>
           
-          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/10">
-            <Phone className="w-5 h-5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/10">
-            <Video className="w-5 h-5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/10">
-            <MoreVertical className="w-5 h-5" />
-          </Button>
+          <Link to={createPageUrl(`CharacterInfo?characterId=${characterId}`)}>
+            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/10">
+              <Info className="w-5 h-5" />
+            </Button>
+          </Link>
         </div>
       </header>
       
