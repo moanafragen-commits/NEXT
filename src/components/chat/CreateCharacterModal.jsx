@@ -7,10 +7,18 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare } from 'lucide-react';
+import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare, Zap } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { CHARACTER_TEMPLATES } from './CharacterTemplates';
 
-const CATEGORIES = ["Freund", "Mentor", "Fantasie", "Berühmtheit", "Assistent", "Andere"];
+const CATEGORIES = [
+  "Freund", "Mentor", "Familie", "Partner", "Kollege",
+  "Therapeut", "Coach", "Lehrer", "Berater",
+  "Fantasie", "Berühmtheit", "Historisch", "Fiktional",
+  "Assistent", "Experte", "Kreativ", "Abenteurer",
+  "Anime", "Gaming", "Sci-Fi", "Mystery",
+  "Romantisch", "Humorvoll", "Philosophisch", "Andere"
+];
 const WRITING_STYLES = [
   { value: "formell", label: "Formell" },
   { value: "informell", label: "Informell" },
@@ -44,6 +52,7 @@ const HUMOR_TYPES = [
 ];
 
 export default function CreateCharacterModal({ open, onClose, onCreated }) {
+  const [showTemplates, setShowTemplates] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     personality: '',
@@ -74,6 +83,16 @@ export default function CreateCharacterModal({ open, onClose, onCreated }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+
+  const applyTemplate = (templateName) => {
+    const template = CHARACTER_TEMPLATES[templateName];
+    setFormData(prev => ({
+      ...prev,
+      ...template,
+      name: prev.name || templateName
+    }));
+    setShowTemplates(false);
+  };
   
   const handleAvatarUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -155,6 +174,40 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="mt-4">
+          {/* Template Selection */}
+          {showTemplates && (
+            <div className="mb-6 p-4 bg-[#262626] rounded-xl border border-white/10">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-emerald-400 flex items-center gap-2">
+                  <Zap className="w-4 h-4" />
+                  Schnellstart: Wähle eine Vorlage
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowTemplates(false)}
+                  className="text-xs text-gray-400 hover:text-white"
+                >
+                  Überspringen
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
+                {Object.keys(CHARACTER_TEMPLATES).map((templateName) => (
+                  <button
+                    key={templateName}
+                    type="button"
+                    onClick={() => applyTemplate(templateName)}
+                    className="p-3 bg-[#1a1a1a] hover:bg-white/5 rounded-lg text-left transition-colors border border-white/5 hover:border-emerald-500/50"
+                  >
+                    <p className="text-sm font-medium text-white">{templateName}</p>
+                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                      {CHARACTER_TEMPLATES[templateName].personality.slice(0, 80)}...
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <Tabs defaultValue="basic" className="w-full">
             <TabsList className="w-full bg-[#262626] mb-4">
               <TabsTrigger value="basic" className="flex-1 data-[state=active]:bg-emerald-600">
@@ -230,7 +283,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectContent className="bg-[#262626] border-white/10 max-h-80">
                       {CATEGORIES.map(cat => (
                         <SelectItem key={cat} value={cat} className="text-white hover:bg-white/10">
                           {cat}

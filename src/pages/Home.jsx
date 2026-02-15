@@ -3,7 +3,7 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Plus, Search, MessageCircle, Settings, MoreVertical, Send, X, Loader2, Users, User, Bell, BellOff, Star, Archive, Inbox } from 'lucide-react';
+import { Plus, Search, MessageCircle, Settings, MoreVertical, Send, X, Loader2, Users, User, Bell, BellOff, Star, Archive, Inbox, Grid } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -246,6 +246,15 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
             >
               {permission === 'granted' ? <Bell className="w-5 h-5" /> : <BellOff className="w-5 h-5" />}
             </Button>
+            <Link to={createPageUrl('CharacterLibrary')}>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="text-gray-400 hover:text-white hover:bg-white/10"
+              >
+                <Grid className="w-5 h-5" />
+              </Button>
+            </Link>
             <Link to={createPageUrl('Feed')}>
               <Button 
                 variant="ghost" 
