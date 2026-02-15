@@ -1,14 +1,14 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { Trash2, Star, Archive } from 'lucide-react';
+import { Trash2, Star, Archive, MessageSquareX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
-export default function CharacterCard({ character, lastMessage, onClick, onDelete, onToggleFavorite, onToggleArchive }) {
+export default function CharacterCard({ character, lastMessage, onClick, onDelete, onDeleteChat, onToggleFavorite, onToggleArchive }) {
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character.name}`;
   const queryClient = useQueryClient();
 
@@ -90,17 +90,34 @@ export default function CharacterCard({ character, lastMessage, onClick, onDelet
         >
           <Archive className="w-4 h-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(character.id);
-          }}
-          className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
-        >
-          <Trash2 className="w-4 h-4" />
-        </Button>
+        {onDeleteChat && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDeleteChat(character.id);
+            }}
+            className="text-orange-400 hover:text-orange-300 hover:bg-orange-500/10"
+            title="Chat löschen"
+          >
+            <MessageSquareX className="w-4 h-4" />
+          </Button>
+        )}
+        {onDelete && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(character.id);
+            }}
+            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+            title="Charakter löschen"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        )}
       </div>
     </div>
   );
