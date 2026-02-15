@@ -134,6 +134,75 @@ export default function CreateCharacterModal({ open, onClose, onCreated }) {
     setIsUploading(false);
   };
   
+  const generateAvatar = async () => {
+    if (!formData.name) return;
+    setIsGeneratingAvatar(true);
+    const genderHint = formData.gender === 'männlich' ? 'male' : formData.gender === 'weiblich' ? 'female' : 'androgynous';
+    const ageHint = formData.age ? `${formData.age} years old` : 'young adult';
+    const categoryHint = formData.category !== 'Andere' ? formData.category : '';
+    const occupationHint = formData.occupation ? `works as ${formData.occupation}` : '';
+    
+    const result = await base44.integrations.Core.GenerateImage({
+      prompt: `Portrait photo of a character named "${formData.name}". ${genderHint}, ${ageHint}. ${categoryHint} ${occupationHint}. High quality, detailed, expressive face, beautiful lighting, cinematic portrait style. ${formData.personality ? formData.personality.slice(0, 100) : ''}`
+    });
+    setFormData(prev => ({ ...prev, avatar_url: result.url }));
+    setIsGeneratingAvatar(false);
+  };
+
+  const generateAll = async () => {
+    if (!formData.name) return;
+    setIsGenerating(true);
+    
+    const genderHint = formData.gender ? `Geschlecht: ${formData.gender}.` : '';
+    const categoryHint = formData.category !== 'Andere' ? `Kategorie: ${formData.category}.` : '';
+    const ageHint = formData.age ? `Alter: ${formData.age}.` : '';
+    const occupationHint = formData.occupation ? `Beruf: ${formData.occupation}.` : '';
+    const bioHint = formData.biography ? `Hintergrund: ${formData.biography}` : '';
+    
+    const result = await base44.integrations.Core.InvokeLLM({
+      prompt: `Erstelle einen vollständigen KI-Charakter namens "${formData.name}".
+${genderHint} ${categoryHint} ${ageHint} ${occupationHint} ${bioHint}
+
+Generiere alle folgenden Felder passend zum Charakter. Alles auf Deutsch.`,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          personality: { type: "string", description: "Detaillierte Persönlichkeitsbeschreibung, 100-200 Wörter" },
+          greeting: { type: "string", description: "Erste Begrüßungsnachricht passend zum Charakter" },
+          status: { type: "string", description: "Kurze Statusnachricht, max 50 Zeichen" },
+          biography: { type: "string", description: "Kurze Biografie, 50-100 Wörter" },
+          interests: { type: "string", description: "Hobbies und Interessen, kommasepariert" },
+          occupation: { type: "string", description: "Beruf wenn nicht angegeben" },
+          age: { type: "string", description: "Alter wenn nicht angegeben" },
+          values: { type: "string", description: "Kernwerte, kommasepariert" },
+          fears: { type: "string", description: "Ängste, kommasepariert" },
+          goals: { type: "string", description: "Lebensziele" },
+          quirks: { type: "string", description: "Besondere Eigenarten" },
+          catchphrases: { type: "string", description: "1-2 typische Redewendungen" },
+          speech_patterns: { type: "string", description: "Sprachliche Eigenheiten" }
+        }
+      }
+    });
+    
+    setFormData(prev => ({
+      ...prev,
+      personality: result.personality || prev.personality,
+      greeting: result.greeting || prev.greeting,
+      status: result.status || prev.status,
+      biography: prev.biography || result.biography || '',
+      interests: prev.interests || result.interests || '',
+      occupation: prev.occupation || result.occupation || '',
+      age: prev.age || result.age || '',
+      values: prev.values || result.values || '',
+      fears: prev.fears || result.fears || '',
+      goals: prev.goals || result.goals || '',
+      quirks: prev.quirks || result.quirks || '',
+      catchphrases: prev.catchphrases || result.catchphrases || '',
+      speech_patterns: prev.speech_patterns || result.speech_patterns || '',
+    }));
+    setIsGenerating(false);
+  };
+
   const generatePersonality = async () => {
     if (!formData.name) return;
     setIsGenerating(true);
