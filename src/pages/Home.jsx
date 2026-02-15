@@ -20,6 +20,7 @@ import UserStatusCircle from '@/components/status/UserStatusCircle';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotifications } from '@/components/notifications/NotificationManager';
 import UnreadBadge from '@/components/notifications/UnreadBadge';
+import { calculateReplyDelay, getDelayReason } from '@/components/chat/ReplyDelayCalculator';
 
 export default function Home() {
   const [showCreateModal, setShowCreateModal] = useState(false);
