@@ -68,12 +68,13 @@ export default function Chat() {
   });
 
   const sendMessageMutation = useMutation({
-    mutationFn: async (content) => {
+    mutationFn: async ({ content, imageUrl }) => {
       // Save user message
       const userMsg = await base44.entities.ChatMessage.create({
         character_id: characterId,
         role: 'user',
         content,
+        image_url: imageUrl || null,
         reply_to_id: replyToMessage?.id || null,
         status: 'sent'
       });
@@ -82,10 +83,11 @@ export default function Chat() {
       queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
       setIsTyping(true);
       
-      // Build conversation history
-      const history = messages.slice(-10).map(m => ({
+      // Build conversation history with more context (last 20 messages)
+      const history = messages.slice(-20).map(m => ({
         role: m.role,
-        content: m.content
+        content: m.content,
+        has_image: !!m.image_url
       }));
       
       // Build character context
@@ -104,20 +106,33 @@ export default function Chat() {
       const now = new Date();
       const dateTimeContext = `\n\nAktuelles Datum: ${now.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\nAktuelle Uhrzeit: ${now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
       
-      // Get AI response with memory extraction
+      // Build enhanced prompt with image support
+      const imageContext = imageUrl ? `\n\nDer Nutzer hat ein Bild gesendet. Reagiere darauf in deiner Antwort (z.B. "Schönes Bild!", "Das sieht interessant aus!", etc.).` : '';
+      
+      const conversationSummary = history.length > 15 ? `\n\nKurzzusammenfassung des bisherigen Gesprächs: Die letzten ${history.length} Nachrichten zeigen eine fortlaufende Unterhaltung mit verschiedenen Themen.` : '';
+
+      // Get AI response with memory extraction and image support
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}${memoryContext}${dateTimeContext}
+        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}${memoryContext}${dateTimeContext}${conversationSummary}
 
-${styleContext} ${lengthContext} ${langContext}${customContext}
+WICHTIGE VERHALTENSREGELN:
+- Bleibe IMMER in deiner Rolle als ${character.name}
+- Deine Antworten sollten natürlich und authentisch wirken
+- Beziehe dich auf frühere Gespräche und gemeinsame Erlebnisse
+- Zeige Emotionen und Persönlichkeit
+- Stelle auch mal Gegenfragen
+- Verwende gelegentlich Emojis wenn es zu deinem Charakter passt
+${styleContext} ${lengthContext} ${langContext}${customContext}${imageContext}
 
-Bisheriger Chatverlauf:
-${history.map(h => `${h.role === 'user' ? 'Nutzer' : character.name}: ${h.content}`).join('\n')}
+Bisheriger Chatverlauf (letzte ${history.length} Nachrichten):
+${history.map(h => `${h.role === 'user' ? 'Nutzer' : character.name}: ${h.content}${h.has_image ? ' [Bild gesendet]' : ''}`).join('\n')}
 
-Nutzer: ${content}
+Nutzer: ${content}${imageUrl ? ' [Bild gesendet]' : ''}
 
-Antworte als ${character.name}. Bleibe in deiner Rolle. Nutze dein Wissen über den Nutzer, um die Konversation persönlicher zu gestalten.
-
-Extrahiere außerdem wichtige neue Informationen über den Nutzer (Name, Vorlieben, Fakten, Emotionen, Ereignisse) die du dir merken solltest.`,
+AUFGABEN:
+1. Antworte als ${character.name} authentisch und in Rolle
+2. Nutze Kontext aus bisherigen Gesprächen
+3. Extrahiere neue wichtige Infos über den Nutzer für zukünftige Gespräche`,
         response_json_schema: {
           type: "object",
           properties: {
@@ -161,11 +176,26 @@ Extrahiere außerdem wichtige neue Informationen über den Nutzer (Name, Vorlieb
         read_at: new Date().toISOString()
       });
 
+      // Generate response image if needed (occasionally for variety)
+      let aiImageUrl = null;
+      if (Math.random() < 0.15 && character.category !== 'Assistent') { // 15% chance
+        try {
+          const imgResponse = await base44.integrations.Core.GenerateImage({
+            prompt: `${character.name}, ${character.personality}. Create an image that fits the context: ${response.response.slice(0, 100)}`,
+            existing_image_urls: imageUrl ? [imageUrl] : undefined
+          });
+          aiImageUrl = imgResponse.url;
+        } catch (e) {
+          // Ignore if image generation fails
+        }
+      }
+
       // Save AI response
       await base44.entities.ChatMessage.create({
         character_id: characterId,
         role: 'assistant',
         content: response.response,
+        image_url: aiImageUrl,
         status: 'delivered'
       });
       
@@ -353,7 +383,7 @@ Extrahiere außerdem wichtige neue Informationen über den Nutzer (Name, Vorlieb
       {/* Input */}
       <div className="sticky bottom-0 bg-[#1a1a1a] border-t border-white/5 p-4">
         <ChatInput 
-          onSend={(content) => sendMessageMutation.mutate(content)}
+          onSend={(content, imageUrl) => sendMessageMutation.mutate({ content, imageUrl })}
           isLoading={sendMessageMutation.isPending || isTyping}
           replyToMessage={replyToMessage}
           onCancelReply={() => setReplyToMessage(null)}

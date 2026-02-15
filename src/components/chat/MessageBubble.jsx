@@ -97,6 +97,14 @@ export default function MessageBubble({ message, characterAvatar, characterName,
             </div>
           )}
           
+          {message.image_url && (
+            <img 
+              src={message.image_url} 
+              alt="Bild" 
+              className="rounded-lg max-w-full mb-2 cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={() => window.open(message.image_url, '_blank')}
+            />
+          )}
           <ReactMarkdown className="text-sm leading-relaxed prose prose-invert prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
             {message.content}
           </ReactMarkdown>

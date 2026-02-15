@@ -1,21 +1,53 @@
-import React, { useState } from 'react';
-import { Send, Mic, X } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Send, Mic, X, Image, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import EmojiPicker from './EmojiPicker';
+import { base44 } from '@/api/base44Client';
 
 export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelReply }) {
   const [message, setMessage] = useState('');
+  const [imageUrl, setImageUrl] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
   
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (message.trim() && !isLoading) {
-      onSend(message);
+    if ((message.trim() || imageUrl) && !isLoading) {
+      onSend(message, imageUrl);
       setMessage('');
+      setImageUrl(null);
+    }
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setImageUrl(file_url);
+    } catch (error) {
+      console.error('Upload failed:', error);
+    } finally {
+      setUploading(false);
     }
   };
   
   return (
     <form onSubmit={handleSubmit}>
+      {imageUrl && (
+        <div className="mb-2 relative">
+          <img src={imageUrl} alt="Preview" className="max-h-32 rounded-lg" />
+          <button
+            type="button"
+            onClick={() => setImageUrl(null)}
+            className="absolute top-1 right-1 bg-black/50 rounded-full p-1"
+          >
+            <X className="w-4 h-4 text-white" />
+          </button>
+        </div>
+      )}
       {replyToMessage && (
         <div className="mb-2 p-2 flex items-start gap-2 bg-[#262626]/50 rounded-lg">
           <div className="flex-1 min-w-0">
@@ -34,6 +66,23 @@ export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelR
         </div>
       )}
       <div className="flex items-center gap-2">
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleImageUpload}
+          accept="image/*"
+          className="hidden"
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploading || isLoading}
+          className="text-gray-400 hover:text-white hover:bg-white/10"
+        >
+          {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Image className="w-5 h-5" />}
+        </Button>
         <EmojiPicker onSelect={(emoji) => setMessage(prev => prev + emoji)} />
         
         <div className="flex-1 relative">
@@ -47,7 +96,7 @@ export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelR
           />
         </div>
         
-        {message.trim() ? (
+        {(message.trim() || imageUrl) ? (
           <Button 
             type="submit" 
             size="icon"
