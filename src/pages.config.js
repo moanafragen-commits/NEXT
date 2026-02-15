@@ -69,6 +69,8 @@ import UserStatusView from './pages/UserStatusView';
 import MemoryTraining from './pages/MemoryTraining';
 import Activity from './pages/Activity';
 import CreatePost from './pages/CreatePost';
+import AppSettings from './pages/AppSettings';
+import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
@@ -94,9 +96,11 @@ export const PAGES = {
     "MemoryTraining": MemoryTraining,
     "Activity": Activity,
     "CreatePost": CreatePost,
+    "AppSettings": AppSettings,
 }
 
 export const pagesConfig = {
     mainPage: "Home",
     Pages: PAGES,
+    Layout: __Layout,
 };
