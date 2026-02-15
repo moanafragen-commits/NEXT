@@ -1059,9 +1059,17 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
 
             {/* Biography Tab */}
             <TabsContent value="biography" className="space-y-5">
+              {/* Lebensgeschichte Section */}
+              <div className="space-y-1 mb-1">
+                <h3 className="text-sm font-semibold text-blue-400 flex items-center gap-2">
+                  <BookOpen className="w-4 h-4" />
+                  Lebensgeschichte
+                </h3>
+                <p className="text-xs text-gray-500">Diese Informationen helfen der KI, den Charakter besser zu verstehen und authentischer zu reagieren.</p>
+              </div>
+
               <div className="space-y-2">
                 <Label className="text-gray-300">Detaillierte Biografie & Hintergrundgeschichte</Label>
-                <p className="text-xs text-gray-500">Diese Informationen helfen der KI, den Charakter besser zu verstehen und authentischer zu reagieren.</p>
                 <Textarea
                   value={formData.biography}
                   onChange={(e) => setFormData(prev => ({ ...prev, biography: e.target.value }))}
@@ -1099,6 +1107,15 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                   placeholder="z.B. Aufgewachsen in Berlin, deutsche Familie"
                   className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
                 />
+              </div>
+
+              {/* Innenwelt Section */}
+              <div className="space-y-1 mt-4 mb-1">
+                <h3 className="text-sm font-semibold text-amber-400 flex items-center gap-2">
+                  <Lightbulb className="w-4 h-4" />
+                  Innenwelt & Überzeugungen
+                </h3>
+                <p className="text-xs text-gray-500">Was treibt den Charakter an? Woran glaubt er?</p>
               </div>
 
               <div className="space-y-2">
@@ -1181,6 +1198,14 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                 <p className="text-xs text-emerald-300">💡 Je mehr Details du angibst, desto einzigartiger und authentischer wird dein Charakter.</p>
               </div>
 
+              {/* Interessen & Wissen Section */}
+              <div className="space-y-1 mb-1">
+                <h3 className="text-sm font-semibold text-cyan-400 flex items-center gap-2">
+                  <Lightbulb className="w-4 h-4" />
+                  Interessen & Wissen
+                </h3>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-gray-300">Interessen & Hobbies</Label>
@@ -1231,6 +1256,15 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
                   />
                 </div>
+              </div>
+
+              {/* Sprache & Ausdruck Section */}
+              <div className="space-y-1 mt-4 mb-1">
+                <h3 className="text-sm font-semibold text-violet-400 flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4" />
+                  Sprache & Ausdruck
+                </h3>
+                <p className="text-xs text-gray-500">Wie drückt sich der Charakter aus?</p>
               </div>
 
               <div className="space-y-2">
@@ -1300,6 +1334,15 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+
+              {/* Geheimnisse & Tiefe Section */}
+              <div className="space-y-1 mt-4 mb-1">
+                <h3 className="text-sm font-semibold text-rose-400 flex items-center gap-2">
+                  <Lock className="w-4 h-4" />
+                  Geheimnisse & Tiefe
+                </h3>
+                <p className="text-xs text-gray-500">Verborgene Seiten des Charakters.</p>
               </div>
 
               <div className="space-y-2">
@@ -1458,6 +1501,14 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+
+              {/* Soziales Verhalten Section */}
+              <div className="space-y-1 mt-4 mb-1">
+                <h3 className="text-sm font-semibold text-emerald-400 flex items-center gap-2">
+                  <Heart className="w-4 h-4" />
+                  Soziales Verhalten
+                </h3>
               </div>
 
               <div className="space-y-2">
