@@ -88,9 +88,7 @@ export default function CharacterCard({ character, lastMessage, unreadCount = 0,
             <Music className="w-3 h-3 text-[#1DB954] flex-shrink-0" />
             <span className="text-[11px] text-[#1DB954] truncate">🎧 {character.current_song}</span>
             <a
-              href={`https://open.spotify.com/search/${encodeURIComponent(character.current_song)}`}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={`spotify:search:${encodeURIComponent(character.current_song)}`}
               onClick={(e) => e.stopPropagation()}
               className="flex-shrink-0 w-4 h-4 rounded-full bg-[#1DB954] flex items-center justify-center hover:bg-[#1ed760] transition-colors"
             >
