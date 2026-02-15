@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import TagManager from './TagManager';
 
 export default function CharacterCard({ character, lastMessage, onClick, onDelete, onDeleteChat, onToggleFavorite, onToggleArchive }) {
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character.name}`;
@@ -65,6 +66,11 @@ export default function CharacterCard({ character, lastMessage, onClick, onDelet
         <p className="text-sm text-gray-400 truncate mt-0.5">
           {lastMessage?.content || character.status || character.greeting || character.personality?.slice(0, 50) + '...'}
         </p>
+        {(character.tags?.length > 0) && (
+          <div className="mt-1">
+            <TagManager character={character} compact={true} />
+          </div>
+        )}
       </Link>
       
       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
