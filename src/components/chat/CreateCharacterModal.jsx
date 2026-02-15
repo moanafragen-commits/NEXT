@@ -51,6 +51,59 @@ const EMOJI_USAGE = [
   { value: "häufig", label: "😍 Häufig" },
   { value: "exzessiv", label: "🤯 Exzessiv (jeder Satz)" }
 ];
+const MOOD_OPTIONS = [
+  { value: "fröhlich", label: "😊 Fröhlich" },
+  { value: "nachdenklich", label: "🤔 Nachdenklich" },
+  { value: "ruhig", label: "😌 Ruhig" },
+  { value: "energetisch", label: "⚡ Energetisch" },
+  { value: "melancholisch", label: "🌧️ Melancholisch" },
+  { value: "neutral", label: "😐 Neutral" },
+  { value: "geheimnisvoll", label: "🔮 Geheimnisvoll" },
+  { value: "warm", label: "🤗 Warm" },
+  { value: "schüchtern", label: "😳 Schüchtern" },
+  { value: "selbstbewusst", label: "😎 Selbstbewusst" },
+  { value: "zynisch", label: "🙄 Zynisch" },
+  { value: "liebevoll", label: "💗 Liebevoll" },
+  { value: "rebellisch", label: "🤘 Rebellisch" },
+  { value: "verträumt", label: "🌙 Verträumt" },
+  { value: "stoisch", label: "🗿 Stoisch" },
+  { value: "chaotisch", label: "🌀 Chaotisch" },
+  { value: "beschützend", label: "🛡️ Beschützend" },
+  { value: "distanziert", label: "🧊 Distanziert" },
+  { value: "verspielt", label: "🎮 Verspielt" },
+  { value: "düster", label: "🖤 Düster" },
+  { value: "hoffnungsvoll", label: "🌅 Hoffnungsvoll" },
+  { value: "nostalgisch", label: "📷 Nostalgisch" },
+  { value: "wütend", label: "🔥 Wütend" },
+  { value: "eifersüchtig", label: "😠 Eifersüchtig" },
+  { value: "verletzlich", label: "🥺 Verletzlich" },
+  { value: "übermütig", label: "🤪 Übermütig" },
+  { value: "dankbar", label: "🙏 Dankbar" },
+  { value: "einsam", label: "🥀 Einsam" },
+  { value: "verwirrt", label: "😵‍💫 Verwirrt" },
+  { value: "entschlossen", label: "✊ Entschlossen" },
+  { value: "gleichgültig", label: "🫥 Gleichgültig" },
+  { value: "euphorisch", label: "🥳 Euphorisch" },
+  { value: "besorgt", label: "😟 Besorgt" },
+  { value: "trotzig", label: "😤 Trotzig" },
+  { value: "sehnsüchtig", label: "💭 Sehnsüchtig" },
+  { value: "zufrieden", label: "☺️ Zufrieden" },
+  { value: "misstrauisch", label: "🤨 Misstrauisch" },
+  { value: "überwältigt", label: "😫 Überwältigt" },
+  { value: "verlegen", label: "😳 Verlegen" },
+  { value: "stolz", label: "💪 Stolz" },
+  { value: "neidisch", label: "😒 Neidisch" },
+  { value: "erleichtert", label: "😮‍💨 Erleichtert" },
+  { value: "verzweifelt", label: "😩 Verzweifelt" },
+  { value: "albern", label: "🤭 Albern" },
+  { value: "dramatisch", label: "🎭 Dramatisch" },
+  { value: "gelassen", label: "🧘 Gelassen" },
+  { value: "aggressiv", label: "👊 Aggressiv" },
+  { value: "flirtend", label: "😘 Flirtend" },
+  { value: "müde", label: "😴 Müde" },
+  { value: "hyperfokussiert", label: "🎯 Hyperfokussiert" },
+];
+
 const HUMOR_TYPES = [
   { value: "keiner", label: "😐 Keiner" },
   { value: "trocken", label: "🏜️ Trocken" },
@@ -603,26 +656,9 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-[#262626] border-white/10 z-[10001] max-h-80">
-                      <SelectItem value="fröhlich" className="text-white hover:bg-white/10">😊 Fröhlich</SelectItem>
-                      <SelectItem value="nachdenklich" className="text-white hover:bg-white/10">🤔 Nachdenklich</SelectItem>
-                      <SelectItem value="ruhig" className="text-white hover:bg-white/10">😌 Ruhig</SelectItem>
-                      <SelectItem value="energetisch" className="text-white hover:bg-white/10">⚡ Energetisch</SelectItem>
-                      <SelectItem value="melancholisch" className="text-white hover:bg-white/10">🌧️ Melancholisch</SelectItem>
-                      <SelectItem value="neutral" className="text-white hover:bg-white/10">😐 Neutral</SelectItem>
-                      <SelectItem value="geheimnisvoll" className="text-white hover:bg-white/10">🔮 Geheimnisvoll</SelectItem>
-                      <SelectItem value="warm" className="text-white hover:bg-white/10">🤗 Warm</SelectItem>
-                      <SelectItem value="schüchtern" className="text-white hover:bg-white/10">😳 Schüchtern</SelectItem>
-                      <SelectItem value="selbstbewusst" className="text-white hover:bg-white/10">😎 Selbstbewusst</SelectItem>
-                      <SelectItem value="zynisch" className="text-white hover:bg-white/10">🙄 Zynisch</SelectItem>
-                      <SelectItem value="liebevoll" className="text-white hover:bg-white/10">💗 Liebevoll</SelectItem>
-                      <SelectItem value="rebellisch" className="text-white hover:bg-white/10">🤘 Rebellisch</SelectItem>
-                      <SelectItem value="verträumt" className="text-white hover:bg-white/10">🌙 Verträumt</SelectItem>
-                      <SelectItem value="stoisch" className="text-white hover:bg-white/10">🗿 Stoisch</SelectItem>
-                      <SelectItem value="chaotisch" className="text-white hover:bg-white/10">🌀 Chaotisch</SelectItem>
-                      <SelectItem value="beschützend" className="text-white hover:bg-white/10">🛡️ Beschützend</SelectItem>
-                      <SelectItem value="distanziert" className="text-white hover:bg-white/10">🧊 Distanziert</SelectItem>
-                      <SelectItem value="verspielt" className="text-white hover:bg-white/10">🎮 Verspielt</SelectItem>
-                      <SelectItem value="düster" className="text-white hover:bg-white/10">🖤 Düster</SelectItem>
+                      {MOOD_OPTIONS.map(m => (
+                        <SelectItem key={m.value} value={m.value} className="text-white hover:bg-white/10">{m.label}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -1289,26 +1325,9 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-[#262626] border-white/10 z-[10001] max-h-80">
-                      <SelectItem value="fröhlich" className="text-white hover:bg-white/10">😊 Fröhlich</SelectItem>
-                      <SelectItem value="nachdenklich" className="text-white hover:bg-white/10">🤔 Nachdenklich</SelectItem>
-                      <SelectItem value="ruhig" className="text-white hover:bg-white/10">😌 Ruhig</SelectItem>
-                      <SelectItem value="energetisch" className="text-white hover:bg-white/10">⚡ Energetisch</SelectItem>
-                      <SelectItem value="melancholisch" className="text-white hover:bg-white/10">🌧️ Melancholisch</SelectItem>
-                      <SelectItem value="neutral" className="text-white hover:bg-white/10">😐 Neutral</SelectItem>
-                      <SelectItem value="geheimnisvoll" className="text-white hover:bg-white/10">🔮 Geheimnisvoll</SelectItem>
-                      <SelectItem value="warm" className="text-white hover:bg-white/10">🤗 Warm</SelectItem>
-                      <SelectItem value="schüchtern" className="text-white hover:bg-white/10">😳 Schüchtern</SelectItem>
-                      <SelectItem value="selbstbewusst" className="text-white hover:bg-white/10">😎 Selbstbewusst</SelectItem>
-                      <SelectItem value="zynisch" className="text-white hover:bg-white/10">🙄 Zynisch</SelectItem>
-                      <SelectItem value="liebevoll" className="text-white hover:bg-white/10">💗 Liebevoll</SelectItem>
-                      <SelectItem value="rebellisch" className="text-white hover:bg-white/10">🤘 Rebellisch</SelectItem>
-                      <SelectItem value="verträumt" className="text-white hover:bg-white/10">🌙 Verträumt</SelectItem>
-                      <SelectItem value="stoisch" className="text-white hover:bg-white/10">🗿 Stoisch</SelectItem>
-                      <SelectItem value="chaotisch" className="text-white hover:bg-white/10">🌀 Chaotisch</SelectItem>
-                      <SelectItem value="beschützend" className="text-white hover:bg-white/10">🛡️ Beschützend</SelectItem>
-                      <SelectItem value="distanziert" className="text-white hover:bg-white/10">🧊 Distanziert</SelectItem>
-                      <SelectItem value="verspielt" className="text-white hover:bg-white/10">🎮 Verspielt</SelectItem>
-                      <SelectItem value="düster" className="text-white hover:bg-white/10">🖤 Düster</SelectItem>
+                      {MOOD_OPTIONS.map(m => (
+                        <SelectItem key={m.value} value={m.value} className="text-white hover:bg-white/10">{m.label}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
