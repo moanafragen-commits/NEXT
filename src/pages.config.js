@@ -59,7 +59,6 @@ import CreateUserStatus from './pages/CreateUserStatus';
 import Feed from './pages/Feed';
 import GroupChat from './pages/GroupChat';
 import GroupChats from './pages/GroupChats';
-import Home from './pages/Home';
 import Landing from './pages/Landing';
 import NotificationSettings from './pages/NotificationSettings';
 import UserChat from './pages/UserChat';
@@ -70,6 +69,7 @@ import MemoryTraining from './pages/MemoryTraining';
 import Activity from './pages/Activity';
 import CreatePost from './pages/CreatePost';
 import AppSettings from './pages/AppSettings';
+import Home from './pages/Home';
 import __Layout from './Layout.jsx';
 
 
@@ -86,7 +86,6 @@ export const PAGES = {
     "Feed": Feed,
     "GroupChat": GroupChat,
     "GroupChats": GroupChats,
-    "Home": Home,
     "Landing": Landing,
     "NotificationSettings": NotificationSettings,
     "UserChat": UserChat,
@@ -97,6 +96,7 @@ export const PAGES = {
     "Activity": Activity,
     "CreatePost": CreatePost,
     "AppSettings": AppSettings,
+    "Home": Home,
 }
 
 export const pagesConfig = {
