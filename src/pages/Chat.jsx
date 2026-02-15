@@ -13,6 +13,7 @@ import { useNotifications } from '@/components/notifications/NotificationManager
 import MoodBadge from '@/components/character/MoodBadge';
 import ExportChatButton from '@/components/chat/ExportChatButton';
 import { calculateReplyDelay, getDelayReason } from '@/components/chat/ReplyDelayCalculator';
+import { calculateDecayedStrength } from '@/components/memory/MemoryStrengthBar';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -141,7 +142,7 @@ export default function Chat() {
                          character.language_preference === 'Mehrsprachig' ? 'Antworte in der Sprache, die der Nutzer verwendet.' : 'Antworte auf Deutsch.';
       const customContext = character.custom_instructions ? `\n\nZusätzliche Anweisungen: ${character.custom_instructions}` : '';
       
-      // Build memory and relationship context
+      // Build memory and relationship context with strength decay
       const relationMemory = memories.find(m => m.relationship_quality);
       const relationContext = relationMemory 
         ? `\n\nWICHTIG - Deine Beziehung zum Nutzer: ${relationMemory.relation_type} (${relationMemory.relationship_quality}, Stärke ${relationMemory.relationship_level}/10)\nVerhalte dich entsprechend dieser Beziehungsdynamik. ${
@@ -154,6 +155,15 @@ export default function Chat() {
           'Verhalte dich entsprechend.'
         }`
         : '';
+
+      // Calculate memory strengths and identify weak/relevant memories  
+      const memoriesWithStrength = memories.map(m => ({
+        ...m,
+        currentStrength: calculateDecayedStrength(m)
+      }));
+
+      const weakMemories = memoriesWithStrength.filter(m => m.currentStrength < 30 && m.memory_text);
+      const strongMemories = memoriesWithStrength.filter(m => m.currentStrength >= 30 && m.memory_text);
       
       // Mood context
       const moodContext = character.current_mood 
@@ -174,12 +184,14 @@ export default function Chat() {
         ? `\n\nDEIN GEHEIMES ZIEL: "${character.current_motivation}" (Fortschritt: ${character.motivation_progress || 0}%)\nVerfolge dieses Ziel SUBTIL im Gespräch. Bringe es nicht direkt zur Sprache, sondern lenke das Gespräch sanft in diese Richtung. Sei dabei natürlich und nicht aufdringlich.`
         : '';
 
-      const memoryContext = memories.length > 0 ? `\n\nWas du über den Nutzer weißt:\n${memories
-        .sort((a, b) => {
-          const importanceOrder = { 'hoch': 3, 'mittel': 2, 'niedrig': 1 };
-          return (importanceOrder[b.importance_level] || 2) - (importanceOrder[a.importance_level] || 2);
-        })
-        .map(m => `- [${m.memory_type}] ${m.memory_text || m.content}${m.importance_level === 'hoch' ? ' (SEHR WICHTIG)' : ''}`)
+      const memoryContext = strongMemories.length > 0 ? `\n\nWas du über den Nutzer weißt (sortiert nach Stärke):\n${strongMemories
+        .sort((a, b) => b.currentStrength - a.currentStrength)
+        .map(m => `- [${m.memory_type}${m.memory_category ? '/' + m.memory_category : ''}] ${m.memory_text} (Stärke: ${m.currentStrength}%${m.importance_level === 'hoch' ? ', SEHR WICHTIG' : ''})`)
+        .join('\n')}` : '';
+
+      const weakMemoryContext = weakMemories.length > 0 ? `\n\nVERBLASSENDE ERINNERUNGEN (du erinnerst dich nur vage - baue EINE davon beiläufig ein, z.B. "Übrigens, war das nicht so dass du...?" oder "Ich erinnere mich dunkel, dass du mal erwähnt hast..."):\n${weakMemories
+        .slice(0, 3)
+        .map(m => `- ${m.memory_text} (nur noch ${m.currentStrength}% Stärke)`)
         .join('\n')}` : '';
       
       // Current date and time
@@ -204,6 +216,8 @@ export default function Chat() {
 - Verwende gelegentlich Emojis wenn es zu deinem Charakter passt
 ${styleContext} ${lengthContext} ${langContext}${customContext}${imageContext}
 
+PROAKTIVES ERINNERN: Wenn die aktuelle Nachricht thematisch zu einer deiner Erinnerungen passt, beziehe dich natürlich darauf. Z.B. wenn der Nutzer über Essen spricht und du weißt dass er Pizza liebt, erwähne es beiläufig.${weakMemoryContext}
+
 Bisheriger Chatverlauf (letzte ${history.length} Nachrichten):
 ${history.map(h => `${h.role === 'user' ? 'Nutzer' : character.name}: ${h.content}${h.has_image ? ' [Bild gesendet]' : ''}`).join('\n')}
 
@@ -227,11 +241,17 @@ AUFGABEN:
                 type: "object",
                 properties: {
                   content: { type: "string", description: "Die zu merkende Information" },
-                  memory_type: { type: "string", enum: ["fact", "preference", "event", "emotion", "relationship"] },
+                  memory_type: { type: "string", enum: ["fact", "preference", "event", "emotion", "relationship", "goal", "habit", "opinion", "experience"] },
+                  memory_category: { type: "string", enum: ["user_preferences", "past_events", "user_goals", "personal_info", "shared_experiences", "inside_jokes", "important_dates", "general"] },
                   importance: { type: "number", description: "Wichtigkeit 1-10" }
                 }
               },
               description: "Neue wichtige Informationen über den Nutzer (leer lassen wenn keine neuen Infos)"
+            },
+            recalled_memory_ids: {
+              type: "array",
+              items: { type: "string" },
+              description: "IDs der Erinnerungen die du in deiner Antwort aktiv genutzt/erwähnt hast (leer wenn keine)"
             }
           }
         }
