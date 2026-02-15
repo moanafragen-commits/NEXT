@@ -123,21 +123,29 @@ export default function Home() {
     mutationFn: async (characterId) => {
       const msgs = await base44.entities.ChatMessage.filter({ character_id: characterId });
       await Promise.all(msgs.map(m => base44.entities.ChatMessage.delete(m.id)));
+      if (user) {
+        const memories = await base44.entities.CharacterMemory.filter({ character_id: characterId, user_email: user.email });
+        await Promise.all(memories.map(m => base44.entities.CharacterMemory.delete(m.id)));
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['all-messages'] });
+      queryClient.invalidateQueries({ queryKey: ['memories'] });
     }
   });
   
   // Collect all unique tags
   const allTags = [...new Set(characters.flatMap(c => c.tags || []))];
 
+  // Only show characters in "Alle" that have at least one message
+  const charactersWithMessages = new Set(messages.map(m => m.character_id));
+
   const filteredCharacters = characters.filter(c => {
     const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTag = !activeTag || (c.tags || []).includes(activeTag);
     if (viewFilter === 'favorites') return matchesSearch && matchesTag && c.is_favorite;
     if (viewFilter === 'archived') return matchesSearch && matchesTag && c.is_archived;
-    return matchesSearch && matchesTag && !c.is_archived;
+    return matchesSearch && matchesTag && !c.is_archived && charactersWithMessages.has(c.id);
   });
 
   const { data: chatMessages = [] } = useQuery({
