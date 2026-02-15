@@ -220,7 +220,52 @@ const DEFAULT_FORM_DATA = {
     inside_jokes: '',
     relationship_boundaries: '',
     love_language: '',
-    relationship_evolution: 'statisch'
+    relationship_evolution: 'statisch',
+    // Aussehen
+    height: '',
+    body_type: '',
+    hair_color: '',
+    hair_style: '',
+    eye_color: '',
+    skin_tone: '',
+    tattoos_piercings: '',
+    scars_marks: '',
+    clothing_style: '',
+    distinctive_features: '',
+    voice_description: '',
+    scent: '',
+    physical_fitness: 'durchschnittlich',
+    // Persönlichkeitstypen
+    mbti_type: '',
+    zodiac_sign: '',
+    enneagram_type: '',
+    // Soziales
+    languages_spoken: '',
+    accent_dialect: '',
+    education: '',
+    living_situation: '',
+    family_status: '',
+    children: '',
+    pets: '',
+    political_stance: '',
+    religion_spirituality: '',
+    substance_use: '',
+    social_media_behavior: '',
+    // Intimität
+    flirt_style: '',
+    intimacy_experience: '',
+    dom_sub_preference: '',
+    kinks_preferences: '',
+    intimacy_taboos: '',
+    physical_description_intimate: '',
+    intimacy_personality: '',
+    turn_ons: '',
+    turn_offs: '',
+    aftercare_style: '',
+    // Story
+    storyline: '',
+    world_setting: 'real_modern',
+    npcs_in_life: ''
 };
 
 export default function CreateCharacterModal({ open, onClose, onCreated, editCharacter }) {
