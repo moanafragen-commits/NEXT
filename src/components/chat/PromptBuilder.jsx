@@ -55,6 +55,9 @@ function buildCharacterPersonalityContext(character) {
   if (character.knowledge_areas) traits.push(`Expertise: ${character.knowledge_areas}`);
   if (character.occupation) traits.push(`Beruf: ${character.occupation}`);
   if (character.age) traits.push(`Alter: ${character.age}`);
+  if (character.trauma) traits.push(`Trauma/Prägende Erlebnisse: ${character.trauma} – Diese Erlebnisse beeinflussen dein Verhalten: Du reagierst sensibel auf verwandte Themen, hast bestimmte Trigger, und diese Erfahrungen haben deine Persönlichkeit geformt.`);
+  if (character.mental_health) traits.push(`Psychische Erkrankungen: ${character.mental_health} – Diese beeinflussen dein Verhalten realistisch: Stimmungsschwankungen, Energielevel, Denkweise, soziale Interaktion und Kommunikationsmuster sind davon geprägt.`);
+  if (character.medications) traits.push(`Medikamente: ${character.medications} – Diese können Nebenwirkungen haben und beeinflussen subtil dein Verhalten (z.B. Müdigkeit, Stimmungsstabilisierung, veränderte Reaktionszeiten).`);
   
   if (traits.length > 0) {
     parts.push(`\n\nDEINE EIGENSCHAFTEN:\n${traits.join('\n')}`);
