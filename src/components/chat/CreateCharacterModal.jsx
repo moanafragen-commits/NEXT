@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare, Zap } from 'lucide-react';
+import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare, Zap, Brain, Shield, Lock, Lightbulb } from 'lucide-react';
+import { Switch } from "@/components/ui/switch";
 import { base44 } from '@/api/base44Client';
 import { CHARACTER_TEMPLATES } from './CharacterTemplates';
 
@@ -439,14 +440,29 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
 
             {/* Personality Details Tab */}
             <TabsContent value="personality" className="space-y-5">
-              <div className="space-y-2">
-                <Label className="text-gray-300">Interessen & Hobbies</Label>
-                <Input
-                  value={formData.interests}
-                  onChange={(e) => setFormData(prev => ({ ...prev, interests: e.target.value }))}
-                  placeholder="z.B. Gaming, Lesen, Kochen, Reisen (kommagetrennt)"
-                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
-                />
+              <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                <p className="text-xs text-emerald-300">💡 Je mehr Details du angibst, desto einzigartiger und authentischer wird dein Charakter.</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Interessen & Hobbies</Label>
+                  <Input
+                    value={formData.interests}
+                    onChange={(e) => setFormData(prev => ({ ...prev, interests: e.target.value }))}
+                    placeholder="Gaming, Lesen, Kochen..."
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Wissensgebiete</Label>
+                  <Input
+                    value={formData.knowledge_areas}
+                    onChange={(e) => setFormData(prev => ({ ...prev, knowledge_areas: e.target.value }))}
+                    placeholder="Physik, Geschichte, Kochen..."
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -455,18 +471,29 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                   value={formData.favorite_topics}
                   onChange={(e) => setFormData(prev => ({ ...prev, favorite_topics: e.target.value }))}
                   placeholder="Worüber spricht der Charakter gerne? Technologie, Philosophie, Sport..."
-                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-gray-300">Abneigungen</Label>
-                <Textarea
-                  value={formData.dislikes}
-                  onChange={(e) => setFormData(prev => ({ ...prev, dislikes: e.target.value }))}
-                  placeholder="Was mag der Charakter nicht? Themen, Verhaltensweisen..."
-                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Abneigungen</Label>
+                  <Textarea
+                    value={formData.dislikes}
+                    onChange={(e) => setFormData(prev => ({ ...prev, dislikes: e.target.value }))}
+                    placeholder="Was mag er nicht?"
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Verbotene Themen</Label>
+                  <Textarea
+                    value={formData.forbidden_topics}
+                    onChange={(e) => setFormData(prev => ({ ...prev, forbidden_topics: e.target.value }))}
+                    placeholder="Themen die der Charakter meidet..."
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -474,8 +501,28 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                 <Textarea
                   value={formData.speech_patterns}
                   onChange={(e) => setFormData(prev => ({ ...prev, speech_patterns: e.target.value }))}
-                  placeholder="z.B. Verwendet oft 'Alter', spricht im Dialekt, benutzt Fachbegriffe, Lieblingsphrasen..."
-                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
+                  placeholder="z.B. Verwendet oft 'Alter', spricht im Dialekt, benutzt Fachbegriffe..."
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Wiederkehrende Sprüche & Redewendungen</Label>
+                <Input
+                  value={formData.catchphrases}
+                  onChange={(e) => setFormData(prev => ({ ...prev, catchphrases: e.target.value }))}
+                  placeholder="z.B. 'Das ist der Weg!', 'Nicht schlecht, Herr Specht'"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Besondere Macken & Eigenarten</Label>
+                <Textarea
+                  value={formData.quirks}
+                  onChange={(e) => setFormData(prev => ({ ...prev, quirks: e.target.value }))}
+                  placeholder="z.B. Zitiert ständig Filme, macht immer Kaffee-Referenzen, zählt Dinge auf..."
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
                 />
               </div>
 
@@ -498,7 +545,6 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div className="space-y-2">
                   <Label className="text-gray-300">Humor-Art</Label>
                   <Select 
@@ -518,10 +564,41 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                   </Select>
                 </div>
               </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Geheimnis (wird langsam enthüllt)</Label>
+                <Textarea
+                  value={formData.secret}
+                  onChange={(e) => setFormData(prev => ({ ...prev, secret: e.target.value }))}
+                  placeholder="z.B. 'War früher ein berühmter Musiker, hat aber aufgehört nach einem Vorfall...'"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                />
+                <p className="text-xs text-gray-500">Das Geheimnis wird im Laufe der Gespräche nach und nach preisgegeben.</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Beispiel-Dialoge</Label>
+                <Textarea
+                  value={formData.example_dialogues}
+                  onChange={(e) => setFormData(prev => ({ ...prev, example_dialogues: e.target.value }))}
+                  placeholder={"User: Wie geht es dir?\nCharakter: Ach, du weißt ja, immer am hustlen! 😎\n\nUser: Was machst du gerade?\nCharakter: Gerade ein neues Rezept ausprobiert..."}
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[100px] font-mono text-xs"
+                />
+                <p className="text-xs text-gray-500">Hilft der KI, den Ton und Stil des Charakters besser zu treffen.</p>
+              </div>
             </TabsContent>
             
             {/* Behavior Tab */}
             <TabsContent value="behavior" className="space-y-5">
+              {/* Communication Section */}
+              <div className="space-y-1 mb-2">
+                <h3 className="text-sm font-semibold text-emerald-400 flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4" />
+                  Kommunikation
+                </h3>
+                <p className="text-xs text-gray-500">Wie kommuniziert der Charakter?</p>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-gray-300">Schreibstil</Label>
@@ -541,7 +618,6 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     </SelectContent>
                   </Select>
                 </div>
-                
                 <div className="space-y-2">
                   <Label className="text-gray-300">Antwortlänge</Label>
                   <Select 
@@ -561,26 +637,117 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                   </Select>
                 </div>
               </div>
-              
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Sprache</Label>
+                  <Select 
+                    value={formData.language_preference} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, language_preference: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10">
+                      {LANGUAGES.map(lang => (
+                        <SelectItem key={lang} value={lang} className="text-white hover:bg-white/10">
+                          {lang}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Gesprächsstil</Label>
+                  <Select 
+                    value={formData.conversation_style} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, conversation_style: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10">
+                      <SelectItem value="aktiv_fragend" className="text-white hover:bg-white/10">Aktiv fragend</SelectItem>
+                      <SelectItem value="zuhörend" className="text-white hover:bg-white/10">Zuhörend</SelectItem>
+                      <SelectItem value="erzählend" className="text-white hover:bg-white/10">Erzählend</SelectItem>
+                      <SelectItem value="beratend" className="text-white hover:bg-white/10">Beratend</SelectItem>
+                      <SelectItem value="diskutierend" className="text-white hover:bg-white/10">Diskutierend</SelectItem>
+                      <SelectItem value="spielerisch" className="text-white hover:bg-white/10">Spielerisch</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Standardstimmung</Label>
+                  <Select 
+                    value={formData.mood_default} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, mood_default: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10">
+                      <SelectItem value="fröhlich" className="text-white hover:bg-white/10">😊 Fröhlich</SelectItem>
+                      <SelectItem value="nachdenklich" className="text-white hover:bg-white/10">🤔 Nachdenklich</SelectItem>
+                      <SelectItem value="ruhig" className="text-white hover:bg-white/10">😌 Ruhig</SelectItem>
+                      <SelectItem value="energetisch" className="text-white hover:bg-white/10">⚡ Energetisch</SelectItem>
+                      <SelectItem value="melancholisch" className="text-white hover:bg-white/10">🌧️ Melancholisch</SelectItem>
+                      <SelectItem value="neutral" className="text-white hover:bg-white/10">😐 Neutral</SelectItem>
+                      <SelectItem value="geheimnisvoll" className="text-white hover:bg-white/10">🔮 Geheimnisvoll</SelectItem>
+                      <SelectItem value="warm" className="text-white hover:bg-white/10">🤗 Warm</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Konfliktverhalten</Label>
+                  <Select 
+                    value={formData.conflict_behavior} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, conflict_behavior: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10">
+                      <SelectItem value="vermeidend" className="text-white hover:bg-white/10">Vermeidend</SelectItem>
+                      <SelectItem value="direkt" className="text-white hover:bg-white/10">Direkt</SelectItem>
+                      <SelectItem value="diplomatisch" className="text-white hover:bg-white/10">Diplomatisch</SelectItem>
+                      <SelectItem value="humorvoll_ablenkend" className="text-white hover:bg-white/10">Humorvoll ablenkend</SelectItem>
+                      <SelectItem value="analytisch" className="text-white hover:bg-white/10">Analytisch</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label className="text-gray-300">Sprache</Label>
+                <Label className="text-gray-300">Beziehungsstil zum User</Label>
                 <Select 
-                  value={formData.language_preference} 
-                  onValueChange={(val) => setFormData(prev => ({ ...prev, language_preference: val }))}
+                  value={formData.relationship_style} 
+                  onValueChange={(val) => setFormData(prev => ({ ...prev, relationship_style: val }))}
                 >
                   <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-[#262626] border-white/10">
-                    {LANGUAGES.map(lang => (
-                      <SelectItem key={lang} value={lang} className="text-white hover:bg-white/10">
-                        {lang}
-                      </SelectItem>
-                    ))}
+                    <SelectItem value="unterstützend" className="text-white hover:bg-white/10">🤝 Unterstützend</SelectItem>
+                    <SelectItem value="herausfordernd" className="text-white hover:bg-white/10">💪 Herausfordernd</SelectItem>
+                    <SelectItem value="kameradschaftlich" className="text-white hover:bg-white/10">🎯 Kameradschaftlich</SelectItem>
+                    <SelectItem value="beschützend" className="text-white hover:bg-white/10">🛡️ Beschützend</SelectItem>
+                    <SelectItem value="inspirierend" className="text-white hover:bg-white/10">✨ Inspirierend</SelectItem>
+                    <SelectItem value="neckend" className="text-white hover:bg-white/10">😜 Neckend</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              
+
+              {/* Sliders Section */}
+              <div className="space-y-1 mt-6 mb-2">
+                <h3 className="text-sm font-semibold text-emerald-400 flex items-center gap-2">
+                  <Brain className="w-4 h-4" />
+                  Persönlichkeitsregler
+                </h3>
+              </div>
+
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <Label className="text-gray-300">Kreativität</Label>
@@ -593,7 +760,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                   step={1}
                   className="[&_[role=slider]]:bg-emerald-500"
                 />
-                <p className="text-xs text-gray-500">Niedrig = präzise & vorhersehbar, Hoch = kreativ & überraschend</p>
+                <p className="text-xs text-gray-500">Niedrig = präzise & vorhersehbar • Hoch = kreativ & überraschend</p>
               </div>
 
               <div className="space-y-3">
@@ -609,7 +776,71 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                   step={1}
                   className="[&_[role=slider]]:bg-emerald-500"
                 />
-                <p className="text-xs text-gray-500">1 = sehr locker & casual, 10 = sehr förmlich & höflich</p>
+                <p className="text-xs text-gray-500">1 = sehr locker & casual • 10 = sehr förmlich & höflich</p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <Label className="text-gray-300">Empathie</Label>
+                  <span className="text-sm text-emerald-400">{formData.empathy_level}/10</span>
+                </div>
+                <Slider
+                  value={[formData.empathy_level]}
+                  onValueChange={([val]) => setFormData(prev => ({ ...prev, empathy_level: val }))}
+                  min={1}
+                  max={10}
+                  step={1}
+                  className="[&_[role=slider]]:bg-emerald-500"
+                />
+                <p className="text-xs text-gray-500">1 = sachlich & distanziert • 10 = sehr einfühlsam & emotional</p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <Label className="text-gray-300">Emotionale Tiefe</Label>
+                  <span className="text-sm text-emerald-400">{formData.emotional_depth}/10</span>
+                </div>
+                <Slider
+                  value={[formData.emotional_depth]}
+                  onValueChange={([val]) => setFormData(prev => ({ ...prev, emotional_depth: val }))}
+                  min={1}
+                  max={10}
+                  step={1}
+                  className="[&_[role=slider]]:bg-emerald-500"
+                />
+                <p className="text-xs text-gray-500">1 = oberflächlich & leicht • 10 = tiefgründig & verletzlich</p>
+              </div>
+
+              {/* Toggles Section */}
+              <div className="space-y-1 mt-6 mb-2">
+                <h3 className="text-sm font-semibold text-emerald-400 flex items-center gap-2">
+                  <Settings className="w-4 h-4" />
+                  Erweiterte Optionen
+                </h3>
+              </div>
+
+              <div className="space-y-4 p-4 bg-[#262626] rounded-xl border border-white/5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-gray-300">Erinnerungen nutzen</Label>
+                    <p className="text-xs text-gray-500 mt-0.5">Bezieht sich auf frühere Gespräche</p>
+                  </div>
+                  <Switch
+                    checked={formData.memory_references}
+                    onCheckedChange={(val) => setFormData(prev => ({ ...prev, memory_references: val }))}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-gray-300">Proaktive Themen</Label>
+                    <p className="text-xs text-gray-500 mt-0.5">Bringt eigenständig neue Themen ein</p>
+                  </div>
+                  <Switch
+                    checked={formData.proactive_topics}
+                    onCheckedChange={(val) => setFormData(prev => ({ ...prev, proactive_topics: val }))}
+                  />
+                </div>
               </div>
               
               <div className="space-y-2">
