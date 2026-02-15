@@ -199,7 +199,7 @@ export default function CharacterInfo() {
               <h3 className="font-semibold">Erinnerungen & Beziehung</h3>
             </div>
             <Button
-              onClick={() => setShowAddMemory(true)}
+              onClick={() => { setEditingMemory(null); setShowMemoryModal(true); }}
               size="sm"
               className="bg-emerald-600 hover:bg-emerald-500"
             >
@@ -214,56 +214,11 @@ export default function CharacterInfo() {
               <p className="text-xs mt-1">Definiere deine Beziehung zu {character.name}.</p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {memories.map((memory) => (
-                <motion.div
-                  key={memory.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="bg-[#262626] rounded-lg p-4"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1">
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
-                        {memory.relation_type && (
-                          <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30">
-                            {memory.relation_type}
-                          </Badge>
-                        )}
-                        <Badge variant="outline" className="text-xs border-white/20">
-                          {memoryTypeLabels[memory.memory_type] || memory.memory_type}
-                        </Badge>
-                        {memory.importance_level && (
-                          <Badge 
-                            className={`text-xs ${
-                              memory.importance_level === 'hoch' ? 'bg-red-500/20 text-red-300 border-red-500/30' :
-                              memory.importance_level === 'mittel' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' :
-                              'bg-gray-500/20 text-gray-300 border-gray-500/30'
-                            }`}
-                          >
-                            {memory.importance_level}
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-300 leading-relaxed">{memory.memory_text || memory.content}</p>
-                      {memory.last_interaction_date && (
-                        <p className="text-xs text-gray-500 mt-2">
-                          Letzte Interaktion: {new Date(memory.last_interaction_date).toLocaleDateString('de-DE')}
-                        </p>
-                      )}
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => deleteMemoryMutation.mutate(memory.id)}
-                      className="text-red-400 hover:text-red-300 hover:bg-red-500/10 flex-shrink-0 h-8 w-8"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+            <MemoryList 
+              memories={memories} 
+              characterId={characterId}
+              onEdit={handleEditMemory}
+            />
           )}
         </div>
         
@@ -282,9 +237,10 @@ export default function CharacterInfo() {
       </div>
 
       {user && (
-        <AddMemoryModal
-          open={showAddMemory}
-          onClose={() => setShowAddMemory(false)}
+        <EditMemoryModal
+          open={showMemoryModal}
+          onClose={() => { setShowMemoryModal(false); setEditingMemory(null); }}
+          memory={editingMemory}
           characterId={characterId}
           userEmail={user.email}
         />
