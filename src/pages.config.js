@@ -59,6 +59,8 @@ import Landing from './pages/Landing';
 import UserChat from './pages/UserChat';
 import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
+import CharacterStatus from './pages/CharacterStatus';
+import CreateStatus from './pages/CreateStatus';
 
 
 export const PAGES = {
@@ -74,6 +76,8 @@ export const PAGES = {
     "UserChat": UserChat,
     "UserChats": UserChats,
     "UserProfile": UserProfile,
+    "CharacterStatus": CharacterStatus,
+    "CreateStatus": CreateStatus,
 }
 
 export const pagesConfig = {

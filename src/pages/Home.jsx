@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import CharacterCard from '@/components/chat/CharacterCard';
 import CreateCharacterModal from '@/components/chat/CreateCharacterModal';
+import StatusCircle from '@/components/status/StatusCircle';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotifications } from '@/components/notifications/NotificationManager';
 import UnreadBadge from '@/components/notifications/UnreadBadge';
@@ -209,6 +210,15 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
             >
               {permission === 'granted' ? <Bell className="w-5 h-5" /> : <BellOff className="w-5 h-5" />}
             </Button>
+            <Link to={createPageUrl('CreateStatus')}>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="text-gray-400 hover:text-white hover:bg-white/10"
+              >
+                <Plus className="w-5 h-5" />
+              </Button>
+            </Link>
             <Link to={createPageUrl('UserProfile')}>
               <Button 
                 variant="ghost" 
@@ -278,9 +288,22 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
           </button>
         </div>
         </header>
-      
-      {/* Character List */}
-      <main className="pb-24">
+
+        {/* Status Bar */}
+        <div className="px-4 py-3 overflow-x-auto">
+          <div className="flex gap-4">
+            {characters.filter(c => !c.is_archived).slice(0, 10).map(character => (
+              <StatusCircle
+                key={character.id}
+                character={character}
+                hasNewStatus={true}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Character List */}
+        <main className="pb-24">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="w-10 h-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
