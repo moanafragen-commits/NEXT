@@ -163,9 +163,11 @@ export default function Characters() {
         )}
       </main>
 
-      {showCreateModal && (
-        <CreateCharacterModal onClose={() => setShowCreateModal(false)} />
-      )}
+      <CreateCharacterModal
+        open={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCreated={() => queryClient.invalidateQueries({ queryKey: ['characters'] })}
+      />
 
       <BottomNav user={user} />
     </div>
