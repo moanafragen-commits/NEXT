@@ -173,9 +173,28 @@ export default function GroupChat() {
         characters.find(c => c.id === m.member_id)
       ).filter(Boolean);
 
-      const charDescriptions = activeCharacters.map(c => 
-        `${c.name}: ${c.personality}`
-      ).join('\n');
+      // Build character context with memories
+      const characterMemories = {};
+      activeCharacters.forEach(char => {
+        const charMemories = allMemories.filter(m => m.character_id === char.id);
+        if (charMemories.length > 0) {
+          characterMemories[char.id] = charMemories;
+        }
+      });
+
+      const charDescriptions = activeCharacters.map(c => {
+        const charMems = characterMemories[c.id] || [];
+        const relationMem = charMems.find(m => m.relation_type);
+        const memoryText = charMems.length > 0 ? `\n  Was ${c.name} über dich weiß:\n  ${charMems
+          .sort((a, b) => {
+            const imp = { 'hoch': 3, 'mittel': 2, 'niedrig': 1 };
+            return (imp[b.importance_level] || 2) - (imp[a.importance_level] || 2);
+          })
+          .map(m => `- ${m.memory_text || m.content}${m.importance_level === 'hoch' ? ' (WICHTIG)' : ''}`)
+          .join('\n  ')}` : '';
+        
+        return `${c.name}: ${c.personality}${relationMem ? `\n  Beziehung zu dir: ${relationMem.relation_type}` : ''}${memoryText}`;
+      }).join('\n\n');
 
       const now = new Date();
       const dateTimeContext = `Aktuelles Datum: ${now.toLocaleDateString('de-DE')}, Uhrzeit: ${now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
