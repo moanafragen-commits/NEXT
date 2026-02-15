@@ -121,20 +121,17 @@ export default function Home() {
 
   const deleteChatMutation = useMutation({
     mutationFn: async (characterId) => {
-      const msgs = await base44.entities.ChatMessage.filter({ character_id: characterId });
-      await Promise.all(msgs.map(m => base44.entities.ChatMessage.delete(m.id)));
-      if (user) {
-        const memories = await base44.entities.CharacterMemory.filter({ character_id: characterId, user_email: user.email });
-        await Promise.all(memories.map(m => base44.entities.CharacterMemory.delete(m.id)));
+        const msgs = await base44.entities.ChatMessage.filter({ character_id: characterId });
+        await Promise.all(msgs.map(m => base44.entities.ChatMessage.delete(m.id)));
+        if (user) {
+          const memories = await base44.entities.CharacterMemory.filter({ character_id: characterId, user_email: user.email });
+          await Promise.all(memories.map(m => base44.entities.CharacterMemory.delete(m.id)));
+        }
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['all-messages'] });
+        queryClient.invalidateQueries({ queryKey: ['memories'] });
       }
-      const statuses = await base44.entities.CharacterStatus.filter({ character_id: characterId });
-      await Promise.all(statuses.map(s => base44.entities.CharacterStatus.delete(s.id)));
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['all-messages'] });
-      queryClient.invalidateQueries({ queryKey: ['memories'] });
-      queryClient.invalidateQueries({ queryKey: ['statuses'] });
-    }
   });
   
   // Collect all unique tags
