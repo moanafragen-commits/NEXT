@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronUp } from 'lucide-react';
@@ -15,22 +15,61 @@ const QUICK_REPLIES = [
   'Liebe es! ❤️'
 ];
 
-export default function StatusReactionBar({ characterId, characterName, statusCaption, statusImageUrl }) {
+export default function StatusReactionBar({ statusId, characterId, characterName, statusCaption, statusImageUrl }) {
   const [showReplies, setShowReplies] = useState(false);
   const [sent, setSent] = useState(null);
   const queryClient = useQueryClient();
 
+  const { data: user } = useQuery({
+    queryKey: ['user'],
+    queryFn: () => base44.auth.me()
+  });
+
+  // Check existing reaction
+  const { data: existingReaction } = useQuery({
+    queryKey: ['my-status-reaction', statusId, user?.email],
+    queryFn: async () => {
+      const reactions = await base44.entities.StatusReaction.filter({
+        status_id: statusId,
+        user_email: user.email
+      });
+      return reactions[0] || null;
+    },
+    enabled: !!statusId && !!user
+  });
+
   const sendReactionMutation = useMutation({
-    mutationFn: async (reactionText) => {
+    mutationFn: async (emoji) => {
+      // Save as StatusReaction entity
+      if (existingReaction) {
+        if (existingReaction.emoji === emoji) {
+          // Remove reaction if same emoji
+          await base44.entities.StatusReaction.delete(existingReaction.id);
+        } else {
+          // Update to new emoji
+          await base44.entities.StatusReaction.update(existingReaction.id, { emoji });
+        }
+      } else {
+        await base44.entities.StatusReaction.create({
+          status_id: statusId,
+          status_type: 'character',
+          user_email: user.email,
+          emoji
+        });
+      }
+
+      // Also send as chat message
       await base44.entities.ChatMessage.create({
         character_id: characterId,
         role: 'user',
-        content: reactionText,
+        content: emoji,
         status: 'sent'
       });
     },
-    onSuccess: (_, reactionText) => {
-      setSent(reactionText);
+    onSuccess: (_, emoji) => {
+      setSent(emoji);
+      queryClient.invalidateQueries({ queryKey: ['my-status-reaction', statusId] });
+      queryClient.invalidateQueries({ queryKey: ['status-reactions', statusId] });
       queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
       queryClient.invalidateQueries({ queryKey: ['all-messages'] });
       setTimeout(() => setSent(null), 2000);
@@ -38,9 +77,8 @@ export default function StatusReactionBar({ characterId, characterName, statusCa
   });
 
   const handleReaction = (text) => {
-    if (sendReactionMutation.isPending) return;
-    const statusRef = statusCaption ? `"${statusCaption}"` : 'deinem Status';
-    sendReactionMutation.mutate(`${text}`);
+    if (sendReactionMutation.isPending || !user) return;
+    sendReactionMutation.mutate(text);
     setShowReplies(false);
   };
 
