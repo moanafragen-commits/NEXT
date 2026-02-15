@@ -35,11 +35,11 @@ export default function BottomNav({ user }) {
               onClick={() => setShowCreateMenu(false)}
             />
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden w-56"
-            >
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden w-56 auto-theme-card"
+              >
               <Link
                 to={createPageUrl('CreatePost')}
                 onClick={() => setShowCreateMenu(false)}

@@ -19,7 +19,7 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
   };
 
   return (
-    <div className="bg-white border-b border-gray-100">
+    <div className="bg-white border-b border-gray-100 auto-theme-card">
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2.5">
         <Link to={createPageUrl(`Chat?characterId=${character?.id}`)} className="flex items-center gap-2.5">
@@ -30,7 +30,7 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="text-[13px] font-semibold text-black">{character?.name}</span>
+          <span className="text-[13px] font-semibold">{character?.name}</span>
         </Link>
         <button className="text-gray-500 hover:text-black">
           <MoreHorizontal className="w-5 h-5" />
@@ -61,28 +61,28 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-4">
             <button onClick={onLike} className="hover:opacity-60 transition-opacity">
-              <Heart className={`w-6 h-6 ${isLiked ? 'fill-red-500 text-red-500' : 'text-black'}`} />
+              <Heart className={`w-6 h-6 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
             </button>
             <button onClick={onOpenComments} className="hover:opacity-60 transition-opacity">
-              <MessageCircle className="w-6 h-6 text-black" />
+              <MessageCircle className="w-6 h-6" />
             </button>
             <Link to={createPageUrl(`Chat?characterId=${character?.id}`)}>
-              <Send className="w-5 h-5 text-black hover:opacity-60 transition-opacity" />
+              <Send className="w-5 h-5 hover:opacity-60 transition-opacity" />
             </Link>
             <AIReactButton post={post} postCharacter={character} allCharacters={allCharacters || []} />
           </div>
           <button onClick={() => setSaved(!saved)} className="hover:opacity-60 transition-opacity">
-            <Bookmark className={`w-6 h-6 ${saved ? 'fill-black text-black' : 'text-black'}`} />
+            <Bookmark className={`w-6 h-6 ${saved ? 'fill-current' : ''}`} />
           </button>
         </div>
 
         {/* Likes */}
-        <p className="text-[13px] font-semibold text-black mb-1">
+        <p className="text-[13px] font-semibold mb-1">
           {post.likes_count || 0} Gefällt mir
         </p>
 
         {/* Caption */}
-        <div className="text-[13px] text-black mb-1">
+        <div className="text-[13px] mb-1">
           <span className="font-semibold mr-1.5">{character?.name}</span>
           {post.content}
         </div>
