@@ -1,7 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { Trash2, Star, Archive, MessageSquareX } from 'lucide-react';
+import { Trash2, Star, Archive, MessageSquareX, Music } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -76,6 +76,12 @@ export default function CharacterCard({ character, lastMessage, onClick, onDelet
             <span className="text-gray-500">{availability.label}</span>
           ) : lastMessage?.content || character.status || character.greeting || character.personality?.slice(0, 50) + '...'}
         </p>
+        {character.current_song && (
+          <div className="flex items-center gap-1.5 mt-1">
+            <Music className="w-3 h-3 text-[#1DB954] flex-shrink-0" />
+            <span className="text-[11px] text-[#1DB954] truncate">🎧 {character.current_song}</span>
+          </div>
+        )}
         {(character.tags?.length > 0) && (
           <div className="mt-1">
             <TagManager character={character} compact={true} />
