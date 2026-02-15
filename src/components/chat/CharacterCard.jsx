@@ -1,8 +1,10 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Star, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 
 export default function CharacterCard({ character, lastMessage, onClick, onDelete, onToggleFavorite, onToggleArchive }) {
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character.name}`;
@@ -63,17 +65,41 @@ export default function CharacterCard({ character, lastMessage, onClick, onDelet
         </p>
       </div>
       
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={(e) => {
-          e.stopPropagation();
-          onDelete(character.id);
-        }}
-        className="opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-300 hover:bg-red-500/10"
-      >
-        <Trash2 className="w-4 h-4" />
-      </Button>
+      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFavoriteMutation.mutate();
+          }}
+          className={character.is_favorite ? 'text-yellow-400' : 'text-gray-400 hover:text-yellow-400'}
+        >
+          <Star className={`w-4 h-4 ${character.is_favorite ? 'fill-yellow-400' : ''}`} />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleArchiveMutation.mutate();
+          }}
+          className="text-gray-400 hover:text-gray-300"
+        >
+          <Archive className="w-4 h-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(character.id);
+          }}
+          className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      </div>
     </div>
   );
 }

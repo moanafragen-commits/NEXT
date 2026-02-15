@@ -10,11 +10,49 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import EmojiPicker from './EmojiPicker';
 
 export default function MessageBubble({ message, characterAvatar, characterName, onPin, onReply, replyToMessage }) {
   const isUser = message.role === 'user';
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${characterName}`;
   const [showActions, setShowActions] = useState(false);
+  const queryClient = useQueryClient();
+
+  const { data: reactions = [] } = useQuery({
+    queryKey: ['reactions', message.id],
+    queryFn: () => base44.entities.MessageReaction.filter({ message_id: message.id })
+  });
+
+  const { data: user } = useQuery({
+    queryKey: ['user'],
+    queryFn: () => base44.auth.me()
+  });
+
+  const addReactionMutation = useMutation({
+    mutationFn: async (emoji) => {
+      const existing = reactions.find(r => r.user_email === user?.email && r.emoji === emoji);
+      if (existing) {
+        await base44.entities.MessageReaction.delete(existing.id);
+      } else {
+        await base44.entities.MessageReaction.create({
+          message_id: message.id,
+          user_email: user.email,
+          emoji
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reactions', message.id] });
+    }
+  });
+
+  const groupedReactions = reactions.reduce((acc, r) => {
+    acc[r.emoji] = acc[r.emoji] || [];
+    acc[r.emoji].push(r);
+    return acc;
+  }, {});
   
   return (
     <div 
@@ -67,18 +105,55 @@ export default function MessageBubble({ message, characterAvatar, characterName,
           <span className="text-[10px] text-gray-500">
             {format(new Date(message.created_date), 'HH:mm', { locale: de })}
           </span>
-          {isUser && <CheckCheck className="w-3.5 h-3.5 text-emerald-400" />}
+          {isUser && message.status && (
+            <>
+              {message.status === 'read' && <CheckCheck className="w-3.5 h-3.5 text-emerald-400" />}
+              {message.status === 'delivered' && <CheckCheck className="w-3.5 h-3.5 text-gray-400" />}
+              {message.status === 'sent' && <Check className="w-3.5 h-3.5 text-gray-400" />}
+            </>
+          )}
         </div>
+
+        {/* Reactions */}
+        {Object.keys(groupedReactions).length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {Object.entries(groupedReactions).map(([emoji, users]) => {
+              const hasReacted = users.some(r => r.user_email === user?.email);
+              return (
+                <button
+                  key={emoji}
+                  onClick={() => addReactionMutation.mutate(emoji)}
+                  className={`px-2 py-0.5 rounded-full text-xs flex items-center gap-1 transition-colors ${
+                    hasReacted 
+                      ? 'bg-emerald-600/20 border border-emerald-500/50' 
+                      : 'bg-[#262626] border border-white/10 hover:bg-white/10'
+                  }`}
+                >
+                  <span>{emoji}</span>
+                  <span className="text-gray-400">{users.length}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Add Reaction Button */}
+      <div className={`opacity-0 group-hover:opacity-100 transition-opacity ${isUser ? 'order-0' : 'order-2'}`}>
+        <EmojiPicker 
+          onSelect={(emoji) => addReactionMutation.mutate(emoji)} 
+          isReaction={true}
+        />
       </div>
       
       {/* Actions Menu */}
-      {(showActions || message.is_pinned) && onPin && onReply && (
+      {onPin && onReply && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
-              className={`h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity ${isUser ? 'order-0' : 'order-2'}`}
+              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <MoreVertical className="w-4 h-4 text-gray-400" />
             </Button>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Send, Smile, Mic, X } from 'lucide-react';
+import { Send, Mic, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import EmojiPicker from './EmojiPicker';
 
 export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelReply }) {
   const [message, setMessage] = useState('');
