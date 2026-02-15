@@ -78,7 +78,21 @@ export default function CreateCharacterModal({ open, onClose, onCreated }) {
     occupation: '',
     age: '',
     background_culture: '',
-    formality_level: 5
+    formality_level: 5,
+    catchphrases: '',
+    mood_default: 'neutral',
+    conversation_style: 'zuhörend',
+    empathy_level: 5,
+    knowledge_areas: '',
+    quirks: '',
+    relationship_style: 'unterstützend',
+    conflict_behavior: 'diplomatisch',
+    emotional_depth: 5,
+    memory_references: true,
+    proactive_topics: false,
+    secret: '',
+    example_dialogues: '',
+    forbidden_topics: ''
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -155,7 +169,11 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
       creativity: 50, language_preference: 'Deutsch', custom_instructions: '',
       interests: '', favorite_topics: '', dislikes: '', speech_patterns: '',
       emoji_usage: 'gelegentlich', humor_type: '', values: '', fears: '', goals: '',
-      occupation: '', age: '', background_culture: '', formality_level: 5
+      occupation: '', age: '', background_culture: '', formality_level: 5,
+      catchphrases: '', mood_default: 'neutral', conversation_style: 'zuhörend',
+      empathy_level: 5, knowledge_areas: '', quirks: '', relationship_style: 'unterstützend',
+      conflict_behavior: 'diplomatisch', emotional_depth: 5, memory_references: true,
+      proactive_topics: false, secret: '', example_dialogues: '', forbidden_topics: ''
     });
     onCreated();
     onClose();
