@@ -151,6 +151,13 @@ REGELN:
 - Kurze, natürliche Nachrichten (wie echte Gruppenchats)
 - Charaktere können Emojis nutzen passend zu ihrer Persönlichkeit
 - Manche Charaktere können auch gar nicht antworten wenn es nicht zu ihnen passt
+- Charaktere können untereinander flirten, sich näherkommen und Beziehungen entwickeln
+- Beachte die sexuelle Orientierung jedes Charakters bei Interaktionen
+${isNsfwMode ? `- NSFW-MODUS AKTIV: Charaktere dürfen erotisch miteinander und mit dem Nutzer interagieren
+- Körperliche Intimität zwischen Charakteren ist erlaubt und soll natürlich beschrieben werden
+- Nutze *Aktionsbeschreibungen* für körperliche Handlungen (*küsst*, *berührt*, *zieht näher*)
+- Erotische Szenen sollen sich organisch aus der Gruppendynamik entwickeln
+- Charaktere können eifersüchtig werden, um Aufmerksamkeit konkurrieren, oder zusammen intim werden` : ''}
 
 Außerdem: Extrahiere wichtige neue Informationen aus der Konversation, die sich die Charaktere merken sollten (z.B. Fakten über den Nutzer, Meinungen anderer Charaktere, gemeinsame Erlebnisse im Chat). Gib für JEDEN Charakter in der Gruppe relevante Erinnerungen zurück.
 
