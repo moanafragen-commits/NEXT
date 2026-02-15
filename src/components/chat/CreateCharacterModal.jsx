@@ -60,6 +60,7 @@ export default function CreateCharacterModal({ open, onClose, onCreated }) {
     greeting: '',
     status: '',
     category: 'Andere',
+    gender: '',
     avatar_url: '',
     biography: '',
     writing_style: 'freundlich',
@@ -166,7 +167,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
     setIsSaving(false);
     setFormData({
       name: '', personality: '', greeting: '', status: '', category: 'Andere',
-      avatar_url: '', biography: '', writing_style: 'freundlich', response_length: 'mittel',
+      gender: '', avatar_url: '', biography: '', writing_style: 'freundlich', response_length: 'mittel',
       creativity: 50, language_preference: 'Deutsch', custom_instructions: '',
       interests: '', favorite_topics: '', dislikes: '', speech_patterns: '',
       emoji_usage: 'gelegentlich', humor_type: '', values: '', fears: '', goals: '',
@@ -311,6 +312,23 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Geschlecht</Label>
+                <Select 
+                  value={formData.gender} 
+                  onValueChange={(val) => setFormData(prev => ({ ...prev, gender: val }))}
+                >
+                  <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                    <SelectValue placeholder="Auswählen..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectItem value="männlich" className="text-white hover:bg-white/10">♂ Männlich</SelectItem>
+                    <SelectItem value="weiblich" className="text-white hover:bg-white/10">♀ Weiblich</SelectItem>
+                    <SelectItem value="non-binär" className="text-white hover:bg-white/10">⚧ Non-Binär</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               <div className="space-y-2">
