@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare, Zap, Brain, Shield, Lock, Lightbulb, ImagePlus, Briefcase, Clock, HeartCrack } from 'lucide-react';
+import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare, Zap, Brain, Shield, Lock, Lightbulb, ImagePlus, Briefcase, Clock, HeartCrack, Flame, Eye, Battery, Moon } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
 import { base44 } from '@/api/base44Client';
 import { CHARACTER_TEMPLATES } from './CharacterTemplates';
@@ -176,6 +176,24 @@ export default function CreateCharacterModal({ open, onClose, onCreated }) {
     trauma: '',
     mental_health: '',
     medications: '',
+    introversion_level: 5,
+    honesty_level: 7,
+    loyalty_level: 7,
+    patience_level: 5,
+    energy_level: 'mittel',
+    mood_cycle: 'stabil',
+    addictions: '',
+    phobias: '',
+    nervous_ticks: '',
+    triggers: '',
+    coping_mechanisms: '',
+    self_esteem: 5,
+    stubbornness_level: 5,
+    impulsivity_level: 5,
+    social_battery: 'mittel',
+    moral_compass: 'moralisch',
+    sleeping_pattern: 'normal',
+    stress_response: 'fight',
     initial_relationship: '',
     relationship_backstory: '',
     relationship_scenario: '',
