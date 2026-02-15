@@ -145,15 +145,23 @@ export default function Home() {
   const sendMessageMutation = useMutation({
     mutationFn: async (content) => {
       const charId = selectedCharacter.id;
-      
-      await base44.entities.ChatMessage.create({
-        character_id: charId,
-        role: 'user',
-        content
-      });
-      
-      await queryClient.invalidateQueries({ queryKey: ['messages', charId] });
-      setIsTyping(true);
+
+          await base44.entities.ChatMessage.create({
+            character_id: charId,
+            role: 'user',
+            content
+          });
+
+          await queryClient.invalidateQueries({ queryKey: ['messages', charId] });
+
+          // Realistic reply delay
+          const delay = calculateReplyDelay(selectedCharacter);
+          const preTypingWait = Math.max(0, delay - 3000);
+          if (preTypingWait > 0) {
+            await new Promise(resolve => setTimeout(resolve, Math.min(preTypingWait, 15000)));
+          }
+          setIsTyping(true);
+          await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
       
       const history = chatMessages.slice(-10).map(m => ({
         role: m.role,
