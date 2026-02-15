@@ -1230,7 +1230,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                       <SelectItem value="fröhlich" className="text-white hover:bg-white/10">😊 Fröhlich</SelectItem>
                       <SelectItem value="nachdenklich" className="text-white hover:bg-white/10">🤔 Nachdenklich</SelectItem>
                       <SelectItem value="ruhig" className="text-white hover:bg-white/10">😌 Ruhig</SelectItem>
@@ -1251,7 +1251,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                       <SelectItem value="vermeidend" className="text-white hover:bg-white/10">🙈 Vermeidend</SelectItem>
                       <SelectItem value="direkt" className="text-white hover:bg-white/10">🎯 Direkt</SelectItem>
                       <SelectItem value="diplomatisch" className="text-white hover:bg-white/10">⚖️ Diplomatisch</SelectItem>
@@ -1275,7 +1275,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                   <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#262626] border-white/10">
+                  <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                     <SelectItem value="unterstützend" className="text-white hover:bg-white/10">🤝 Unterstützend</SelectItem>
                     <SelectItem value="herausfordernd" className="text-white hover:bg-white/10">💪 Herausfordernd</SelectItem>
                     <SelectItem value="kameradschaftlich" className="text-white hover:bg-white/10">🎯 Kameradschaftlich</SelectItem>
