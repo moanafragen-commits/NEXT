@@ -269,12 +269,6 @@ AUFGABEN:
         queryClient.invalidateQueries({ queryKey: ['memories', characterId, user.email] });
       }
       
-      // Mark user message as read
-      await base44.entities.ChatMessage.update(userMsg.id, {
-        status: 'read',
-        read_at: new Date().toISOString()
-      });
-
       // Generate response image if needed (occasionally for variety)
       let aiImageUrl = null;
       if (Math.random() < 0.15 && character.category !== 'Assistent') { // 15% chance
