@@ -359,6 +359,11 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
       conflict_behavior: 'diplomatisch', emotional_depth: 5, memory_references: true,
       proactive_topics: false, secret: '', example_dialogues: '', forbidden_topics: '',
       trauma: '', mental_health: '', medications: '',
+      introversion_level: 5, honesty_level: 7, loyalty_level: 7, patience_level: 5,
+      energy_level: 'mittel', mood_cycle: 'stabil', addictions: '', phobias: '',
+      nervous_ticks: '', triggers: '', coping_mechanisms: '', self_esteem: 5,
+      stubbornness_level: 5, impulsivity_level: 5, social_battery: 'mittel',
+      moral_compass: 'moralisch', sleeping_pattern: 'normal', stress_response: 'fight',
       initial_relationship: '', relationship_backstory: '',
       relationship_scenario: '', relationship_dynamic: 'gleichberechtigt',
       trust_level: 5, jealousy_level: 3, attachment_style: 'sicher',
@@ -1208,6 +1213,106 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                 />
                 <p className="text-xs text-gray-500">Kann Nebenwirkungen und Verhaltensänderungen beeinflussen</p>
               </div>
+
+              {/* Schwächen & Ticks Section */}
+              <div className="space-y-1 mt-4 mb-1">
+                <h3 className="text-sm font-semibold text-orange-400 flex items-center gap-2">
+                  <Flame className="w-4 h-4" />
+                  Schwächen & Gewohnheiten
+                </h3>
+                <p className="text-xs text-gray-500">Was macht den Charakter menschlich und unperfekt?</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Süchte & Abhängigkeiten</Label>
+                <Textarea
+                  value={formData.addictions}
+                  onChange={(e) => setFormData(prev => ({ ...prev, addictions: e.target.value }))}
+                  placeholder="z.B. Alkohol, Nikotin, Social Media, Gaming, Koffein, Shopping..."
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                />
+                <p className="text-xs text-gray-500">Beeinflusst Verhalten und kann im Chat thematisiert werden</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Phobien</Label>
+                  <Textarea
+                    value={formData.phobias}
+                    onChange={(e) => setFormData(prev => ({ ...prev, phobias: e.target.value }))}
+                    placeholder="Spinnen, Höhe, enge Räume..."
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Nervöse Ticks</Label>
+                  <Textarea
+                    value={formData.nervous_ticks}
+                    onChange={(e) => setFormData(prev => ({ ...prev, nervous_ticks: e.target.value }))}
+                    placeholder="Nägelkauen, Haare zwirbeln..."
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Emotionale Trigger</Label>
+                  <Textarea
+                    value={formData.triggers}
+                    onChange={(e) => setFormData(prev => ({ ...prev, triggers: e.target.value }))}
+                    placeholder="Verlustangst, Ungerechtigkeit, Lügen..."
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Bewältigungsstrategien</Label>
+                  <Textarea
+                    value={formData.coping_mechanisms}
+                    onChange={(e) => setFormData(prev => ({ ...prev, coping_mechanisms: e.target.value }))}
+                    placeholder="Sport, Essen, Rückzug, Humor..."
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Stressreaktion</Label>
+                  <Select 
+                    value={formData.stress_response} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, stress_response: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
+                      <SelectItem value="fight" className="text-white hover:bg-white/10">⚔️ Fight – Angriff & Konfrontation</SelectItem>
+                      <SelectItem value="flight" className="text-white hover:bg-white/10">🏃 Flight – Flucht & Vermeidung</SelectItem>
+                      <SelectItem value="freeze" className="text-white hover:bg-white/10">🧊 Freeze – Erstarren & Blockade</SelectItem>
+                      <SelectItem value="fawn" className="text-white hover:bg-white/10">🙇 Fawn – Anpassen & Beschwichtigen</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Schlafmuster</Label>
+                  <Select 
+                    value={formData.sleeping_pattern} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, sleeping_pattern: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
+                      <SelectItem value="frühaufsteher" className="text-white hover:bg-white/10">🌅 Frühaufsteher</SelectItem>
+                      <SelectItem value="normal" className="text-white hover:bg-white/10">☀️ Normal</SelectItem>
+                      <SelectItem value="nachtmensch" className="text-white hover:bg-white/10">🌙 Nachtmensch</SelectItem>
+                      <SelectItem value="chaotisch" className="text-white hover:bg-white/10">🌀 Chaotisch</SelectItem>
+                      <SelectItem value="schlaflos" className="text-white hover:bg-white/10">👁️ Schlaflos</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </TabsContent>
 
             {/* Personality Details Tab */}
@@ -1662,6 +1767,201 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                   className="[&_[role=slider]]:bg-emerald-500"
                 />
                 <p className="text-xs text-gray-500">1 = oberflächlich & leicht • 10 = tiefgründig & verletzlich</p>
+              </div>
+
+              {/* Soziale Persönlichkeit Section */}
+              <div className="space-y-1 mt-6 mb-2">
+                <h3 className="text-sm font-semibold text-sky-400 flex items-center gap-2">
+                  <Eye className="w-4 h-4" />
+                  Soziale Persönlichkeit
+                </h3>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <Label className="text-gray-300">Introversion</Label>
+                  <span className="text-sm text-sky-400">{formData.introversion_level}/10</span>
+                </div>
+                <Slider
+                  value={[formData.introversion_level]}
+                  onValueChange={([val]) => setFormData(prev => ({ ...prev, introversion_level: val }))}
+                  min={1} max={10} step={1}
+                  className="[&_[role=slider]]:bg-sky-500"
+                />
+                <p className="text-xs text-gray-500">1 = extrem extrovertiert • 10 = extrem introvertiert</p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <Label className="text-gray-300">Ehrlichkeit</Label>
+                  <span className="text-sm text-sky-400">{formData.honesty_level}/10</span>
+                </div>
+                <Slider
+                  value={[formData.honesty_level]}
+                  onValueChange={([val]) => setFormData(prev => ({ ...prev, honesty_level: val }))}
+                  min={1} max={10} step={1}
+                  className="[&_[role=slider]]:bg-sky-500"
+                />
+                <p className="text-xs text-gray-500">1 = pathologischer Lügner • 10 = brutal ehrlich</p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <Label className="text-gray-300">Loyalität</Label>
+                  <span className="text-sm text-sky-400">{formData.loyalty_level}/10</span>
+                </div>
+                <Slider
+                  value={[formData.loyalty_level]}
+                  onValueChange={([val]) => setFormData(prev => ({ ...prev, loyalty_level: val }))}
+                  min={1} max={10} step={1}
+                  className="[&_[role=slider]]:bg-sky-500"
+                />
+                <p className="text-xs text-gray-500">1 = illoyaler Verräter • 10 = stirbt für dich</p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <Label className="text-gray-300">Geduld</Label>
+                  <span className="text-sm text-sky-400">{formData.patience_level}/10</span>
+                </div>
+                <Slider
+                  value={[formData.patience_level]}
+                  onValueChange={([val]) => setFormData(prev => ({ ...prev, patience_level: val }))}
+                  min={1} max={10} step={1}
+                  className="[&_[role=slider]]:bg-sky-500"
+                />
+                <p className="text-xs text-gray-500">1 = extrem ungeduldig • 10 = engelsgeduldig</p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <Label className="text-gray-300">Selbstwertgefühl</Label>
+                  <span className="text-sm text-sky-400">{formData.self_esteem}/10</span>
+                </div>
+                <Slider
+                  value={[formData.self_esteem]}
+                  onValueChange={([val]) => setFormData(prev => ({ ...prev, self_esteem: val }))}
+                  min={1} max={10} step={1}
+                  className="[&_[role=slider]]:bg-sky-500"
+                />
+                <p className="text-xs text-gray-500">1 = extrem unsicher • 10 = narzisstisch</p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <Label className="text-gray-300">Sturheit</Label>
+                  <span className="text-sm text-sky-400">{formData.stubbornness_level}/10</span>
+                </div>
+                <Slider
+                  value={[formData.stubbornness_level]}
+                  onValueChange={([val]) => setFormData(prev => ({ ...prev, stubbornness_level: val }))}
+                  min={1} max={10} step={1}
+                  className="[&_[role=slider]]:bg-sky-500"
+                />
+                <p className="text-xs text-gray-500">1 = sehr nachgiebig • 10 = extrem stur</p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <Label className="text-gray-300">Impulsivität</Label>
+                  <span className="text-sm text-sky-400">{formData.impulsivity_level}/10</span>
+                </div>
+                <Slider
+                  value={[formData.impulsivity_level]}
+                  onValueChange={([val]) => setFormData(prev => ({ ...prev, impulsivity_level: val }))}
+                  min={1} max={10} step={1}
+                  className="[&_[role=slider]]:bg-sky-500"
+                />
+                <p className="text-xs text-gray-500">1 = sehr überlegt • 10 = extrem impulsiv</p>
+              </div>
+
+              {/* Dynamisches Verhalten Section */}
+              <div className="space-y-1 mt-6 mb-2">
+                <h3 className="text-sm font-semibold text-amber-400 flex items-center gap-2">
+                  <Battery className="w-4 h-4" />
+                  Dynamisches Verhalten
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Energielevel</Label>
+                  <Select 
+                    value={formData.energy_level} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, energy_level: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
+                      <SelectItem value="sehr_niedrig" className="text-white hover:bg-white/10">😴 Sehr niedrig</SelectItem>
+                      <SelectItem value="niedrig" className="text-white hover:bg-white/10">🐢 Niedrig</SelectItem>
+                      <SelectItem value="mittel" className="text-white hover:bg-white/10">😊 Mittel</SelectItem>
+                      <SelectItem value="hoch" className="text-white hover:bg-white/10">⚡ Hoch</SelectItem>
+                      <SelectItem value="sehr_hoch" className="text-white hover:bg-white/10">🚀 Sehr hoch</SelectItem>
+                      <SelectItem value="schwankend" className="text-white hover:bg-white/10">🌊 Schwankend</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Launen-Zyklus</Label>
+                  <Select 
+                    value={formData.mood_cycle} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, mood_cycle: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
+                      <SelectItem value="stabil" className="text-white hover:bg-white/10">⏸️ Stabil</SelectItem>
+                      <SelectItem value="leicht_schwankend" className="text-white hover:bg-white/10">🌤️ Leicht schwankend</SelectItem>
+                      <SelectItem value="stark_schwankend" className="text-white hover:bg-white/10">🌊 Stark schwankend</SelectItem>
+                      <SelectItem value="zyklisch" className="text-white hover:bg-white/10">🔄 Zyklisch</SelectItem>
+                      <SelectItem value="unberechenbar" className="text-white hover:bg-white/10">🎲 Unberechenbar</SelectItem>
+                      <SelectItem value="tageszeit_abhängig" className="text-white hover:bg-white/10">🌅 Tageszeit-abhängig</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Soziale Batterie</Label>
+                  <Select 
+                    value={formData.social_battery} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, social_battery: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
+                      <SelectItem value="unendlich" className="text-white hover:bg-white/10">♾️ Unendlich</SelectItem>
+                      <SelectItem value="hoch" className="text-white hover:bg-white/10">🔋 Hoch</SelectItem>
+                      <SelectItem value="mittel" className="text-white hover:bg-white/10">🪫 Mittel</SelectItem>
+                      <SelectItem value="niedrig" className="text-white hover:bg-white/10">🔌 Niedrig</SelectItem>
+                      <SelectItem value="sehr_niedrig" className="text-white hover:bg-white/10">💤 Sehr niedrig</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500">Wie schnell wird der Charakter sozial erschöpft?</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Moralischer Kompass</Label>
+                  <Select 
+                    value={formData.moral_compass} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, moral_compass: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
+                      <SelectItem value="streng_moralisch" className="text-white hover:bg-white/10">😇 Streng moralisch</SelectItem>
+                      <SelectItem value="moralisch" className="text-white hover:bg-white/10">👍 Moralisch</SelectItem>
+                      <SelectItem value="flexibel" className="text-white hover:bg-white/10">🤷 Flexibel</SelectItem>
+                      <SelectItem value="grauzone" className="text-white hover:bg-white/10">🌫️ Grauzone</SelectItem>
+                      <SelectItem value="amoralisch" className="text-white hover:bg-white/10">😈 Amoralisch</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {/* Toggles Section */}
