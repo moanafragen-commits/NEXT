@@ -78,13 +78,7 @@ export default function AppSettings() {
             <ArrowLeft className="w-6 h-6" />
           </button>
           <h1 className="text-base font-semibold">Einstellungen</h1>
-          <button
-            onClick={handleSave}
-            disabled={!hasChanges || saveMutation.isPending}
-            className={`text-sm font-semibold transition-colors ${hasChanges ? 'text-blue-500' : 'text-transparent pointer-events-none'}`}
-          >
-            {saveMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Speichern'}
-          </button>
+          <div className="w-6" />
         </div>
       </header>
 
