@@ -257,16 +257,7 @@ export default function Home() {
                 <UnreadBadge count={unreadUserMessages} />
               </Button>
             </Link>
-            <Link to={createPageUrl('GroupChats')}>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="text-gray-400 hover:text-white hover:bg-white/10 relative h-9 w-9"
-              >
-                <Users className="w-5 h-5" />
-                <UnreadBadge count={unreadGroupMessages} />
-              </Button>
-            </Link>
+
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -484,12 +475,19 @@ export default function Home() {
         onCreated={() => queryClient.invalidateQueries({ queryKey: ['characters'] })}
       />
 
-      {/* Bottom Feed Button */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30">
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2">
         <Link to={createPageUrl('Feed')}>
-          <Button className="bg-[#1a1a1a] hover:bg-[#262626] border border-white/10 text-white rounded-full px-6 h-12 shadow-lg shadow-black/40 flex items-center gap-2">
+          <Button className="bg-[#1a1a1a] hover:bg-[#262626] border border-white/10 text-white rounded-full px-5 h-12 shadow-lg shadow-black/40 flex items-center gap-2">
             <MessageCircle className="w-5 h-5 text-emerald-400" />
             <span className="text-sm font-medium">Feed</span>
+          </Button>
+        </Link>
+        <Link to={createPageUrl('GroupChats')}>
+          <Button className="bg-[#1a1a1a] hover:bg-[#262626] border border-white/10 text-white rounded-full px-5 h-12 shadow-lg shadow-black/40 flex items-center gap-2 relative">
+            <Users className="w-5 h-5 text-emerald-400" />
+            <span className="text-sm font-medium">Gruppen</span>
+            <UnreadBadge count={unreadGroupMessages} />
           </Button>
         </Link>
       </div>
