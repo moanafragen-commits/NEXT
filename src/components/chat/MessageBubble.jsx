@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { Check, CheckCheck, Pin, Reply, MoreVertical } from 'lucide-react';
+import { Check, CheckCheck, Pin, Reply, MoreVertical, Bookmark, Copy } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,8 +13,9 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import EmojiPicker from './EmojiPicker';
+import { toast } from 'sonner';
 
-export default function MessageBubble({ message, characterAvatar, characterName, onPin, onReply, replyToMessage }) {
+export default function MessageBubble({ message, characterAvatar, characterName, onPin, onReply, onBookmark, replyToMessage }) {
   const isUser = message.role === 'user';
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${characterName}`;
   const [showActions, setShowActions] = useState(false);
@@ -69,12 +70,21 @@ export default function MessageBubble({ message, characterAvatar, characterName,
       )}
       
       <div className={`max-w-[75%] ${isUser ? 'order-1' : ''}`}>
-        {message.is_pinned && (
-          <div className="flex items-center gap-1 mb-1 text-xs text-emerald-400">
-            <Pin className="w-3 h-3" />
-            <span>Gepinnt</span>
-          </div>
-        )}
+        {/* Pinned / Bookmarked indicators */}
+        <div className="flex items-center gap-2 mb-1">
+          {message.is_pinned && (
+            <div className="flex items-center gap-1 text-xs text-emerald-400">
+              <Pin className="w-3 h-3" />
+              <span>Gepinnt</span>
+            </div>
+          )}
+          {message.is_bookmarked && (
+            <div className="flex items-center gap-1 text-xs text-amber-400">
+              <Bookmark className="w-3 h-3 fill-amber-400" />
+              <span>Markiert</span>
+            </div>
+          )}
+        </div>
         
         <div 
           className={`rounded-2xl px-4 py-2.5 relative ${
@@ -109,16 +119,38 @@ export default function MessageBubble({ message, characterAvatar, characterName,
             {message.content}
           </ReactMarkdown>
         </div>
-        <div className={`flex items-center gap-2 mt-1 ${isUser ? 'justify-end' : 'justify-start'}`}>
+        <div className={`flex items-center gap-1.5 mt-1 ${isUser ? 'justify-end' : 'justify-start'}`}>
           <span className="text-[10px] text-gray-500">
             {format(new Date(message.created_date), 'HH:mm', { locale: de })}
           </span>
           {isUser && message.status && (
-            <>
-              {message.status === 'read' && <CheckCheck className="w-3.5 h-3.5 text-emerald-400" />}
-              {message.status === 'delivered' && <CheckCheck className="w-3.5 h-3.5 text-gray-400" />}
-              {message.status === 'sent' && <Check className="w-3.5 h-3.5 text-gray-400" />}
-            </>
+            <div className="flex items-center gap-0.5">
+              {message.status === 'read' && (
+                <span className="flex items-center gap-0.5" title="Gelesen">
+                  <CheckCheck className="w-3.5 h-3.5 text-blue-400" />
+                </span>
+              )}
+              {message.status === 'delivered' && (
+                <span className="flex items-center gap-0.5" title="Zugestellt">
+                  <CheckCheck className="w-3.5 h-3.5 text-gray-400" />
+                </span>
+              )}
+              {message.status === 'sent' && (
+                <span className="flex items-center gap-0.5" title="Gesendet">
+                  <Check className="w-3.5 h-3.5 text-gray-500" />
+                </span>
+              )}
+              {message.status === 'sending' && (
+                <span className="flex items-center gap-0.5" title="Wird gesendet...">
+                  <div className="w-3 h-3 border border-gray-500 border-t-transparent rounded-full animate-spin" />
+                </span>
+              )}
+            </div>
+          )}
+          {message.read_at && isUser && message.status === 'read' && (
+            <span className="text-[9px] text-gray-600" title={`Gelesen um ${format(new Date(message.read_at), 'HH:mm', { locale: de })}`}>
+              {format(new Date(message.read_at), 'HH:mm', { locale: de })}
+            </span>
           )}
         </div>
 
@@ -155,7 +187,7 @@ export default function MessageBubble({ message, characterAvatar, characterName,
       </div>
       
       {/* Actions Menu */}
-      {onPin && onReply && (
+      {(onPin || onReply || onBookmark) && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -167,19 +199,42 @@ export default function MessageBubble({ message, characterAvatar, characterName,
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align={isUser ? 'end' : 'start'} className="bg-[#262626] border-white/10">
+            {onReply && (
+              <DropdownMenuItem 
+                onClick={() => onReply(message)}
+                className="text-gray-200 hover:bg-white/5 cursor-pointer"
+              >
+                <Reply className="w-4 h-4 mr-2" />
+                Zitieren
+              </DropdownMenuItem>
+            )}
+            {onPin && (
+              <DropdownMenuItem 
+                onClick={() => onPin(message)}
+                className="text-gray-200 hover:bg-white/5 cursor-pointer"
+              >
+                <Pin className="w-4 h-4 mr-2" />
+                {message.is_pinned ? 'Entpinnen' : 'Pinnen'}
+              </DropdownMenuItem>
+            )}
+            {onBookmark && (
+              <DropdownMenuItem 
+                onClick={() => onBookmark(message)}
+                className="text-gray-200 hover:bg-white/5 cursor-pointer"
+              >
+                <Bookmark className={`w-4 h-4 mr-2 ${message.is_bookmarked ? 'fill-amber-400 text-amber-400' : ''}`} />
+                {message.is_bookmarked ? 'Markierung entfernen' : 'Markieren'}
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem 
-              onClick={() => onReply(message)}
+              onClick={() => {
+                navigator.clipboard.writeText(message.content);
+                toast.success('Nachricht kopiert');
+              }}
               className="text-gray-200 hover:bg-white/5 cursor-pointer"
             >
-              <Reply className="w-4 h-4 mr-2" />
-              Zitieren
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => onPin(message)}
-              className="text-gray-200 hover:bg-white/5 cursor-pointer"
-            >
-              <Pin className="w-4 h-4 mr-2" />
-              {message.is_pinned ? 'Entpinnen' : 'Pinnen'}
+              <Copy className="w-4 h-4 mr-2" />
+              Kopieren
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
