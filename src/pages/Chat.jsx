@@ -300,6 +300,39 @@ AUFGABEN:
         }
       }
 
+      // Process relationship changes
+      if (response.relationship_changes) {
+        const rc = response.relationship_changes;
+
+        // Update trust & jealousy on character
+        if (rc.trust_delta || rc.jealousy_delta) {
+          const updates = {};
+          if (rc.trust_delta) {
+            updates.trust_level = Math.min(10, Math.max(1, (character.trust_level || 5) + rc.trust_delta));
+          }
+          if (rc.jealousy_delta) {
+            updates.jealousy_level = Math.min(10, Math.max(1, (character.jealousy_level || 3) + rc.jealousy_delta));
+          }
+          await base44.entities.Character.update(characterId, updates);
+          queryClient.invalidateQueries({ queryKey: ['character', characterId] });
+        }
+
+        // Create relationship event
+        if (rc.event_type && rc.event_description) {
+          await base44.entities.RelationshipEvent.create({
+            character_id: characterId,
+            user_email: user.email,
+            event_type: rc.event_type,
+            description: rc.event_description,
+            attribute_changed: rc.trust_delta ? 'Vertrauen' : rc.jealousy_delta ? 'Eifersucht' : null,
+            old_value: rc.trust_delta ? String((character.trust_level || 5)) : rc.jealousy_delta ? String((character.jealousy_level || 3)) : null,
+            new_value: rc.trust_delta ? String(Math.min(10, Math.max(1, (character.trust_level || 5) + rc.trust_delta))) : rc.jealousy_delta ? String(Math.min(10, Math.max(1, (character.jealousy_level || 3) + rc.jealousy_delta))) : null,
+            impact_score: rc.impact_score || 0
+          });
+          queryClient.invalidateQueries({ queryKey: ['relationship-events'] });
+        }
+      }
+
       // Save new memories
       if (response.new_memories && response.new_memories.length > 0) {
         for (const memory of response.new_memories) {
