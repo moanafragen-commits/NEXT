@@ -10,7 +10,7 @@ import { createPageUrl } from '@/utils';
 import TagManager from './TagManager';
 import { getCharacterAvailability } from './ReplyDelayCalculator';
 
-export default function CharacterCard({ character, lastMessage, onClick, onDelete, onDeleteChat, onToggleFavorite, onToggleArchive }) {
+export default function CharacterCard({ character, lastMessage, unreadCount = 0, onClick, onDelete, onDeleteChat, onToggleFavorite, onToggleArchive }) {
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character.name}`;
   const queryClient = useQueryClient();
   const availability = getCharacterAvailability(character);
@@ -64,14 +64,21 @@ export default function CharacterCard({ character, lastMessage, onClick, onDelet
         className="flex-1 min-w-0"
       >
         <div className="flex justify-between items-baseline">
-          <h3 className="font-semibold text-white truncate">{character.name}</h3>
-          {lastMessage && (
-            <span className="text-xs text-gray-500 ml-2 flex-shrink-0">
-              {format(new Date(lastMessage.created_date), 'HH:mm', { locale: de })}
-            </span>
-          )}
+          <h3 className={`font-semibold truncate ${unreadCount > 0 ? 'text-white' : 'text-white'}`}>{character.name}</h3>
+          <div className="flex items-center gap-2 ml-2 flex-shrink-0">
+            {lastMessage && (
+              <span className={`text-xs ${unreadCount > 0 ? 'text-emerald-400 font-semibold' : 'text-gray-500'}`}>
+                {format(new Date(lastMessage.created_date), 'HH:mm', { locale: de })}
+              </span>
+            )}
+            {unreadCount > 0 && (
+              <span className="min-w-[20px] h-5 px-1.5 rounded-full bg-emerald-500 text-white text-[11px] font-bold flex items-center justify-center">
+                {unreadCount}
+              </span>
+            )}
+          </div>
         </div>
-        <p className="text-sm text-gray-400 truncate mt-0.5">
+        <p className={`text-sm truncate mt-0.5 ${unreadCount > 0 ? 'text-white font-medium' : 'text-gray-400'}`}>
           {availability.status === 'offline' ? (
             <span className="text-gray-500">{availability.label}</span>
           ) : lastMessage?.content || character.status || character.greeting || character.personality?.slice(0, 50) + '...'}
