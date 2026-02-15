@@ -210,6 +210,30 @@ Verfügbare character_ids: ${activeCharacters.map(c => `${c.name}=${c.id}`).join
       await new Promise(resolve => setTimeout(resolve, 500));
     }
 
+    // Save new memories from group chat for each character
+    if (response.new_memories?.length > 0 && user) {
+      for (const mem of response.new_memories) {
+        if (!mem.memory_text || !mem.character_id || mem.importance < 3) continue;
+        const existingMems = allMemories.filter(m => m.character_id === mem.character_id);
+        const isDuplicate = existingMems.some(m => 
+          m.memory_text?.toLowerCase().includes(mem.memory_text.toLowerCase().slice(0, 25))
+        );
+        if (!isDuplicate) {
+          await base44.entities.CharacterMemory.create({
+            character_id: mem.character_id,
+            user_email: user.email,
+            memory_text: `[Gruppenchat "${group?.name}"] ${mem.memory_text}`,
+            memory_type: mem.memory_type || 'event',
+            memory_category: 'shared_experiences',
+            importance_level: mem.importance >= 7 ? 'hoch' : mem.importance >= 4 ? 'mittel' : 'niedrig',
+            strength: Math.min(100, mem.importance * 10),
+            source: 'ai_extracted'
+          });
+        }
+      }
+      queryClient.invalidateQueries({ queryKey: ['all-memories'] });
+    }
+
     // 30% chance for characters to continue talking to each other
     if (Math.random() < 0.3 && activeCharacters.length >= 2 && (response.responses?.length || 0) >= 2) {
       await new Promise(resolve => setTimeout(resolve, 1500));
