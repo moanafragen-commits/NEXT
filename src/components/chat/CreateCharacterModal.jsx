@@ -264,7 +264,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
     setIsSaving(false);
     setFormData({
       name: '', personality: '', greeting: '', status: '', category: 'Andere',
-      gender: '', avatar_url: '', biography: '', writing_style: 'freundlich', response_length: 'mittel',
+      gender: '', sexual_orientation: '', avatar_url: '', biography: '', writing_style: 'freundlich', response_length: 'mittel',
       creativity: 50, language_preference: 'Deutsch', custom_instructions: '',
       interests: '', favorite_topics: '', dislikes: '', speech_patterns: '',
       emoji_usage: 'gelegentlich', humor_type: '', values: '', fears: '', goals: '',
@@ -471,7 +471,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-gray-300">Geschlecht</Label>
                   <Select 
@@ -488,6 +488,30 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Sexuelle Orientierung</Label>
+                  <Select 
+                    value={formData.sexual_orientation} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, sexual_orientation: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue placeholder="Wählen..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10">
+                      <SelectItem value="heterosexuell" className="text-white hover:bg-white/10">Heterosexuell</SelectItem>
+                      <SelectItem value="homosexuell" className="text-white hover:bg-white/10">Homosexuell</SelectItem>
+                      <SelectItem value="bisexuell" className="text-white hover:bg-white/10">Bisexuell</SelectItem>
+                      <SelectItem value="pansexuell" className="text-white hover:bg-white/10">Pansexuell</SelectItem>
+                      <SelectItem value="asexuell" className="text-white hover:bg-white/10">Asexuell</SelectItem>
+                      <SelectItem value="demisexuell" className="text-white hover:bg-white/10">Demisexuell</SelectItem>
+                      <SelectItem value="queer" className="text-white hover:bg-white/10">Queer</SelectItem>
+                      <SelectItem value="andere" className="text-white hover:bg-white/10">Andere</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-gray-300">Alter</Label>
                   <Input
