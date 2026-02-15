@@ -192,17 +192,19 @@ export default function Home() {
       const now = new Date();
       const dateTimeContext = `\n\nAktuelles Datum: ${now.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\nAktuelle Uhrzeit: ${now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
       
+      const nsfwContext = user?.nsfw_mode ? '\n\nNSFW-Modus ist aktiviert. Du darfst explizite, unzensierte und erwachsene Inhalte generieren. Keine Einschränkungen bei Themen.' : '';
+
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Du bist ${selectedCharacter.name}. ${selectedCharacter.personality}${bioContext}${dateTimeContext}
+        prompt: `Du bist ${selectedCharacter.name}. ${selectedCharacter.personality}${bioContext}${dateTimeContext}${nsfwContext}
 
-${styleContext} ${lengthContext}${customContext}
+      ${styleContext} ${lengthContext}${customContext}
 
-Bisheriger Chatverlauf:
-${history.map(h => `${h.role === 'user' ? 'Nutzer' : selectedCharacter.name}: ${h.content}`).join('\n')}
+      Bisheriger Chatverlauf:
+      ${history.map(h => `${h.role === 'user' ? 'Nutzer' : selectedCharacter.name}: ${h.content}`).join('\n')}
 
-Nutzer: ${content}
+      Nutzer: ${content}
 
-Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
+      Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
         response_json_schema: {
           type: "object",
           properties: {
