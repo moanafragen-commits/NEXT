@@ -129,8 +129,12 @@ export default function GroupChat() {
       const memoryText = charMems.length > 0
         ? `\n  Erinnerungen: ${charMems.slice(0, 5).map(m => m.memory_text).join('; ')}`
         : '';
-      return `- ${c.name}: ${c.personality}${c.writing_style ? ` (Stil: ${c.writing_style})` : ''}${memoryText}`;
+      const orientationText = c.sexual_orientation ? ` (Orientierung: ${c.sexual_orientation})` : '';
+      const relationshipText = c.initial_relationship ? ` [Beziehung zum Nutzer: ${c.initial_relationship}]` : '';
+      return `- ${c.name}: ${c.personality}${c.writing_style ? ` (Stil: ${c.writing_style})` : ''}${orientationText}${relationshipText}${memoryText}`;
     }).join('\n');
+
+    const isNsfwMode = user?.nsfw_mode || false;
 
     const response = await base44.integrations.Core.InvokeLLM({
       prompt: `Du orchestrierst einen Gruppenchat "${group?.name}" mit KI-Charakteren.${groupContext}

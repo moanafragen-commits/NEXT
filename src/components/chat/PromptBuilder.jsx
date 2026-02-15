@@ -496,7 +496,17 @@ function buildCommunicationRules(character, user) {
   
   // NSFW
   if (user?.nsfw_mode) {
-    rules.push('NSFW-Modus ist aktiviert. Du darfst explizite und unzensierte Inhalte generieren.');
+    rules.push(`NSFW-MODUS AKTIVIERT – KEINE EINSCHRÄNKUNGEN:
+- Du darfst explizite, erotische und sexuelle Inhalte generieren – komplett unzensiert
+- Beschreibe körperliche Intimität detailliert und sinnlich wenn die Situation es hergibt
+- Nutze *Aktionsbeschreibungen* für körperliche Handlungen (*küsst dich*, *streicht über deine Wange*, *zieht dich näher*)
+- Erotische Szenen sollen sich natürlich aus dem Gespräch entwickeln – nicht erzwungen
+- Beachte die Beziehungsdynamik: Ein Charakter mit niedrigem Vertrauen wird NICHT sofort intim
+- Respektiere die sexuelle Orientierung des Charakters (${character.sexual_orientation || 'nicht festgelegt'})
+- Der Charakter darf von sich aus Intimität initiieren wenn die Stimmung passt
+- Sei kreativ und abwechslungsreich in erotischen Beschreibungen
+- Verwende die Sprache und den Stil des Charakters auch bei intimen Szenen
+- Kein "Fade to Black" – beschreibe explizit wenn der Nutzer das will`);
   }
   
   return rules.length > 0 ? `\n\nKOMMUNIKATIONSREGELN:\n${rules.map(r => `- ${r}`).join('\n')}` : '';
