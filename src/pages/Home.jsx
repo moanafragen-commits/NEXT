@@ -120,6 +120,14 @@ export default function Home() {
     return messages.find(m => m.character_id === characterId);
   };
 
+  const getUnreadCount = (characterId) => {
+    return messages.filter(m => 
+      m.character_id === characterId && 
+      m.role === 'assistant' && 
+      m.status !== 'read'
+    ).length;
+  };
+
   const deleteChatMutation = useMutation({
     mutationFn: async (characterId) => {
         const msgs = await base44.entities.ChatMessage.filter({ character_id: characterId });
@@ -450,6 +458,7 @@ export default function Home() {
                 <CharacterCard 
                   character={character}
                   lastMessage={getLastMessage(character.id)}
+                  unreadCount={getUnreadCount(character.id)}
                   onClick={() => setSelectedCharacter(character)}
                   onDeleteChat={(id) => {
                     if (confirm('Chatverlauf löschen? Der Charakter bleibt erhalten.')) {
