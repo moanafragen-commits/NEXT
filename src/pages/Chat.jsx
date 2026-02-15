@@ -28,6 +28,8 @@ export default function Chat() {
   const [showPinned, setShowPinned] = useState(false);
   const [showBookmarked, setShowBookmarked] = useState(false);
   const [delayStatus, setDelayStatus] = useState(null);
+  const [pendingMessages, setPendingMessages] = useState([]);
+  const isProcessingRef = useRef(false);
 
   const { data: user } = useQuery({
     queryKey: ['user'],
@@ -101,65 +103,82 @@ export default function Chat() {
     }
   });
 
-  const sendMessageMutation = useMutation({
-    mutationFn: async ({ content, imageUrl }) => {
-      // Save user message
-      const userMsg = await base44.entities.ChatMessage.create({
-        character_id: characterId,
-        role: 'user',
-        content,
-        image_url: imageUrl || null,
-        reply_to_id: replyToMessage?.id || null,
-        status: 'sent'
-      });
-      setReplyToMessage(null);
-      
-      queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
-      
-      // Check if user is nagging / sending follow-up
-      const isNag = isRepeatNag(messages, content);
-      
-      // Realistic reply delay based on character traits & availability
-      const delay = calculateReplyDelay(character, isNag);
-      const reason = getDelayReason(character);
-      setDelayStatus(reason);
-      
-      const typingDelay = Math.min(delay, 60000);
-      const preTypingWait = Math.max(0, delay - typingDelay);
-      
-      if (preTypingWait > 0) {
-        await new Promise(resolve => setTimeout(resolve, preTypingWait));
+  // Send user message immediately, then queue AI response
+  const handleSendMessage = async (content, imageUrl) => {
+    // 1. Save user message immediately
+    await base44.entities.ChatMessage.create({
+      character_id: characterId,
+      role: 'user',
+      content,
+      image_url: imageUrl || null,
+      reply_to_id: replyToMessage?.id || null,
+      status: 'sent'
+    });
+    setReplyToMessage(null);
+    queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
+
+    // 2. Queue AI response processing
+    setPendingMessages(prev => [...prev, { content, imageUrl }]);
+  };
+
+  // Process pending messages one at a time
+  useEffect(() => {
+    if (pendingMessages.length === 0 || isProcessingRef.current) return;
+    if (!character || !user) return;
+
+    isProcessingRef.current = true;
+    const currentMsg = pendingMessages[0];
+
+    const processAIResponse = async () => {
+      // Fetch latest messages for context
+      const latestMessages = await base44.entities.ChatMessage.filter({ character_id: characterId }, 'created_date', 100);
+
+      // Check if more messages are queued – if so, skip delay & just batch into one response
+      const remainingCount = pendingMessages.length;
+
+      if (remainingCount === 1) {
+        // Only one message – do normal delay + typing
+        const isNag = isRepeatNag(latestMessages, currentMsg.content);
+        const delay = calculateReplyDelay(character, isNag);
+        const reason = getDelayReason(character);
+        setDelayStatus(reason);
+        
+        const typingDelay = Math.min(delay, 60000);
+        const preTypingWait = Math.max(0, delay - typingDelay);
+        
+        if (preTypingWait > 0) {
+          await new Promise(resolve => setTimeout(resolve, preTypingWait));
+        }
+        setDelayStatus(null);
+        setIsTyping(true);
+        await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 3000));
+      } else {
+        // Multiple messages queued – consume all, respond to all at once
+        setIsTyping(true);
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
-      
-      // Character "reads" the message
-      await base44.entities.ChatMessage.update(userMsg.id, {
-        status: 'read',
-        read_at: new Date().toISOString()
-      });
-      queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
-      
-      setDelayStatus(null);
-      setIsTyping(true);
-      
-      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 3000));
-      
-      // Build prompt using PromptBuilder
+
+      // Consume all pending messages for context
+      const allPending = [...pendingMessages];
+      const combinedContent = allPending.map(m => m.content).join('\n');
+      const lastImage = allPending.reverse().find(m => m.imageUrl)?.imageUrl || null;
+
+      // Build prompt
       const { prompt, allMemories } = buildFullPrompt({
         character,
         user,
-        messages,
+        messages: latestMessages,
         memories,
-        content,
-        imageUrl,
+        content: combinedContent,
+        imageUrl: lastImage,
         sharedMemories,
         allCharacters
       });
 
-      // Get AI response
       const response = await base44.integrations.Core.InvokeLLM({
         prompt,
         response_json_schema: RESPONSE_SCHEMA,
-        file_urls: imageUrl ? [imageUrl] : undefined
+        file_urls: lastImage ? [lastImage] : undefined
       });
       
       setIsTyping(false);
@@ -194,80 +213,34 @@ export default function Chat() {
       // Process relationship changes
       if (response.relationship_changes) {
         const rc = response.relationship_changes;
-
         const charUpdates = {};
-        if (rc.trust_delta) {
-          charUpdates.trust_level = Math.min(10, Math.max(1, (character.trust_level || 5) + rc.trust_delta));
-        }
-        if (rc.jealousy_delta) {
-          charUpdates.jealousy_level = Math.min(10, Math.max(1, (character.jealousy_level || 3) + rc.jealousy_delta));
-        }
-        if (rc.closeness_delta) {
-          charUpdates.empathy_level = Math.min(10, Math.max(1, (character.empathy_level || 5) + rc.closeness_delta));
-        }
-        // Update relationship evolution based on phase
+        if (rc.trust_delta) charUpdates.trust_level = Math.min(10, Math.max(1, (character.trust_level || 5) + rc.trust_delta));
+        if (rc.jealousy_delta) charUpdates.jealousy_level = Math.min(10, Math.max(1, (character.jealousy_level || 3) + rc.jealousy_delta));
+        if (rc.closeness_delta) charUpdates.empathy_level = Math.min(10, Math.max(1, (character.empathy_level || 5) + rc.closeness_delta));
         if (rc.relationship_phase) {
-          const phaseToEvolution = {
-            'kennenlernphase': 'sich_annähernd',
-            'aufbauphase': 'sich_annähernd',
-            'vertrauensphase': 'sich_vertiefend',
-            'tiefe_verbindung': 'sich_vertiefend',
-            'krise': 'sich_entfernend',
-            'versöhnung': 'sich_annähernd',
-            'stabil': 'statisch'
-          };
-          if (phaseToEvolution[rc.relationship_phase]) {
-            charUpdates.relationship_evolution = phaseToEvolution[rc.relationship_phase];
-          }
+          const phaseToEvolution = { 'kennenlernphase': 'sich_annähernd', 'aufbauphase': 'sich_annähernd', 'vertrauensphase': 'sich_vertiefend', 'tiefe_verbindung': 'sich_vertiefend', 'krise': 'sich_entfernend', 'versöhnung': 'sich_annähernd', 'stabil': 'statisch' };
+          if (phaseToEvolution[rc.relationship_phase]) charUpdates.relationship_evolution = phaseToEvolution[rc.relationship_phase];
         }
-        
         if (Object.keys(charUpdates).length > 0) {
           await base44.entities.Character.update(characterId, charUpdates);
           queryClient.invalidateQueries({ queryKey: ['character', characterId] });
         }
-
         if (rc.event_type && rc.event_description) {
           const mainChange = rc.trust_delta ? 'Vertrauen' : rc.jealousy_delta ? 'Eifersucht' : rc.closeness_delta ? 'Nähe' : null;
           const oldVal = rc.trust_delta ? String(character.trust_level || 5) : rc.jealousy_delta ? String(character.jealousy_level || 3) : rc.closeness_delta ? String(character.empathy_level || 5) : null;
           const newVal = rc.trust_delta ? String(charUpdates.trust_level || character.trust_level || 5) : rc.jealousy_delta ? String(charUpdates.jealousy_level || character.jealousy_level || 3) : rc.closeness_delta ? String(charUpdates.empathy_level || character.empathy_level || 5) : null;
-          
-          await base44.entities.RelationshipEvent.create({
-            character_id: characterId,
-            user_email: user.email,
-            event_type: rc.event_type,
-            description: rc.event_description,
-            attribute_changed: mainChange,
-            old_value: oldVal,
-            new_value: newVal,
-            impact_score: rc.impact_score || 0
-          });
+          await base44.entities.RelationshipEvent.create({ character_id: characterId, user_email: user.email, event_type: rc.event_type, description: rc.event_description, attribute_changed: mainChange, old_value: oldVal, new_value: newVal, impact_score: rc.impact_score || 0 });
           queryClient.invalidateQueries({ queryKey: ['relationship-events'] });
         }
       }
 
-      // Save new memories (lower threshold for more comprehensive memory)
+      // Save new memories
       if (response.new_memories?.length > 0) {
         for (const memory of response.new_memories) {
           if (memory.content && memory.importance >= 3) {
-            // Check for duplicate memories
-            const isDuplicate = memories.some(existing => 
-              existing.memory_text && memory.content &&
-              existing.memory_text.toLowerCase().includes(memory.content.toLowerCase().slice(0, 30))
-            );
-            
+            const isDuplicate = memories.some(existing => existing.memory_text && memory.content && existing.memory_text.toLowerCase().includes(memory.content.toLowerCase().slice(0, 30)));
             if (!isDuplicate) {
-              await base44.entities.CharacterMemory.create({
-                character_id: characterId,
-                user_email: user.email,
-                memory_text: memory.content,
-                memory_type: memory.memory_type || 'fact',
-                memory_category: memory.memory_category || 'general',
-                importance_level: memory.importance >= 8 ? 'hoch' : memory.importance >= 5 ? 'mittel' : 'niedrig',
-                last_interaction_date: new Date().toISOString(),
-                strength: Math.min(100, memory.importance * 12),
-                recall_count: 0,
-                source: 'ai_extracted',
-              });
+              await base44.entities.CharacterMemory.create({ character_id: characterId, user_email: user.email, memory_text: memory.content, memory_type: memory.memory_type || 'fact', memory_category: memory.memory_category || 'general', importance_level: memory.importance >= 8 ? 'hoch' : memory.importance >= 5 ? 'mittel' : 'niedrig', last_interaction_date: new Date().toISOString(), strength: Math.min(100, memory.importance * 12), recall_count: 0, source: 'ai_extracted' });
             }
           }
         }
@@ -276,9 +249,7 @@ export default function Chat() {
 
       // Mark used shared memories
       if (response.used_shared_memory_ids?.length > 0) {
-        for (const smId of response.used_shared_memory_ids) {
-          await base44.entities.SharedMemory.update(smId, { is_used: true });
-        }
+        for (const smId of response.used_shared_memory_ids) { await base44.entities.SharedMemory.update(smId, { is_used: true }); }
         queryClient.invalidateQueries({ queryKey: ['shared-memories', characterId, user.email] });
       }
       
@@ -287,64 +258,42 @@ export default function Chat() {
         const otherChars = allCharacters.filter(c => c.id !== characterId && !c.is_archived);
         for (const info of response.info_to_share) {
           if (info.content && info.importance >= 5 && otherChars.length > 0) {
-            // Pick random subset of characters to share with (not all!)
             const shareCount = Math.min(otherChars.length, Math.ceil(Math.random() * 3));
             const shuffled = [...otherChars].sort(() => Math.random() - 0.5);
-            const targets = shuffled.slice(0, shareCount);
-            
-            for (const target of targets) {
-              await base44.entities.SharedMemory.create({
-                source_character_id: characterId,
-                target_character_id: target.id,
-                user_email: user.email,
-                content: info.content,
-                share_type: info.share_type || 'gossip',
-                accuracy: info.accuracy || 80,
-                is_used: false
-              });
+            for (const target of shuffled.slice(0, shareCount)) {
+              await base44.entities.SharedMemory.create({ source_character_id: characterId, target_character_id: target.id, user_email: user.email, content: info.content, share_type: info.share_type || 'gossip', accuracy: info.accuracy || 80, is_used: false });
             }
           }
         }
       }
 
-      // Store proactive topic for next conversation
       if (response.proactive_topic && character.proactive_topics) {
-        await base44.entities.Character.update(characterId, {
-          current_motivation: response.proactive_topic
-        });
+        await base44.entities.Character.update(characterId, { current_motivation: response.proactive_topic });
       }
       
       // Generate response image occasionally
       let aiImageUrl = null;
       if (Math.random() < 0.15 && character.category !== 'Assistent') {
         try {
-          const styleHint = character.writing_style === 'poetisch' ? 'artistic, dreamy' :
-                           character.writing_style === 'humorvoll' ? 'fun, lighthearted' :
-                           character.writing_style === 'mysteriös' ? 'mysterious, atmospheric' : 'natural, authentic';
-
-          const imgResponse = await base44.integrations.Core.GenerateImage({
-            prompt: `Portrait of ${character.name}. ${styleHint}. Context: ${response.response.slice(0, 100)}. High quality, cinematic.`,
-            existing_image_urls: imageUrl ? [imageUrl] : undefined
-          });
+          const styleHint = character.writing_style === 'poetisch' ? 'artistic, dreamy' : character.writing_style === 'humorvoll' ? 'fun, lighthearted' : character.writing_style === 'mysteriös' ? 'mysterious, atmospheric' : 'natural, authentic';
+          const imgResponse = await base44.integrations.Core.GenerateImage({ prompt: `Portrait of ${character.name}. ${styleHint}. Context: ${response.response.slice(0, 100)}. High quality, cinematic.`, existing_image_urls: lastImage ? [lastImage] : undefined });
           aiImageUrl = imgResponse.url;
-        } catch (e) {
-          // Ignore
-        }
+        } catch (e) { /* ignore */ }
       }
 
       // Save AI response
-      await base44.entities.ChatMessage.create({
-        character_id: characterId,
-        role: 'assistant',
-        content: response.response,
-        image_url: aiImageUrl,
-        status: 'delivered'
-      });
+      await base44.entities.ChatMessage.create({ character_id: characterId, role: 'assistant', content: response.response, image_url: aiImageUrl, status: 'delivered' });
       
       queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
       queryClient.invalidateQueries({ queryKey: ['all-messages'] });
-    }
-  });
+
+      // Remove all processed messages from queue
+      setPendingMessages(prev => prev.slice(allPending.length));
+      isProcessingRef.current = false;
+    };
+
+    processAIResponse();
+  }, [pendingMessages, character, user]);
   
   const defaultAvatar = character ? `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character.name}` : '';
   
@@ -570,8 +519,8 @@ export default function Chat() {
       {/* Input */}
       <div className="shrink-0 bg-[#1a1a1a] border-t border-white/5 p-4">
         <ChatInput 
-          onSend={(content, imageUrl) => sendMessageMutation.mutate({ content, imageUrl })}
-          isLoading={sendMessageMutation.isPending || isTyping}
+          onSend={(content, imageUrl) => handleSendMessage(content, imageUrl)}
+          isLoading={false}
           replyToMessage={replyToMessage}
           onCancelReply={() => setReplyToMessage(null)}
         />
