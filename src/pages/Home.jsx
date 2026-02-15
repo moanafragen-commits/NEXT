@@ -3,7 +3,7 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Plus, Search, MessageCircle, Settings, MoreVertical, Send, X, Loader2, Users, User, Bell, BellOff, Star, Archive, Inbox, Grid, Sparkles, Contact } from 'lucide-react';
+import { Plus, Search, MessageCircle, Settings, MoreVertical, Send, X, Loader2, Users, User, Bell, BellOff, Star, Archive, Inbox, Grid, Sparkles, Contact, Heart, Home as HomeIcon, PlusSquare } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -459,38 +459,52 @@ export default function Home() {
         )}
       </main>
       
-      {/* FAB */}
-      <motion.button
-        onClick={() => setShowCreateModal(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/30 flex items-center justify-center transition-all"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <Plus className="w-7 h-7" />
-      </motion.button>
-      
       <CreateCharacterModal
         open={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onCreated={() => queryClient.invalidateQueries({ queryKey: ['characters'] })}
       />
 
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2">
-        <Link to={createPageUrl('Feed')}>
-          <Button className="bg-[#1a1a1a] hover:bg-[#262626] border border-white/10 text-white rounded-full px-5 h-12 shadow-lg shadow-black/40 flex items-center gap-2">
-            <MessageCircle className="w-5 h-5 text-emerald-400" />
-            <span className="text-sm font-medium">Feed</span>
-          </Button>
-        </Link>
-        <Link to={createPageUrl('GroupChats')}>
-          <Button className="bg-[#1a1a1a] hover:bg-[#262626] border border-white/10 text-white rounded-full px-5 h-12 shadow-lg shadow-black/40 flex items-center gap-2 relative">
-            <Users className="w-5 h-5 text-emerald-400" />
-            <span className="text-sm font-medium">Gruppen</span>
+      {/* Bottom Tab Bar */}
+      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-[#0a0a0a] border-t border-white/5">
+        <div className="flex items-center justify-around h-16 max-w-lg mx-auto px-2">
+          {/* Home */}
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="flex flex-col items-center justify-center gap-0.5 w-14 h-14 text-white"
+          >
+            <HomeIcon className="w-6 h-6 fill-white" />
+          </button>
+
+          {/* Search / Feed */}
+          <Link to={createPageUrl('Feed')} className="flex flex-col items-center justify-center gap-0.5 w-14 h-14 text-gray-400 hover:text-white transition-colors">
+            <Search className="w-6 h-6" />
+          </Link>
+
+          {/* Create (center, prominent) */}
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center justify-center w-12 h-12 rounded-xl border-2 border-white/80 text-white hover:bg-white/10 transition-colors"
+          >
+            <Plus className="w-7 h-7" />
+          </button>
+
+          {/* Favorites / Groups */}
+          <Link to={createPageUrl('GroupChats')} className="flex flex-col items-center justify-center gap-0.5 w-14 h-14 text-gray-400 hover:text-white transition-colors relative">
+            <Heart className="w-6 h-6" />
             <UnreadBadge count={unreadGroupMessages} />
-          </Button>
-        </Link>
-      </div>
+          </Link>
+
+          {/* Profile */}
+          <Link to={createPageUrl('UserProfile')} className="flex flex-col items-center justify-center gap-0.5 w-14 h-14">
+            {user?.avatar_url ? (
+              <img src={user.avatar_url} alt="Profil" className="w-7 h-7 rounded-full object-cover ring-2 ring-white/20" />
+            ) : (
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 ring-2 ring-white/20" />
+            )}
+          </Link>
+        </div>
+      </nav>
 
       {/* Chat Sidebar */}
       <AnimatePresence>
