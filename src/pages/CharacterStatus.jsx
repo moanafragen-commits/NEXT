@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
+import StatusReactionBar from '@/components/status/StatusReactionBar';
 
 export default function CharacterStatus() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -179,17 +180,25 @@ export default function CharacterStatus() {
 
         {/* Caption */}
         {currentStatus.caption && (
-          <div className="absolute bottom-20 left-0 right-0 px-6">
-            <p className="text-white text-center text-sm bg-black/50 backdrop-blur-sm rounded-lg px-4 py-2">
+          <div className="absolute bottom-36 left-0 right-0 px-6">
+            <p className="text-white text-center text-sm" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>
               {currentStatus.caption}
             </p>
           </div>
         )}
 
-        {/* Views counter */}
-        <div className="absolute bottom-6 left-0 right-0 px-6 flex items-center justify-center gap-2 text-white">
-          <Eye className="w-4 h-4" />
-          <span className="text-sm">{currentStatus.views_count || 0} Aufrufe</span>
+        {/* Reaction Bar & Views */}
+        <div className="absolute bottom-4 left-0 right-0 px-4 z-20 space-y-2">
+          <StatusReactionBar
+            characterId={characterId}
+            characterName={character.name}
+            statusCaption={currentStatus.caption}
+            statusImageUrl={currentStatus.image_url}
+          />
+          <div className="flex items-center justify-center gap-2 text-white/70">
+            <Eye className="w-3.5 h-3.5" />
+            <span className="text-xs">{currentStatus.views_count || 0} Aufrufe</span>
+          </div>
         </div>
 
         {/* Navigation areas */}
