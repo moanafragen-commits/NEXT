@@ -598,7 +598,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                       <SelectItem value="fröhlich" className="text-white hover:bg-white/10">😊 Fröhlich</SelectItem>
                       <SelectItem value="nachdenklich" className="text-white hover:bg-white/10">🤔 Nachdenklich</SelectItem>
                       <SelectItem value="ruhig" className="text-white hover:bg-white/10">😌 Ruhig</SelectItem>
@@ -619,7 +619,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                       {WRITING_STYLES.map(style => (
                         <SelectItem key={style.value} value={style.value} className="text-white hover:bg-white/10">
                           {style.label}
@@ -684,7 +684,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue placeholder="Wähle eine Beziehung..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10 max-h-80">
+                    <SelectContent className="bg-[#262626] border-white/10 max-h-80 z-[10001]">
                       <SelectItem value="Bester Freund" className="text-white hover:bg-white/10">👫 Bester Freund</SelectItem>
                       <SelectItem value="Guter Freund" className="text-white hover:bg-white/10">🤝 Guter Freund</SelectItem>
                       <SelectItem value="Bekannter" className="text-white hover:bg-white/10">👋 Bekannter</SelectItem>
@@ -1147,7 +1147,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                       {WRITING_STYLES.map(style => (
                         <SelectItem key={style.value} value={style.value} className="text-white hover:bg-white/10">
                           {style.label}
