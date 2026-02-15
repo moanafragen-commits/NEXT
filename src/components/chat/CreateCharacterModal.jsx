@@ -479,26 +479,38 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
           )}
 
           <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="w-full bg-[#262626] mb-4">
-              <TabsTrigger value="basic" className="flex-1 data-[state=active]:bg-emerald-600">
-                <User className="w-4 h-4 mr-2" />
+            <TabsList className="w-full bg-[#262626] mb-4 flex-wrap h-auto gap-1 p-1">
+              <TabsTrigger value="basic" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs">
+                <User className="w-3 h-3 mr-1" />
                 Basis
               </TabsTrigger>
-              <TabsTrigger value="relationship" className="flex-1 data-[state=active]:bg-emerald-600">
-                <Heart className="w-4 h-4 mr-2" />
+              <TabsTrigger value="appearance" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs">
+                <Palette className="w-3 h-3 mr-1" />
+                Aussehen
+              </TabsTrigger>
+              <TabsTrigger value="relationship" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs">
+                <Heart className="w-3 h-3 mr-1" />
                 Beziehung
               </TabsTrigger>
-              <TabsTrigger value="biography" className="flex-1 data-[state=active]:bg-emerald-600">
-                <BookOpen className="w-4 h-4 mr-2" />
+              <TabsTrigger value="biography" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs">
+                <BookOpen className="w-3 h-3 mr-1" />
                 Biografie
               </TabsTrigger>
-              <TabsTrigger value="personality" className="flex-1 data-[state=active]:bg-emerald-600">
-                <Lightbulb className="w-4 h-4 mr-2" />
+              <TabsTrigger value="personality" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs">
+                <Lightbulb className="w-3 h-3 mr-1" />
                 Details
               </TabsTrigger>
-              <TabsTrigger value="behavior" className="flex-1 data-[state=active]:bg-emerald-600">
-                <Settings className="w-4 h-4 mr-2" />
+              <TabsTrigger value="behavior" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs">
+                <Settings className="w-3 h-3 mr-1" />
                 Verhalten
+              </TabsTrigger>
+              <TabsTrigger value="intimacy" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs">
+                <Flame className="w-3 h-3 mr-1" />
+                Intimität
+              </TabsTrigger>
+              <TabsTrigger value="world" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs">
+                <Globe className="w-3 h-3 mr-1" />
+                Welt
               </TabsTrigger>
             </TabsList>
             
