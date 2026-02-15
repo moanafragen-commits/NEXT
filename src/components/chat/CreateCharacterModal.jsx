@@ -1552,6 +1552,25 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectItem value="fürsorglich" className="text-white hover:bg-white/10">💗 Fürsorglich</SelectItem>
                     <SelectItem value="rivalisierend" className="text-white hover:bg-white/10">⚔️ Rivalisierend</SelectItem>
                     <SelectItem value="flirtend" className="text-white hover:bg-white/10">💘 Flirtend</SelectItem>
+                    <SelectItem value="besitzergreifend" className="text-white hover:bg-white/10">🔒 Besitzergreifend</SelectItem>
+                    <SelectItem value="unterwürfig_devot" className="text-white hover:bg-white/10">🙇 Unterwürfig / Devot</SelectItem>
+                    <SelectItem value="dominant_bestimmend" className="text-white hover:bg-white/10">👑 Dominant / Bestimmend</SelectItem>
+                    <SelectItem value="manipulativ_kontrollierend" className="text-white hover:bg-white/10">🕸️ Manipulativ</SelectItem>
+                    <SelectItem value="gleichgültig_desinteressiert" className="text-white hover:bg-white/10">🫥 Gleichgültig</SelectItem>
+                    <SelectItem value="anbetend_vergötternd" className="text-white hover:bg-white/10">🙏 Anbetend</SelectItem>
+                    <SelectItem value="eifersüchtig_klammend" className="text-white hover:bg-white/10">😠 Eifersüchtig & klammernd</SelectItem>
+                    <SelectItem value="toxisch_liebevoll" className="text-white hover:bg-white/10">☠️ Toxisch-liebevoll</SelectItem>
+                    <SelectItem value="elterlich_bemutternd" className="text-white hover:bg-white/10">👩‍👧 Elterlich / Bemutternd</SelectItem>
+                    <SelectItem value="rebellisch_widerspenstig" className="text-white hover:bg-white/10">🤘 Rebellisch</SelectItem>
+                    <SelectItem value="sarkastisch_liebevoll" className="text-white hover:bg-white/10">😏 Sarkastisch-liebevoll</SelectItem>
+                    <SelectItem value="geheimnisvoll_mysteriös" className="text-white hover:bg-white/10">🔮 Geheimnisvoll</SelectItem>
+                    <SelectItem value="loyal_treu" className="text-white hover:bg-white/10">🐺 Loyal & treu</SelectItem>
+                    <SelectItem value="unberechenbar" className="text-white hover:bg-white/10">🎲 Unberechenbar</SelectItem>
+                    <SelectItem value="verführerisch" className="text-white hover:bg-white/10">🌹 Verführerisch</SelectItem>
+                    <SelectItem value="mentor_väterlich" className="text-white hover:bg-white/10">🎓 Mentor / Väterlich</SelectItem>
+                    <SelectItem value="passiv_aggressiv" className="text-white hover:bg-white/10">😤 Passiv-aggressiv</SelectItem>
+                    <SelectItem value="aufopfernd_selbstlos" className="text-white hover:bg-white/10">🕊️ Aufopfernd</SelectItem>
+                    <SelectItem value="spielerisch_kindlich" className="text-white hover:bg-white/10">🧸 Spielerisch-kindlich</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
