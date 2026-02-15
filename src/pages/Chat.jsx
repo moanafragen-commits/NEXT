@@ -60,6 +60,21 @@ export default function Chat() {
     enabled: !!characterId && !!user
   });
   
+  const { data: sharedMemories = [] } = useQuery({
+    queryKey: ['shared-memories', characterId, user?.email],
+    queryFn: () => base44.entities.SharedMemory.filter({ 
+      target_character_id: characterId,
+      user_email: user.email,
+      is_used: false
+    }),
+    enabled: !!characterId && !!user
+  });
+  
+  const { data: allCharacters = [] } = useQuery({
+    queryKey: ['all-characters-for-sharing'],
+    queryFn: () => base44.entities.Character.list(),
+  });
+  
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -135,7 +150,9 @@ export default function Chat() {
         messages,
         memories,
         content,
-        imageUrl
+        imageUrl,
+        sharedMemories,
+        allCharacters
       });
 
       // Get AI response
@@ -255,6 +272,39 @@ export default function Chat() {
           }
         }
         queryClient.invalidateQueries({ queryKey: ['memories', characterId, user.email] });
+      }
+
+      // Mark used shared memories
+      if (response.used_shared_memory_ids?.length > 0) {
+        for (const smId of response.used_shared_memory_ids) {
+          await base44.entities.SharedMemory.update(smId, { is_used: true });
+        }
+        queryClient.invalidateQueries({ queryKey: ['shared-memories', characterId, user.email] });
+      }
+      
+      // Share info with other characters
+      if (response.info_to_share?.length > 0) {
+        const otherChars = allCharacters.filter(c => c.id !== characterId && !c.is_archived);
+        for (const info of response.info_to_share) {
+          if (info.content && info.importance >= 5 && otherChars.length > 0) {
+            // Pick random subset of characters to share with (not all!)
+            const shareCount = Math.min(otherChars.length, Math.ceil(Math.random() * 3));
+            const shuffled = [...otherChars].sort(() => Math.random() - 0.5);
+            const targets = shuffled.slice(0, shareCount);
+            
+            for (const target of targets) {
+              await base44.entities.SharedMemory.create({
+                source_character_id: characterId,
+                target_character_id: target.id,
+                user_email: user.email,
+                content: info.content,
+                share_type: info.share_type || 'gossip',
+                accuracy: info.accuracy || 80,
+                is_used: false
+              });
+            }
+          }
+        }
       }
 
       // Store proactive topic for next conversation
