@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, BookOpen, MessageCircle, Settings, Sparkles, Plus, Brain, Heart, Target, TrendingUp, Dumbbell } from 'lucide-react';
+import { ArrowLeft, BookOpen, MessageCircle, Settings, Sparkles, Plus, Brain, Heart, Target, TrendingUp, Dumbbell, Camera, Upload, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -20,6 +20,8 @@ export default function CharacterInfo() {
   const queryClient = useQueryClient();
   const [showMemoryModal, setShowMemoryModal] = useState(false);
   const [editingMemory, setEditingMemory] = useState(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
   
   const { data: character } = useQuery({
     queryKey: ['character', characterId],
@@ -51,6 +53,31 @@ export default function CharacterInfo() {
     setEditingMemory(memory);
     setShowMemoryModal(true);
   };
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !character) return;
+    setIsUploadingAvatar(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    await base44.entities.Character.update(character.id, { avatar_url: file_url });
+    queryClient.invalidateQueries({ queryKey: ['character', characterId] });
+    queryClient.invalidateQueries({ queryKey: ['characters'] });
+    setIsUploadingAvatar(false);
+  };
+
+  const handleGenerateAvatar = async () => {
+    if (!character) return;
+    setIsGeneratingAvatar(true);
+    const genderHint = character.gender === 'männlich' ? 'male' : character.gender === 'weiblich' ? 'female' : 'androgynous';
+    const ageHint = character.age ? `${character.age} years old` : 'young adult';
+    const result = await base44.integrations.Core.GenerateImage({
+      prompt: `Portrait photo of a character named "${character.name}". ${genderHint}, ${ageHint}. ${character.category || ''} ${character.occupation || ''}. High quality, detailed, expressive face, beautiful lighting, cinematic portrait style. ${character.personality ? character.personality.slice(0, 100) : ''}`
+    });
+    await base44.entities.Character.update(character.id, { avatar_url: result.url });
+    queryClient.invalidateQueries({ queryKey: ['character', characterId] });
+    queryClient.invalidateQueries({ queryKey: ['characters'] });
+    setIsGeneratingAvatar(false);
+  };
   
   if (!character) return null;
   
@@ -75,11 +102,43 @@ export default function CharacterInfo() {
       <div className="pb-6">
         {/* Avatar & Name Section */}
         <div className="bg-[#1a1a1a] py-8 flex flex-col items-center">
-          <img 
-            src={character.avatar_url || defaultAvatar}
-            alt={character.name}
-            className="w-32 h-32 rounded-full object-cover ring-4 ring-emerald-500/30 mb-4"
-          />
+          <div className="relative group mb-4">
+            <img 
+              src={character.avatar_url || defaultAvatar}
+              alt={character.name}
+              className="w-32 h-32 rounded-full object-cover ring-4 ring-emerald-500/30"
+            />
+            <label className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+              {isUploadingAvatar ? (
+                <Loader2 className="w-6 h-6 animate-spin text-white" />
+              ) : (
+                <Camera className="w-6 h-6 text-white" />
+              )}
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={handleAvatarUpload}
+                className="hidden"
+                disabled={isUploadingAvatar}
+              />
+            </label>
+          </div>
+          <div className="flex gap-2 mb-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleGenerateAvatar}
+              disabled={isGeneratingAvatar}
+              className="border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 text-xs"
+            >
+              {isGeneratingAvatar ? (
+                <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+              ) : (
+                <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+              )}
+              Avatar generieren
+            </Button>
+          </div>
           <h2 className="text-2xl font-bold">{character.name}</h2>
           <p className="text-gray-400 mt-1">{character.status || 'Kein Status'}</p>
           <div className="flex items-center gap-2 mt-3">
