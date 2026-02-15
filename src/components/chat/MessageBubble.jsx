@@ -111,7 +111,7 @@ export default function MessageBubble({ message, characterAvatar, characterName,
             <img 
               src={message.image_url} 
               alt="Bild" 
-              className="rounded-lg max-w-full mb-2 cursor-pointer hover:opacity-90 transition-opacity"
+              className="rounded-lg w-[280px] max-w-full mb-2 cursor-pointer hover:opacity-90 transition-opacity object-cover"
               onClick={() => window.open(message.image_url, '_blank')}
             />
           )}
