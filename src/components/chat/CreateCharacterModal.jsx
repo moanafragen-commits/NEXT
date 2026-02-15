@@ -96,7 +96,18 @@ export default function CreateCharacterModal({ open, onClose, onCreated }) {
     example_dialogues: '',
     forbidden_topics: '',
     initial_relationship: '',
-    relationship_backstory: ''
+    relationship_backstory: '',
+    relationship_scenario: '',
+    relationship_dynamic: 'gleichberechtigt',
+    trust_level: 5,
+    jealousy_level: 3,
+    attachment_style: 'sicher',
+    pet_names: '',
+    shared_memories: '',
+    inside_jokes: '',
+    relationship_boundaries: '',
+    love_language: '',
+    relationship_evolution: 'statisch'
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -178,7 +189,11 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
       empathy_level: 5, knowledge_areas: '', quirks: '', relationship_style: 'unterstützend',
       conflict_behavior: 'diplomatisch', emotional_depth: 5, memory_references: true,
       proactive_topics: false, secret: '', example_dialogues: '', forbidden_topics: '',
-      initial_relationship: '', relationship_backstory: ''
+      initial_relationship: '', relationship_backstory: '',
+      relationship_scenario: '', relationship_dynamic: 'gleichberechtigt',
+      trust_level: 5, jealousy_level: 3, attachment_style: 'sicher',
+      pet_names: '', shared_memories: '', inside_jokes: '',
+      relationship_boundaries: '', love_language: '', relationship_evolution: 'statisch'
     });
     onCreated();
     onClose();
