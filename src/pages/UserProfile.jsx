@@ -17,6 +17,7 @@ export default function UserProfile() {
   const [uploading, setUploading] = useState(false);
   const [editing, setEditing] = useState(false);
   const [tab, setTab] = useState('posts'); // posts, saved
+  const [selectedPost, setSelectedPost] = useState(null);
 
   const { data: user, isLoading } = useQuery({
     queryKey: ['user'],
