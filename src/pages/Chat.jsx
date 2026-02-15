@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Phone, Video, MoreVertical, Loader2, Info, Search, X, Pin, Target } from 'lucide-react';
+import { ArrowLeft, Loader2, Info, Search, X, Pin, Bookmark, Download } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import MessageBubble from '@/components/chat/MessageBubble';
@@ -11,6 +11,7 @@ import ChatInput from '@/components/chat/ChatInput';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotifications } from '@/components/notifications/NotificationManager';
 import MoodBadge from '@/components/character/MoodBadge';
+import ExportChatButton from '@/components/chat/ExportChatButton';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -22,6 +23,7 @@ export default function Chat() {
   const [showSearch, setShowSearch] = useState(false);
   const [replyToMessage, setReplyToMessage] = useState(null);
   const [showPinned, setShowPinned] = useState(false);
+  const [showBookmarked, setShowBookmarked] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['user'],
@@ -65,6 +67,15 @@ export default function Chat() {
   const togglePinMutation = useMutation({
     mutationFn: async ({ messageId, isPinned }) => {
       await base44.entities.ChatMessage.update(messageId, { is_pinned: !isPinned });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
+    }
+  });
+
+  const toggleBookmarkMutation = useMutation({
+    mutationFn: async ({ messageId, isBookmarked }) => {
+      await base44.entities.ChatMessage.update(messageId, { is_bookmarked: !isBookmarked });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
@@ -278,14 +289,16 @@ AUFGABEN:
   
   const defaultAvatar = character ? `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character.name}` : '';
   
-  // Filter messages based on search or pinned view
+  // Filter messages based on search, pinned, or bookmarked view
   const filteredMessages = messages.filter(msg => {
     if (showPinned) return msg.is_pinned;
+    if (showBookmarked) return msg.is_bookmarked;
     if (searchQuery) return msg.content.toLowerCase().includes(searchQuery.toLowerCase());
     return true;
   });
   
   const pinnedCount = messages.filter(m => m.is_pinned).length;
+  const bookmarkedCount = messages.filter(m => m.is_bookmarked).length;
   
   if (!character) {
     return (
