@@ -14,7 +14,7 @@ import MoodBadge from '@/components/character/MoodBadge';
 import ExportChatButton from '@/components/chat/ExportChatButton';
 import ShareChatButton from '@/components/chat/ShareChatButton';
 import { calculateReplyDelay, getDelayReason } from '@/components/chat/ReplyDelayCalculator';
-import { calculateDecayedStrength } from '@/components/memory/MemoryStrengthBar';
+import { buildFullPrompt, RESPONSE_SCHEMA } from '@/components/chat/PromptBuilder';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
