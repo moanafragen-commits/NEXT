@@ -136,6 +136,7 @@ export default function Chat() {
       
       // Build character context
       const bioContext = character.biography ? `\n\nHintergrundgeschichte:\n${character.biography}` : '';
+      const initialRelContext = character.initial_relationship ? `\n\nBEZIEHUNG ZUM NUTZER: Ihr seid "${character.initial_relationship}".${character.relationship_backstory ? ` Hintergrund: ${character.relationship_backstory}` : ''} Verhalte dich entsprechend dieser Beziehung von Anfang an.` : '';
       const styleContext = character.writing_style ? `Schreibstil: ${character.writing_style}.` : '';
       const lengthContext = character.response_length === 'kurz' ? 'Halte dich kurz (1-2 Sätze).' : 
                            character.response_length === 'ausführlich' ? 'Antworte ausführlich und detailliert.' : '';
@@ -206,7 +207,7 @@ export default function Chat() {
 
       // Get AI response with memory extraction and image support
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}${relationContext}${moodContext}${motivationContext}${memoryContext}${dateTimeContext}${conversationSummary}
+        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}${initialRelContext}${relationContext}${moodContext}${motivationContext}${memoryContext}${dateTimeContext}${conversationSummary}
 
       WICHTIGE VERHALTENSREGELN:
 - Bleibe IMMER in deiner Rolle als ${character.name}
