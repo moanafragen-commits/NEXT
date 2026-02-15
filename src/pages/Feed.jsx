@@ -92,8 +92,8 @@ export default function Feed() {
             <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center">
               <Sparkles className="w-5 h-5" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">
-              AISphere
+            <span className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+              NEXT
             </span>
           </div>
           <div className="flex gap-2">

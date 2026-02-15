@@ -34,8 +34,8 @@ export default function Landing() {
               <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
                 <Sparkles className="w-6 h-6" />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">
-                AISphere
+              <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+                NEXT
               </span>
             </div>
             <Button onClick={handleSignUp} variant="ghost" className="text-white hover:bg-white/10">

@@ -48,9 +48,13 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import CharacterInfo from './pages/CharacterInfo';
+import CharacterLibrary from './pages/CharacterLibrary';
+import CharacterStatus from './pages/CharacterStatus';
 import Characters from './pages/Characters';
 import Chat from './pages/Chat';
 import ChatView from './pages/ChatView';
+import CreateStatus from './pages/CreateStatus';
+import CreateUserStatus from './pages/CreateUserStatus';
 import Feed from './pages/Feed';
 import GroupChat from './pages/GroupChat';
 import GroupChats from './pages/GroupChats';
@@ -59,18 +63,18 @@ import Landing from './pages/Landing';
 import UserChat from './pages/UserChat';
 import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
-import CharacterStatus from './pages/CharacterStatus';
-import CreateStatus from './pages/CreateStatus';
-import CreateUserStatus from './pages/CreateUserStatus';
 import UserStatusView from './pages/UserStatusView';
-import CharacterLibrary from './pages/CharacterLibrary';
 
 
 export const PAGES = {
     "CharacterInfo": CharacterInfo,
+    "CharacterLibrary": CharacterLibrary,
+    "CharacterStatus": CharacterStatus,
     "Characters": Characters,
     "Chat": Chat,
     "ChatView": ChatView,
+    "CreateStatus": CreateStatus,
+    "CreateUserStatus": CreateUserStatus,
     "Feed": Feed,
     "GroupChat": GroupChat,
     "GroupChats": GroupChats,
@@ -79,11 +83,7 @@ export const PAGES = {
     "UserChat": UserChat,
     "UserChats": UserChats,
     "UserProfile": UserProfile,
-    "CharacterStatus": CharacterStatus,
-    "CreateStatus": CreateStatus,
-    "CreateUserStatus": CreateUserStatus,
     "UserStatusView": UserStatusView,
-    "CharacterLibrary": CharacterLibrary,
 }
 
 export const pagesConfig = {
