@@ -127,10 +127,13 @@ export default function Home() {
           const memories = await base44.entities.CharacterMemory.filter({ character_id: characterId, user_email: user.email });
           await Promise.all(memories.map(m => base44.entities.CharacterMemory.delete(m.id)));
         }
+        const charStatuses = await base44.entities.CharacterStatus.filter({ character_id: characterId });
+        await Promise.all(charStatuses.map(s => base44.entities.CharacterStatus.delete(s.id)));
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['all-messages'] });
         queryClient.invalidateQueries({ queryKey: ['memories'] });
+        queryClient.invalidateQueries({ queryKey: ['statuses'] });
       }
   });
   
@@ -408,8 +411,8 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
               );
             })}
 
-            {/* Character Status */}
-            {characters.filter(c => !c.is_archived).slice(0, 8).map(character => {
+            {/* Character Status - only show characters that have active statuses */}
+                {characters.filter(c => !c.is_archived && statuses.some(s => s.character_id === c.id)).map(character => {
               const characterStatuses = statuses.filter(s => s.character_id === character.id);
               const viewedStatusIds = new Set(statusViews.map(v => v.status_id));
               const hasUnseenStatus = characterStatuses.some(s => !viewedStatusIds.has(s.id));
