@@ -264,6 +264,7 @@ Chatverlauf:
 ${updatedHistory}
 
 Wähle 1-2 Charaktere die jetzt aufeinander reagieren. Sie sollen sich gegenseitig ansprechen oder auf das Gesagte eingehen. Kurz und natürlich.
+${isNsfwMode ? 'NSFW erlaubt: Charaktere dürfen flirten, intim werden, körperlich interagieren. Nutze *Aktionsbeschreibungen*.' : ''}
 character_ids: ${activeCharacters.map(c => `${c.name}=${c.id}`).join(', ')}`,
         response_json_schema: {
           type: "object",
