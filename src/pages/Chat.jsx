@@ -186,8 +186,8 @@ export default function Chat() {
 
       const memoryContext = strongMemories.length > 0 ? `\n\nWas du über den Nutzer weißt (sortiert nach Stärke):\n${strongMemories
         .sort((a, b) => b.currentStrength - a.currentStrength)
-        .map(m => `- [${m.memory_type}${m.memory_category ? '/' + m.memory_category : ''}] ${m.memory_text} (Stärke: ${m.currentStrength}%${m.importance_level === 'hoch' ? ', SEHR WICHTIG' : ''})`)
-        .join('\n')}` : '';
+        .map(m => `- [ID:${m.id}][${m.memory_type}${m.memory_category ? '/' + m.memory_category : ''}] ${m.memory_text} (Stärke: ${m.currentStrength}%${m.importance_level === 'hoch' ? ', SEHR WICHTIG' : ''})`)
+          .join('\n')}` : '';
 
       const weakMemoryContext = weakMemories.length > 0 ? `\n\nVERBLASSENDE ERINNERUNGEN (du erinnerst dich nur vage - baue EINE davon beiläufig ein, z.B. "Übrigens, war das nicht so dass du...?" oder "Ich erinnere mich dunkel, dass du mal erwähnt hast..."):\n${weakMemories
         .slice(0, 3)
@@ -272,6 +272,20 @@ AUFGABEN:
         queryClient.invalidateQueries({ queryKey: ['character', characterId] });
       }
       
+      // Update recalled memories (boost strength)
+      if (response.recalled_memory_ids && response.recalled_memory_ids.length > 0) {
+        for (const memId of response.recalled_memory_ids) {
+          const mem = memories.find(m => m.id === memId);
+          if (mem) {
+            await base44.entities.CharacterMemory.update(memId, {
+              strength: Math.min(100, (mem.strength || 50) + 15),
+              recall_count: (mem.recall_count || 0) + 1,
+              last_recalled_date: new Date().toISOString(),
+            });
+          }
+        }
+      }
+
       // Save new memories
       if (response.new_memories && response.new_memories.length > 0) {
         for (const memory of response.new_memories) {
@@ -281,8 +295,12 @@ AUFGABEN:
               user_email: user.email,
               memory_text: memory.content,
               memory_type: memory.memory_type || 'fact',
+              memory_category: memory.memory_category || 'general',
               importance_level: memory.importance >= 8 ? 'hoch' : memory.importance >= 5 ? 'mittel' : 'niedrig',
-              last_interaction_date: new Date().toISOString()
+              last_interaction_date: new Date().toISOString(),
+              strength: 100,
+              recall_count: 0,
+              source: 'ai_extracted',
             });
           }
         }
