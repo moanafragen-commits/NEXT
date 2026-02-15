@@ -5,6 +5,8 @@ import { Trash2, Star, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 export default function CharacterCard({ character, lastMessage, onClick, onDelete, onToggleFavorite, onToggleArchive }) {
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character.name}`;
@@ -36,9 +38,9 @@ export default function CharacterCard({ character, lastMessage, onClick, onDelet
     <div 
       className="flex items-center gap-4 p-4 hover:bg-white/5 transition-all duration-200 border-b border-white/5 group"
     >
-      <div 
-        onClick={onClick}
-        className="relative cursor-pointer"
+      <Link 
+        to={createPageUrl(`Chat?characterId=${character.id}`)}
+        className="relative"
       >
         <img 
           src={character.avatar_url || defaultAvatar}
@@ -46,11 +48,11 @@ export default function CharacterCard({ character, lastMessage, onClick, onDelet
           className="w-14 h-14 rounded-full object-cover ring-2 ring-emerald-500/20"
         />
         <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-[#111]" />
-      </div>
+      </Link>
       
-      <div 
-        onClick={onClick}
-        className="flex-1 min-w-0 cursor-pointer"
+      <Link 
+        to={createPageUrl(`Chat?characterId=${character.id}`)}
+        className="flex-1 min-w-0"
       >
         <div className="flex justify-between items-baseline">
           <h3 className="font-semibold text-white truncate">{character.name}</h3>
@@ -63,7 +65,7 @@ export default function CharacterCard({ character, lastMessage, onClick, onDelet
         <p className="text-sm text-gray-400 truncate mt-0.5">
           {lastMessage?.content || character.status || character.greeting || character.personality?.slice(0, 50) + '...'}
         </p>
-      </div>
+      </Link>
       
       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <Button
