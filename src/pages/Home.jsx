@@ -4,6 +4,12 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Plus, Search, MessageCircle, Settings, MoreVertical, Send, X, Loader2, Users, User, Bell, BellOff, Star, Archive, Inbox, Grid } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -213,12 +219,12 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
           <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
             NEXT
           </h1>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Link to={createPageUrl('UserChats')}>
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="text-gray-400 hover:text-white hover:bg-white/10 relative"
+                className="text-gray-400 hover:text-white hover:bg-white/10 relative h-9 w-9"
               >
                 <User className="w-5 h-5" />
                 <UnreadBadge count={unreadUserMessages} />
@@ -228,55 +234,52 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="text-gray-400 hover:text-white hover:bg-white/10 relative"
+                className="text-gray-400 hover:text-white hover:bg-white/10 relative h-9 w-9"
               >
                 <Users className="w-5 h-5" />
                 <UnreadBadge count={unreadGroupMessages} />
-              </Button>
-            </Link>
-            <Link to={createPageUrl('NotificationSettings')}>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="text-gray-400 hover:text-white hover:bg-white/10"
-              >
-                {permission === 'granted' ? <Bell className="w-5 h-5" /> : <BellOff className="w-5 h-5" />}
-              </Button>
-            </Link>
-            <Link to={createPageUrl('CharacterLibrary')}>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="text-gray-400 hover:text-white hover:bg-white/10"
-              >
-                <Grid className="w-5 h-5" />
               </Button>
             </Link>
             <Link to={createPageUrl('Feed')}>
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="text-gray-400 hover:text-white hover:bg-white/10"
+                className="text-gray-400 hover:text-white hover:bg-white/10 h-9 w-9"
               >
                 <MessageCircle className="w-5 h-5" />
               </Button>
             </Link>
-            <Link to={createPageUrl('UserProfile')}>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="text-gray-400 hover:text-white hover:bg-white/10"
-              >
-                <Settings className="w-5 h-5" />
-              </Button>
-            </Link>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="text-gray-400 hover:text-white hover:bg-white/10"
-            >
-              <MoreVertical className="w-5 h-5" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  className="text-gray-400 hover:text-white hover:bg-white/10 h-9 w-9"
+                >
+                  <MoreVertical className="w-5 h-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-[#262626] border-white/10">
+                <DropdownMenuItem asChild className="text-gray-200 hover:bg-white/5 cursor-pointer">
+                  <Link to={createPageUrl('CharacterLibrary')} className="flex items-center">
+                    <Grid className="w-4 h-4 mr-2" />
+                    Bibliothek
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="text-gray-200 hover:bg-white/5 cursor-pointer">
+                  <Link to={createPageUrl('NotificationSettings')} className="flex items-center">
+                    {permission === 'granted' ? <Bell className="w-4 h-4 mr-2" /> : <BellOff className="w-4 h-4 mr-2" />}
+                    Benachrichtigungen
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="text-gray-200 hover:bg-white/5 cursor-pointer">
+                  <Link to={createPageUrl('UserProfile')} className="flex items-center">
+                    <Settings className="w-4 h-4 mr-2" />
+                    Profil & Einstellungen
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
         
