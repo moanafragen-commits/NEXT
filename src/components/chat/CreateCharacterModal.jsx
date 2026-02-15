@@ -74,6 +74,7 @@ export default function CreateCharacterModal({ open, onClose, onCreated }) {
     status: '',
     category: 'Andere',
     gender: '',
+    sexual_orientation: '',
     avatar_url: '',
     biography: '',
     writing_style: 'freundlich',
