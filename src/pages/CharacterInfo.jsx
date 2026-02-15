@@ -3,12 +3,15 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, User, BookOpen, MessageCircle, Settings, Sparkles, Calendar, Clock, Trash2, Plus, Brain } from 'lucide-react';
+import { ArrowLeft, User, BookOpen, MessageCircle, Settings, Sparkles, Calendar, Clock, Trash2, Plus, Brain, Heart, Target } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { motion } from 'framer-motion';
 import AddMemoryModal from '@/components/memory/AddMemoryModal';
+import MoodBadge from '@/components/character/MoodBadge';
+import RelationshipPanel from '@/components/character/RelationshipPanel';
+import MoodMotivationPanel from '@/components/character/MoodMotivationPanel';
 
 export default function CharacterInfo() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -85,9 +88,12 @@ export default function CharacterInfo() {
           />
           <h2 className="text-2xl font-bold">{character.name}</h2>
           <p className="text-gray-400 mt-1">{character.status || 'Kein Status'}</p>
-          <Badge className="mt-3 bg-emerald-600/20 text-emerald-400 border-emerald-600/30">
-            {character.category}
-          </Badge>
+          <div className="flex items-center gap-2 mt-3">
+            <Badge className="bg-emerald-600/20 text-emerald-400 border-emerald-600/30">
+              {character.category}
+            </Badge>
+            {character.current_mood && <MoodBadge mood={character.current_mood} />}
+          </div>
         </div>
         
         <Separator className="bg-white/5" />
@@ -138,6 +144,35 @@ export default function CharacterInfo() {
         
         <Separator className="bg-white/5" />
         
+        {/* Mood & Motivation */}
+        <div className="p-6 space-y-4">
+          <div className="flex items-center gap-2 text-emerald-400">
+            <Target className="w-5 h-5" />
+            <h3 className="font-semibold">Stimmung & Ziele</h3>
+          </div>
+          <MoodMotivationPanel character={character} />
+        </div>
+
+        <Separator className="bg-white/5" />
+        
+        {/* Relationship */}
+        {user && (
+          <>
+            <div className="p-6 space-y-4">
+              <div className="flex items-center gap-2 text-emerald-400">
+                <Heart className="w-5 h-5" />
+                <h3 className="font-semibold">Beziehung definieren</h3>
+              </div>
+              <RelationshipPanel 
+                characterId={characterId}
+                userEmail={user.email}
+                memories={memories}
+              />
+            </div>
+            <Separator className="bg-white/5" />
+          </>
+        )}
+
         {/* Behavior Settings */}
         <div className="p-6 space-y-4">
           <div className="flex items-center gap-2 text-emerald-400">
