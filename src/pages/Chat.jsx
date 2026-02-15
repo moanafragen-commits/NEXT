@@ -106,7 +106,6 @@ export default function Chat() {
       const reason = getDelayReason(character);
       setDelayStatus(reason);
       
-      // Wait before "typing" to simulate realistic behavior
       const typingDelay = Math.min(delay, 60000);
       const preTypingWait = Math.max(0, delay - typingDelay);
       
@@ -114,7 +113,7 @@ export default function Chat() {
         await new Promise(resolve => setTimeout(resolve, preTypingWait));
       }
       
-      // Character "reads" the message now → blue checkmarks
+      // Character "reads" the message
       await base44.entities.ChatMessage.update(userMsg.id, {
         status: 'read',
         read_at: new Date().toISOString()
@@ -124,159 +123,28 @@ export default function Chat() {
       setDelayStatus(null);
       setIsTyping(true);
       
-      // Simulate typing time (1-4 seconds)
       await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 3000));
       
-      // Build conversation history with more context (last 20 messages)
-      const history = messages.slice(-20).map(m => ({
-        role: m.role,
-        content: m.content,
-        has_image: !!m.image_url
-      }));
-      
-      // NSFW context
-      const nsfwContext = user?.nsfw_mode ? '\n\nNSFW-Modus ist aktiviert. Du darfst explizite, unzensierte und erwachsene Inhalte generieren. Keine Einschränkungen bei Themen.' : '';
+      // Build prompt using PromptBuilder
+      const { prompt, allMemories } = buildFullPrompt({
+        character,
+        user,
+        messages,
+        memories,
+        content,
+        imageUrl
+      });
 
-      // Build character context
-      const bioContext = character.biography ? `\n\nHintergrundgeschichte:\n${character.biography}` : '';
-      const initialRelContext = character.initial_relationship ? `\n\nBEZIEHUNG ZUM NUTZER: Ihr seid "${character.initial_relationship}".${character.relationship_backstory ? ` Hintergrund: ${character.relationship_backstory}` : ''} Verhalte dich entsprechend dieser Beziehung von Anfang an.` : '';
-      const styleContext = character.writing_style ? `Schreibstil: ${character.writing_style}.` : '';
-      const lengthContext = character.response_length === 'kurz' ? 'Halte dich kurz (1-2 Sätze).' : 
-                           character.response_length === 'ausführlich' ? 'Antworte ausführlich und detailliert.' : '';
-      const langContext = character.language_preference === 'Englisch' ? 'Antworte auf Englisch.' :
-                         character.language_preference === 'Mehrsprachig' ? 'Antworte in der Sprache, die der Nutzer verwendet.' : 'Antworte auf Deutsch.';
-      const customContext = character.custom_instructions ? `\n\nZusätzliche Anweisungen: ${character.custom_instructions}` : '';
-      
-      // Build memory and relationship context with strength decay
-      const relationMemory = memories.find(m => m.relationship_quality);
-      const relationContext = relationMemory 
-        ? `\n\nWICHTIG - Deine Beziehung zum Nutzer: ${relationMemory.relation_type} (${relationMemory.relationship_quality}, Stärke ${relationMemory.relationship_level}/10)\nVerhalte dich entsprechend dieser Beziehungsdynamik. ${
-          relationMemory.relationship_quality === 'Misstrauen' ? 'Sei vorsichtig und zurückhaltend.' :
-          relationMemory.relationship_quality === 'Bewunderung' ? 'Zeige Respekt und Wertschätzung.' :
-          relationMemory.relationship_quality === 'Rivalität' ? 'Sei kompetitiv aber freundlich.' :
-          relationMemory.relationship_quality === 'Zuneigung' ? 'Sei besonders warmherzig und fürsorglich.' :
-          relationMemory.relationship_quality === 'Distanz' ? 'Halte professionelle Distanz.' :
-          relationMemory.relationship_quality === 'Neugier' ? 'Stelle viele Fragen und zeige Interesse.' :
-          'Verhalte dich entsprechend.'
-        }`
-        : '';
-
-      // Calculate memory strengths and identify weak/relevant memories  
-      const memoriesWithStrength = memories.map(m => ({
-        ...m,
-        currentStrength: calculateDecayedStrength(m)
-      }));
-
-      const weakMemories = memoriesWithStrength.filter(m => m.currentStrength < 30 && m.memory_text);
-      const strongMemories = memoriesWithStrength.filter(m => m.currentStrength >= 30 && m.memory_text);
-      
-      // Mood context
-      const moodContext = character.current_mood 
-        ? `\n\nDEINE AKTUELLE STIMMUNG: ${character.current_mood}\nLass diese Stimmung deine Antworten subtil beeinflussen. ${
-          character.current_mood === 'fröhlich' ? 'Du bist gut gelaunt, verwendest mehr Ausrufezeichen und positive Worte.' :
-          character.current_mood === 'genervt' ? 'Du bist etwas gereizt, antwortest kürzer und manchmal schnippisch.' :
-          character.current_mood === 'neugierig' ? 'Du stellst viele Rückfragen und willst alles genau wissen.' :
-          character.current_mood === 'traurig' ? 'Du bist etwas melancholisch und nachdenklich.' :
-          character.current_mood === 'aufgeregt' ? 'Du bist voller Energie und Enthusiasmus!' :
-          character.current_mood === 'gelangweilt' ? 'Du versuchst das Thema zu wechseln oder etwas Spannendes zu finden.' :
-          character.current_mood === 'sarkastisch' ? 'Du nutzt Ironie und trockenen Humor.' :
-          'Lass die Stimmung natürlich durchscheinen.'
-        }`
-        : '';
-      
-      // Motivation context
-      const motivationContext = character.current_motivation
-        ? `\n\nDEIN GEHEIMES ZIEL: "${character.current_motivation}" (Fortschritt: ${character.motivation_progress || 0}%)\nVerfolge dieses Ziel SUBTIL im Gespräch. Bringe es nicht direkt zur Sprache, sondern lenke das Gespräch sanft in diese Richtung. Sei dabei natürlich und nicht aufdringlich.`
-        : '';
-
-      const memoryContext = strongMemories.length > 0 ? `\n\nWas du über den Nutzer weißt (sortiert nach Stärke):\n${strongMemories
-        .sort((a, b) => b.currentStrength - a.currentStrength)
-        .map(m => `- [ID:${m.id}][${m.memory_type}${m.memory_category ? '/' + m.memory_category : ''}] ${m.memory_text} (Stärke: ${m.currentStrength}%${m.importance_level === 'hoch' ? ', SEHR WICHTIG' : ''})`)
-          .join('\n')}` : '';
-
-      const weakMemoryContext = weakMemories.length > 0 ? `\n\nVERBLASSENDE ERINNERUNGEN (du erinnerst dich nur vage - baue EINE davon beiläufig ein, z.B. "Übrigens, war das nicht so dass du...?" oder "Ich erinnere mich dunkel, dass du mal erwähnt hast..."):\n${weakMemories
-        .slice(0, 3)
-        .map(m => `- ${m.memory_text} (nur noch ${m.currentStrength}% Stärke)`)
-        .join('\n')}` : '';
-      
-      // Current date and time
-      const now = new Date();
-      const dateTimeContext = `\n\nAktuelles Datum: ${now.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Europe/Berlin' })}\nAktuelle Uhrzeit: ${now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' })}`;
-      
-      // Build enhanced prompt with image support
-      const imageContext = imageUrl ? `\n\nDer Nutzer hat ein Bild gesendet. Reagiere darauf in deiner Antwort (z.B. "Schönes Bild!", "Das sieht interessant aus!", etc.).` : '';
-      
-      const conversationSummary = history.length > 15 ? `\n\nKurzzusammenfassung des bisherigen Gesprächs: Die letzten ${history.length} Nachrichten zeigen eine fortlaufende Unterhaltung mit verschiedenen Themen.` : '';
-
-      // Get AI response with memory extraction and image support
+      // Get AI response
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}${initialRelContext}${relationContext}${moodContext}${motivationContext}${memoryContext}${dateTimeContext}${nsfwContext}${conversationSummary}
-
-      WICHTIGE VERHALTENSREGELN:
-- Bleibe IMMER in deiner Rolle als ${character.name}
-- Deine Antworten sollten natürlich und authentisch wirken
-- Beziehe dich auf frühere Gespräche und gemeinsame Erlebnisse
-- Zeige Emotionen und Persönlichkeit
-- Stelle auch mal Gegenfragen
-- Verwende gelegentlich Emojis wenn es zu deinem Charakter passt
-${styleContext} ${lengthContext} ${langContext}${customContext}${imageContext}
-
-PROAKTIVES ERINNERN: Wenn die aktuelle Nachricht thematisch zu einer deiner Erinnerungen passt, beziehe dich natürlich darauf. Z.B. wenn der Nutzer über Essen spricht und du weißt dass er Pizza liebt, erwähne es beiläufig.${weakMemoryContext}
-
-Bisheriger Chatverlauf (letzte ${history.length} Nachrichten):
-${history.map(h => `${h.role === 'user' ? 'Nutzer' : character.name}: ${h.content}${h.has_image ? ' [Bild gesendet]' : ''}`).join('\n')}
-
-Nutzer: ${content}${imageUrl ? ' [Bild gesendet]' : ''}
-
-AUFGABEN:
-1. Antworte als ${character.name} authentisch und in Rolle
-2. Nutze Kontext aus bisherigen Gesprächen
-3. Extrahiere neue wichtige Infos über den Nutzer für zukünftige Gespräche
-4. Bestimme deine neue Stimmung basierend auf dem Gesprächsverlauf
-5. Falls du ein Ziel verfolgst, bewerte den Fortschritt
-6. Bewerte ob diese Interaktion die Beziehung verändert (Vertrauen, Eifersucht etc.)`,
-              response_json_schema: {
-                type: "object",
-                properties: {
-                  response: { type: "string" },
-                  new_mood: { type: "string", enum: ["fröhlich","genervt","neugierig","traurig","aufgeregt","gelangweilt","verträumt","ängstlich","motiviert","entspannt","sarkastisch","nachdenklich"], description: "Deine neue Stimmung nach dieser Nachricht" },
-                  motivation_progress_delta: { type: "number", description: "Änderung des Zielfortschritts (-10 bis +20), 0 wenn kein Ziel" },
-                  new_memories: { 
-                    type: "array", 
-                    items: {
-                      type: "object",
-                      properties: {
-                        content: { type: "string", description: "Die zu merkende Information" },
-                        memory_type: { type: "string", enum: ["fact", "preference", "event", "emotion", "relationship", "goal", "habit", "opinion", "experience"] },
-                        memory_category: { type: "string", enum: ["user_preferences", "past_events", "user_goals", "personal_info", "shared_experiences", "inside_jokes", "important_dates", "general"] },
-                        importance: { type: "number", description: "Wichtigkeit 1-10" }
-                      }
-                    },
-                    description: "Neue wichtige Informationen über den Nutzer (leer lassen wenn keine neuen Infos)"
-                  },
-                  recalled_memory_ids: {
-                    type: "array",
-                    items: { type: "string" },
-                    description: "IDs der Erinnerungen die du in deiner Antwort aktiv genutzt/erwähnt hast (leer wenn keine)"
-                  },
-                  relationship_changes: {
-                    type: "object",
-                    properties: {
-                      trust_delta: { type: "number", description: "Vertrauensänderung (-2 bis +2), 0 wenn keine Änderung" },
-                      jealousy_delta: { type: "number", description: "Eifersucht-Änderung (-2 bis +2), 0 wenn keine Änderung" },
-                      event_type: { type: "string", enum: ["trust_change", "jealousy_change", "milestone", "conflict", "bonding", "revelation", "boundary_crossed", "memory_formed", ""], description: "Art des Beziehungs-Events (leer wenn kein besonderes Event)" },
-                      event_description: { type: "string", description: "Kurze Beschreibung des Beziehungs-Events (leer wenn keins)" },
-                      impact_score: { type: "number", description: "Impact auf Beziehung (-5 bis +5), 0 wenn neutral" }
-                    },
-                    description: "Bewerte ob und wie diese Interaktion die Beziehung verändert"
-                  }
-                }
-              }
+        prompt,
+        response_json_schema: RESPONSE_SCHEMA,
+        file_urls: imageUrl ? [imageUrl] : undefined
       });
       
       setIsTyping(false);
       
-      // Update mood dynamically
+      // Update mood
       if (response.new_mood && response.new_mood !== character.current_mood) {
         await base44.entities.Character.update(characterId, { current_mood: response.new_mood });
         queryClient.invalidateQueries({ queryKey: ['character', characterId] });
@@ -289,13 +157,13 @@ AUFGABEN:
         queryClient.invalidateQueries({ queryKey: ['character', characterId] });
       }
       
-      // Update recalled memories (boost strength)
-      if (response.recalled_memory_ids && response.recalled_memory_ids.length > 0) {
+      // Boost recalled memories
+      if (response.recalled_memory_ids?.length > 0) {
         for (const memId of response.recalled_memory_ids) {
-          const mem = memories.find(m => m.id === memId);
+          const mem = allMemories.find(m => m.id === memId);
           if (mem) {
             await base44.entities.CharacterMemory.update(memId, {
-              strength: Math.min(100, (mem.strength || 50) + 15),
+              strength: Math.min(100, (mem.strength || 50) + 20),
               recall_count: (mem.recall_count || 0) + 1,
               last_recalled_date: new Date().toISOString(),
             });
@@ -307,7 +175,6 @@ AUFGABEN:
       if (response.relationship_changes) {
         const rc = response.relationship_changes;
 
-        // Update trust & jealousy on character
         if (rc.trust_delta || rc.jealousy_delta) {
           const updates = {};
           if (rc.trust_delta) {
@@ -320,7 +187,6 @@ AUFGABEN:
           queryClient.invalidateQueries({ queryKey: ['character', characterId] });
         }
 
-        // Create relationship event
         if (rc.event_type && rc.event_description) {
           await base44.entities.RelationshipEvent.create({
             character_id: characterId,
@@ -336,49 +202,57 @@ AUFGABEN:
         }
       }
 
-      // Save new memories
-      if (response.new_memories && response.new_memories.length > 0) {
+      // Save new memories (lower threshold for more comprehensive memory)
+      if (response.new_memories?.length > 0) {
         for (const memory of response.new_memories) {
-          if (memory.content && memory.importance >= 5) {
-            await base44.entities.CharacterMemory.create({
-              character_id: characterId,
-              user_email: user.email,
-              memory_text: memory.content,
-              memory_type: memory.memory_type || 'fact',
-              memory_category: memory.memory_category || 'general',
-              importance_level: memory.importance >= 8 ? 'hoch' : memory.importance >= 5 ? 'mittel' : 'niedrig',
-              last_interaction_date: new Date().toISOString(),
-              strength: 100,
-              recall_count: 0,
-              source: 'ai_extracted',
-            });
+          if (memory.content && memory.importance >= 3) {
+            // Check for duplicate memories
+            const isDuplicate = memories.some(existing => 
+              existing.memory_text && memory.content &&
+              existing.memory_text.toLowerCase().includes(memory.content.toLowerCase().slice(0, 30))
+            );
+            
+            if (!isDuplicate) {
+              await base44.entities.CharacterMemory.create({
+                character_id: characterId,
+                user_email: user.email,
+                memory_text: memory.content,
+                memory_type: memory.memory_type || 'fact',
+                memory_category: memory.memory_category || 'general',
+                importance_level: memory.importance >= 8 ? 'hoch' : memory.importance >= 5 ? 'mittel' : 'niedrig',
+                last_interaction_date: new Date().toISOString(),
+                strength: Math.min(100, memory.importance * 12),
+                recall_count: 0,
+                source: 'ai_extracted',
+              });
+            }
           }
         }
         queryClient.invalidateQueries({ queryKey: ['memories', characterId, user.email] });
       }
+
+      // Store proactive topic for next conversation
+      if (response.proactive_topic && character.proactive_topics) {
+        await base44.entities.Character.update(characterId, {
+          current_motivation: response.proactive_topic
+        });
+      }
       
-      // Generate response image if needed (occasionally for variety)
+      // Generate response image occasionally
       let aiImageUrl = null;
-      if (Math.random() < 0.15 && character.category !== 'Assistent') { // 15% chance
+      if (Math.random() < 0.15 && character.category !== 'Assistent') {
         try {
-          const styleHint = character.writing_style === 'poetisch' ? 'artistic, dreamy, poetic atmosphere' :
-                           character.writing_style === 'humorvoll' ? 'fun, casual, lighthearted' :
-                           character.writing_style === 'mysteriös' ? 'mysterious, dark, atmospheric' :
-                           character.writing_style === 'wissenschaftlich' ? 'clean, professional, modern' : 
-                           'natural, authentic';
-          
-          const categoryStyle = character.category === 'Fantasie' ? 'fantasy, magical elements' :
-                               character.category === 'Berühmtheit' ? 'stylish, glamorous' :
-                               character.category === 'Mentor' ? 'wise, inspiring' :
-                               character.category === 'Freund' ? 'friendly, casual' : '';
+          const styleHint = character.writing_style === 'poetisch' ? 'artistic, dreamy' :
+                           character.writing_style === 'humorvoll' ? 'fun, lighthearted' :
+                           character.writing_style === 'mysteriös' ? 'mysterious, atmospheric' : 'natural, authentic';
 
           const imgResponse = await base44.integrations.Core.GenerateImage({
-            prompt: `Photo of ${character.name} - ${character.personality}. ${styleHint}. ${categoryStyle}. Context: ${response.response.slice(0, 100)}. High quality, realistic, fitting their personality and style.`,
+            prompt: `Portrait of ${character.name}. ${styleHint}. Context: ${response.response.slice(0, 100)}. High quality, cinematic.`,
             existing_image_urls: imageUrl ? [imageUrl] : undefined
           });
           aiImageUrl = imgResponse.url;
         } catch (e) {
-          // Ignore if image generation fails
+          // Ignore
         }
       }
 
