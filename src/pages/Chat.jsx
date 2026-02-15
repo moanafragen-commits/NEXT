@@ -351,7 +351,13 @@ AUFGABEN:
               {character.current_mood && <MoodBadge mood={character.current_mood} size="sm" />}
             </div>
             <p className="text-xs text-gray-400 truncate">
-              {isTyping ? <span className="text-emerald-400">schreibt...</span> : (character.status || 'online')}
+              {isTyping ? (
+                <span className="text-emerald-400">schreibt...</span>
+              ) : delayStatus ? (
+                <span className="text-amber-400">{delayStatus}</span>
+              ) : (
+                character.status || 'online'
+              )}
             </p>
           </div>
           
