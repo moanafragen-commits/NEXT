@@ -34,20 +34,35 @@ export default function CreateStatus() {
     mutationFn: async () => {
       setIsGenerating(true);
       
+      const bioContext = character.biography ? `\n\nHintergrund: ${character.biography.slice(0, 200)}` : '';
+      const styleContext = character.writing_style ? `\nSchreibstil: ${character.writing_style}` : '';
+      
+      const categoryContext = character.category === 'Fantasie' ? 'Zeige etwas Magisches oder Fantastisches aus deiner Welt' :
+                             character.category === 'Berühmtheit' ? 'Teile einen Moment aus deinem glamourösen Leben' :
+                             character.category === 'Mentor' ? 'Teile eine inspirierende Weisheit oder einen Lebensrat' :
+                             character.category === 'Freund' ? 'Zeige einen alltäglichen Moment aus deinem Leben' :
+                             'Teile etwas das zu deiner Persönlichkeit passt';
+
       // Generate image prompt based on character
       const promptResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `Du bist ${character.name}. ${character.personality}
-        
-Erstelle einen kreativen Bild-Prompt und eine kurze Caption für einen Status-Post, der zu deiner Persönlichkeit passt.
-Der Post sollte authentisch und interessant sein, als würdest du ihn gerade erleben.
+        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}${styleContext}
 
-Beispiele für Status-Themen:
-- Aktivitäten (Sport, Hobbys, Arbeit)
-- Orte (Café, Park, Zuhause, Reisen)
-- Momente (Sonnenuntergang, Food, Selfie, Haustiere)
-- Stimmungen (entspannt, motiviert, nachdenklich)
+CHARAKTER-KONTEXT:
+- Kategorie: ${character.category}
+- ${categoryContext}
+- Sei authentisch und bleibe in deiner Rolle
+- Das Bild und die Caption sollten perfekt zu deinem Charakter passen
 
-Der Bildprompt sollte spezifisch und visuell ansprechend sein.`,
+Erstelle einen Status-Post mit:
+1. IMAGE_PROMPT: Detaillierte Beschreibung für ein Foto/Bild das zu DIR passt (beschreibe Stil, Stimmung, Setting - nicht generisch!)
+2. CAPTION: Kurze Caption (1-2 Sätze) in deinem Stil mit passenden Emojis
+
+Beispiele nach Charaktertyp:
+- Mysteriöser Charakter: Dunkles, atmosphärisches Foto bei Nacht
+- Humorvoller Charakter: Lustiges, lockeres Alltagsfoto
+- Poetischer Charakter: Künstlerisches, träumerisches Bild
+
+WICHTIG: Der Post muss authentisch zu ${character.name} passen!`,
         response_json_schema: {
           type: "object",
           properties: {
@@ -58,14 +73,14 @@ Der Bildprompt sollte spezifisch und visuell ansprechend sein.`,
       });
 
       // Generate image
-      const styleHint = char.writing_style === 'poetisch' ? 'artistic, dreamy, atmospheric, poetic' :
-                       char.writing_style === 'humorvoll' ? 'fun, lighthearted, casual, bright' :
-                       char.writing_style === 'mysteriös' ? 'dark, mysterious, moody, atmospheric' :
-                       char.writing_style === 'wissenschaftlich' ? 'clean, modern, professional' :
+      const styleHint = character.writing_style === 'poetisch' ? 'artistic, dreamy, atmospheric, poetic' :
+                       character.writing_style === 'humorvoll' ? 'fun, lighthearted, casual, bright' :
+                       character.writing_style === 'mysteriös' ? 'dark, mysterious, moody, atmospheric' :
+                       character.writing_style === 'wissenschaftlich' ? 'clean, modern, professional' :
                        'natural, authentic, realistic';
 
       const imageResponse = await base44.integrations.Core.GenerateImage({
-        prompt: `${promptResponse.image_prompt}. Style: ${styleHint}. Character: ${char.name} - ${char.personality.slice(0, 100)}. High quality, authentic to character's personality and aesthetic.`
+        prompt: `${promptResponse.image_prompt}. Style: ${styleHint}. Character: ${character.name} - ${character.personality.slice(0, 100)}. High quality, authentic to character's personality and aesthetic.`
       });
 
       // Create status with 24h expiry
