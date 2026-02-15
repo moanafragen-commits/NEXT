@@ -425,7 +425,43 @@ function buildProactivityDirective(character, memories, history) {
   return parts.join('\n');
 }
 
-export function buildFullPrompt({ character, user, messages, memories, content, imageUrl }) {
+function buildSharedMemoryContext(sharedMemories, character, allCharacters) {
+  if (!sharedMemories || sharedMemories.length === 0) return '';
+  
+  const parts = [];
+  parts.push('\n\nINFOS VON ANDEREN CHARAKTEREN (Klatsch & Tratsch):');
+  parts.push('Andere Charaktere haben dir Folgendes über den Nutzer erzählt. Nutze diese Infos NATÜRLICH im Gespräch:');
+  parts.push('- Du kannst die Info direkt erwähnen ("Ich hab gehört, dass du...")')
+  parts.push('- Oder subtil darauf anspielen, ohne die Quelle zu verraten');
+  parts.push('- Bei Gerüchten/Gossip: Die Info kann UNGENAU oder ÜBERTRIEBEN sein!');
+  parts.push('- Bei Geheimnissen: Sei vorsichtig – der Nutzer weiß vielleicht nicht, dass du es weißt');
+  parts.push('- Bei Warnungen: Nimm sie ernst und passe dein Verhalten an');
+  parts.push('');
+  
+  for (const sm of sharedMemories.slice(0, 8)) {
+    const sourceName = allCharacters?.find(c => c.id === sm.source_character_id)?.name || 'Jemand';
+    const accuracy = sm.accuracy || 80;
+    const typeLabel = {
+      'fact': '📋 Fakt',
+      'rumor': '🗣️ Gerücht',
+      'secret': '🤫 Geheimnis',
+      'gossip': '💬 Klatsch',
+      'warning': '⚠️ Warnung',
+      'praise': '⭐ Lob',
+      'concern': '😟 Sorge'
+    }[sm.share_type] || '📝 Info';
+    
+    const accuracyHint = accuracy >= 90 ? '' : accuracy >= 60 ? ' (möglicherweise nicht ganz korrekt)' : ' (sehr ungenau/übertrieben!)';
+    
+    parts.push(`${typeLabel} von ${sourceName}: "${sm.content}"${accuracyHint}`);
+  }
+  
+  parts.push('\nWICHTIG: Markiere genutzte Shared-Memory-IDs in deiner Antwort!');
+  
+  return parts.join('\n');
+}
+
+export function buildFullPrompt({ character, user, messages, memories, content, imageUrl, sharedMemories, allCharacters }) {
   // Build conversation history (last 30 messages for more context)
   const history = messages.slice(-30).map(m => ({
     role: m.role,
@@ -446,10 +482,11 @@ export function buildFullPrompt({ character, user, messages, memories, content, 
   const communicationRules = buildCommunicationRules(character, user);
   const conversationSummary = buildConversationSummary(history);
   const proactivityDirective = buildProactivityDirective(character, memories, history);
+  const sharedMemoryContext = buildSharedMemoryContext(sharedMemories, character, allCharacters);
   const imageContext = imageUrl ? `\n\nDer Nutzer hat ein Bild gesendet. Reagiere darauf natürlich.` : '';
 
   // Assemble full prompt
-  const prompt = `${personalityContext}${relationshipContext}${moodContext}${strongContext}${dateTimeContext}${communicationRules}${conversationSummary}${proactivityDirective}
+  const prompt = `${personalityContext}${relationshipContext}${moodContext}${strongContext}${sharedMemoryContext}${dateTimeContext}${communicationRules}${conversationSummary}${proactivityDirective}
 
 KERNREGELN – MENSCHLICHES VERHALTEN:
 - Bleibe IMMER in deiner Rolle als ${character.name}
@@ -502,7 +539,15 @@ AUFGABEN:
    - Gab es einen besonderen Moment (Insider-Witz, Geständnis, Flirt)? → event_type setzen!
    - Bestimme die aktuelle Beziehungsphase wenn sich etwas geändert hat
 5. Liste IDs genutzter Erinnerungen auf
-6. Schlage ggf. ein Thema vor das du proaktiv ansprechen möchtest`;
+6. Schlage ggf. ein Thema vor das du proaktiv ansprechen möchtest
+7. INFORMATIONSWEITERGABE: Entscheide ob Infos aus diesem Gespräch an andere Charaktere weitergegeben werden sollen:
+   - Klatsch/Gossip: Wenn der Nutzer etwas Interessantes erzählt, das andere Charaktere interessieren könnte
+   - Gerüchte: Wenn du etwas gehört hast, das du (vielleicht etwas übertrieben) weitererzählen würdest
+   - Warnungen: Wenn der Nutzer etwas Besorgniserregendes tut oder sagt
+   - Lob: Wenn der Nutzer etwas Tolles gemacht hat
+   - Geheimnisse: Wenn der Nutzer dir ein Geheimnis anvertraut hat (je nach deiner Persönlichkeit verrätst du es oder nicht!)
+   - NICHT jede Nachricht generiert Weitergaben! Nur bei wirklich relevanten Infos.
+   - Die Genauigkeit (accuracy) hängt von deiner Persönlichkeit ab: dramatische Charaktere übertreiben, gewissenhafte geben exakt wieder`;
 
   return { prompt, allMemories };
 }
@@ -559,6 +604,24 @@ export const RESPONSE_SCHEMA = {
     proactive_topic: {
       type: "string",
       description: "Ein Thema das du beim nächsten Mal proaktiv ansprechen möchtest (leer wenn keins)"
+    },
+    used_shared_memory_ids: {
+      type: "array",
+      items: { type: "string" },
+      description: "IDs der genutzten Shared Memories (von anderen Charakteren erhaltene Infos)"
+    },
+    info_to_share: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          content: { type: "string", description: "Die weiterzugebende Information – so wie DU sie weitererzählen würdest (kann übertrieben/ungenau sein!)" },
+          share_type: { type: "string", enum: ["fact", "rumor", "secret", "gossip", "warning", "praise", "concern"], description: "Art der Weitergabe" },
+          accuracy: { type: "number", description: "Wie genau gibst du es wieder? 100=exakt, 70=leicht verändert, 40=stark übertrieben/verfälscht" },
+          importance: { type: "number", description: "Wie wichtig ist die Info? 1-10. Nur Infos >= 5 werden weitergegeben." }
+        }
+      },
+      description: "Infos die du an andere Charaktere weitergeben möchtest. NUR bei wirklich relevanten Dingen! Leeres Array wenn nichts."
     }
   }
 };
