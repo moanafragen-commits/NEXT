@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNotifications } from '@/components/notifications/NotificationManager';
 import MoodBadge from '@/components/character/MoodBadge';
 import ExportChatButton from '@/components/chat/ExportChatButton';
+import { calculateReplyDelay, getDelayReason } from '@/components/chat/ReplyDelayCalculator';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
