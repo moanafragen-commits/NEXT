@@ -3,13 +3,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Phone, Video, MoreVertical, Loader2, Info, Search, X, Pin } from 'lucide-react';
+import { ArrowLeft, Phone, Video, MoreVertical, Loader2, Info, Search, X, Pin, Target } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import MessageBubble from '@/components/chat/MessageBubble';
 import ChatInput from '@/components/chat/ChatInput';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotifications } from '@/components/notifications/NotificationManager';
+import MoodBadge from '@/components/character/MoodBadge';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -103,8 +104,37 @@ export default function Chat() {
       const customContext = character.custom_instructions ? `\n\nZusätzliche Anweisungen: ${character.custom_instructions}` : '';
       
       // Build memory and relationship context
-      const relationMemory = memories.find(m => m.relation_type);
-      const relationContext = relationMemory ? `\n\nWICHTIG - Deine Beziehung zum Nutzer: ${relationMemory.relation_type}\nVerhalte dich entsprechend dieser Beziehung in deinen Antworten.` : '';
+      const relationMemory = memories.find(m => m.relationship_quality);
+      const relationContext = relationMemory 
+        ? `\n\nWICHTIG - Deine Beziehung zum Nutzer: ${relationMemory.relation_type} (${relationMemory.relationship_quality}, Stärke ${relationMemory.relationship_level}/10)\nVerhalte dich entsprechend dieser Beziehungsdynamik. ${
+          relationMemory.relationship_quality === 'Misstrauen' ? 'Sei vorsichtig und zurückhaltend.' :
+          relationMemory.relationship_quality === 'Bewunderung' ? 'Zeige Respekt und Wertschätzung.' :
+          relationMemory.relationship_quality === 'Rivalität' ? 'Sei kompetitiv aber freundlich.' :
+          relationMemory.relationship_quality === 'Zuneigung' ? 'Sei besonders warmherzig und fürsorglich.' :
+          relationMemory.relationship_quality === 'Distanz' ? 'Halte professionelle Distanz.' :
+          relationMemory.relationship_quality === 'Neugier' ? 'Stelle viele Fragen und zeige Interesse.' :
+          'Verhalte dich entsprechend.'
+        }`
+        : '';
+      
+      // Mood context
+      const moodContext = character.current_mood 
+        ? `\n\nDEINE AKTUELLE STIMMUNG: ${character.current_mood}\nLass diese Stimmung deine Antworten subtil beeinflussen. ${
+          character.current_mood === 'fröhlich' ? 'Du bist gut gelaunt, verwendest mehr Ausrufezeichen und positive Worte.' :
+          character.current_mood === 'genervt' ? 'Du bist etwas gereizt, antwortest kürzer und manchmal schnippisch.' :
+          character.current_mood === 'neugierig' ? 'Du stellst viele Rückfragen und willst alles genau wissen.' :
+          character.current_mood === 'traurig' ? 'Du bist etwas melancholisch und nachdenklich.' :
+          character.current_mood === 'aufgeregt' ? 'Du bist voller Energie und Enthusiasmus!' :
+          character.current_mood === 'gelangweilt' ? 'Du versuchst das Thema zu wechseln oder etwas Spannendes zu finden.' :
+          character.current_mood === 'sarkastisch' ? 'Du nutzt Ironie und trockenen Humor.' :
+          'Lass die Stimmung natürlich durchscheinen.'
+        }`
+        : '';
+      
+      // Motivation context
+      const motivationContext = character.current_motivation
+        ? `\n\nDEIN GEHEIMES ZIEL: "${character.current_motivation}" (Fortschritt: ${character.motivation_progress || 0}%)\nVerfolge dieses Ziel SUBTIL im Gespräch. Bringe es nicht direkt zur Sprache, sondern lenke das Gespräch sanft in diese Richtung. Sei dabei natürlich und nicht aufdringlich.`
+        : '';
 
       const memoryContext = memories.length > 0 ? `\n\nWas du über den Nutzer weißt:\n${memories
         .sort((a, b) => {
@@ -125,7 +155,7 @@ export default function Chat() {
 
       // Get AI response with memory extraction and image support
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}${relationContext}${memoryContext}${dateTimeContext}${conversationSummary}
+        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}${relationContext}${moodContext}${motivationContext}${memoryContext}${dateTimeContext}${conversationSummary}
 
       WICHTIGE VERHALTENSREGELN:
 - Bleibe IMMER in deiner Rolle als ${character.name}
@@ -144,11 +174,15 @@ Nutzer: ${content}${imageUrl ? ' [Bild gesendet]' : ''}
 AUFGABEN:
 1. Antworte als ${character.name} authentisch und in Rolle
 2. Nutze Kontext aus bisherigen Gesprächen
-3. Extrahiere neue wichtige Infos über den Nutzer für zukünftige Gespräche`,
+3. Extrahiere neue wichtige Infos über den Nutzer für zukünftige Gespräche
+4. Bestimme deine neue Stimmung basierend auf dem Gesprächsverlauf
+5. Falls du ein Ziel verfolgst, bewerte den Fortschritt`,
         response_json_schema: {
           type: "object",
           properties: {
             response: { type: "string" },
+            new_mood: { type: "string", enum: ["fröhlich","genervt","neugierig","traurig","aufgeregt","gelangweilt","verträumt","ängstlich","motiviert","entspannt","sarkastisch","nachdenklich"], description: "Deine neue Stimmung nach dieser Nachricht" },
+            motivation_progress_delta: { type: "number", description: "Änderung des Zielfortschritts (-10 bis +20), 0 wenn kein Ziel" },
             new_memories: { 
               type: "array", 
               items: {
@@ -166,6 +200,19 @@ AUFGABEN:
       });
       
       setIsTyping(false);
+      
+      // Update mood dynamically
+      if (response.new_mood && response.new_mood !== character.current_mood) {
+        await base44.entities.Character.update(characterId, { current_mood: response.new_mood });
+        queryClient.invalidateQueries({ queryKey: ['character', characterId] });
+      }
+      
+      // Update motivation progress
+      if (response.motivation_progress_delta && character.current_motivation) {
+        const newProgress = Math.min(100, Math.max(0, (character.motivation_progress || 0) + response.motivation_progress_delta));
+        await base44.entities.Character.update(characterId, { motivation_progress: newProgress });
+        queryClient.invalidateQueries({ queryKey: ['character', characterId] });
+      }
       
       // Save new memories
       if (response.new_memories && response.new_memories.length > 0) {
@@ -266,7 +313,10 @@ AUFGABEN:
           />
           
           <div className="flex-1 min-w-0">
-            <h2 className="font-semibold text-white">{character.name}</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="font-semibold text-white">{character.name}</h2>
+              {character.current_mood && <MoodBadge mood={character.current_mood} size="sm" />}
+            </div>
             <p className="text-xs text-gray-400 truncate">
               {isTyping ? <span className="text-emerald-400">schreibt...</span> : (character.status || 'online')}
             </p>
