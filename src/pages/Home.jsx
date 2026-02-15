@@ -21,6 +21,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNotifications } from '@/components/notifications/NotificationManager';
 import UnreadBadge from '@/components/notifications/UnreadBadge';
 import { calculateReplyDelay, getDelayReason } from '@/components/chat/ReplyDelayCalculator';
+import { getTagColor } from '@/components/chat/TagManager';
 
 export default function Home() {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -29,6 +30,7 @@ export default function Home() {
   const [chatMessage, setChatMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [viewFilter, setViewFilter] = useState('all'); // all, favorites, archived
+  const [activeTag, setActiveTag] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -127,11 +129,15 @@ export default function Home() {
     }
   });
   
+  // Collect all unique tags
+  const allTags = [...new Set(characters.flatMap(c => c.tags || []))];
+
   const filteredCharacters = characters.filter(c => {
     const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase());
-    if (viewFilter === 'favorites') return matchesSearch && c.is_favorite;
-    if (viewFilter === 'archived') return matchesSearch && c.is_archived;
-    return matchesSearch && !c.is_archived;
+    const matchesTag = !activeTag || (c.tags || []).includes(activeTag);
+    if (viewFilter === 'favorites') return matchesSearch && matchesTag && c.is_favorite;
+    if (viewFilter === 'archived') return matchesSearch && matchesTag && c.is_archived;
+    return matchesSearch && matchesTag && !c.is_archived;
   });
 
   const { data: chatMessages = [] } = useQuery({
@@ -338,9 +344,28 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
           >
             <Archive className="w-4 h-4 inline mr-2" />
             Archiviert
-          </button>
-        </div>
-        </header>
+            </button>
+            </div>
+
+            {/* Tag Filter */}
+            {allTags.length > 0 && (
+            <div className="px-4 pb-3 flex gap-1.5 overflow-x-auto scrollbar-hide">
+            {allTags.map(tag => (
+              <button
+                key={tag}
+                onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+                className={`px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap border transition-all ${
+                  activeTag === tag
+                    ? getTagColor(tag)
+                    : 'bg-[#262626] text-gray-500 border-transparent hover:text-gray-300'
+                }`}
+              >
+                #{tag}
+              </button>
+            ))}
+            </div>
+            )}
+            </header>
 
         {/* Status Bar */}
         <div className="px-4 py-3 overflow-x-auto border-b border-white/5 scrollbar-hide">
