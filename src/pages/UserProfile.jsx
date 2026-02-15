@@ -224,7 +224,7 @@ export default function UserProfile() {
         {tab === 'posts' && (
           <div className="grid grid-cols-3 gap-0.5">
             {posts.filter(p => p.image_url).map(post => (
-              <div key={post.id} className="aspect-square">
+              <div key={post.id} className="aspect-square relative cursor-pointer" onClick={() => setSelectedPost(post)}>
                 <img src={post.image_url} alt="" className="w-full h-full object-cover" />
               </div>
             ))}
