@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, User, BookOpen, MessageCircle, Settings, Sparkles, Calendar, Clock, Trash2 } from 'lucide-react';
+import { ArrowLeft, User, BookOpen, MessageCircle, Settings, Sparkles, Calendar, Clock, Trash2, Plus, Brain } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { motion } from 'framer-motion';
+import AddMemoryModal from '@/components/memory/AddMemoryModal';
 
 export default function CharacterInfo() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -30,9 +31,14 @@ export default function CharacterInfo() {
     enabled: !!characterId
   });
   
+  const { data: user } = useQuery({
+    queryKey: ['user'],
+    queryFn: () => base44.auth.me()
+  });
+
   const { data: memories = [] } = useQuery({
     queryKey: ['memories', characterId],
-    queryFn: () => base44.entities.CharacterMemory.filter({ character_id: characterId }, '-importance'),
+    queryFn: () => base44.entities.CharacterMemory.filter({ character_id: characterId }),
     enabled: !!characterId
   });
   
@@ -156,33 +162,66 @@ export default function CharacterInfo() {
         </div>
         
         {/* Memories Section */}
-        {memories.length > 0 && (
-          <>
-            <Separator className="bg-white/5" />
-            <div className="p-6 space-y-4">
-              <div className="flex items-center gap-2 text-emerald-400">
-                <MessageCircle className="w-5 h-5" />
-                <h3 className="font-semibold">Was {character.name} über dich weiß</h3>
-              </div>
-              
-              <div className="space-y-2">
-                {memories.map((memory) => (
-                  <motion.div
-                    key={memory.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="bg-[#262626] rounded-lg p-3 flex items-start justify-between gap-3"
-                  >
+        <Separator className="bg-white/5" />
+        <div className="p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-emerald-400">
+              <Brain className="w-5 h-5" />
+              <h3 className="font-semibold">Erinnerungen & Beziehung</h3>
+            </div>
+            <Button
+              onClick={() => setShowAddMemory(true)}
+              size="sm"
+              className="bg-emerald-600 hover:bg-emerald-500"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Hinzufügen
+            </Button>
+          </div>
+          
+          {memories.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <p className="text-sm">Noch keine Erinnerungen vorhanden.</p>
+              <p className="text-xs mt-1">Definiere deine Beziehung zu {character.name}.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {memories.map((memory) => (
+                <motion.div
+                  key={memory.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="bg-[#262626] rounded-lg p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs">
-                          {memoryTypeLabels[memory.memory_type] || '📝 Info'}
-                        </span>
-                        <span className="text-xs text-emerald-400">
-                          {'⭐'.repeat(Math.min(Math.ceil(memory.importance / 2), 5))}
-                        </span>
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        {memory.relation_type && (
+                          <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30">
+                            {memory.relation_type}
+                          </Badge>
+                        )}
+                        <Badge variant="outline" className="text-xs border-white/20">
+                          {memoryTypeLabels[memory.memory_type] || memory.memory_type}
+                        </Badge>
+                        {memory.importance_level && (
+                          <Badge 
+                            className={`text-xs ${
+                              memory.importance_level === 'hoch' ? 'bg-red-500/20 text-red-300 border-red-500/30' :
+                              memory.importance_level === 'mittel' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' :
+                              'bg-gray-500/20 text-gray-300 border-gray-500/30'
+                            }`}
+                          >
+                            {memory.importance_level}
+                          </Badge>
+                        )}
                       </div>
-                      <p className="text-sm text-gray-300">{memory.content}</p>
+                      <p className="text-sm text-gray-300 leading-relaxed">{memory.memory_text || memory.content}</p>
+                      {memory.last_interaction_date && (
+                        <p className="text-xs text-gray-500 mt-2">
+                          Letzte Interaktion: {new Date(memory.last_interaction_date).toLocaleDateString('de-DE')}
+                        </p>
+                      )}
                     </div>
                     <Button
                       variant="ghost"
@@ -192,12 +231,12 @@ export default function CharacterInfo() {
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
-                  </motion.div>
-                ))}
-              </div>
+                  </div>
+                </motion.div>
+              ))}
             </div>
-          </>
-        )}
+          )}
+        </div>
         
         {character.greeting && (
           <>
@@ -212,6 +251,15 @@ export default function CharacterInfo() {
           </>
         )}
       </div>
+
+      {user && (
+        <AddMemoryModal
+          open={showAddMemory}
+          onClose={() => setShowAddMemory(false)}
+          characterId={characterId}
+          userEmail={user.email}
+        />
+      )}
     </div>
   );
 }
