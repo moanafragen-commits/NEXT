@@ -61,9 +61,10 @@ export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelR
         ) : (
           <button type="button" className="p-2 text-gray-400 hover:text-gray-300 transition-colors">
             <Mic className="w-6 h-6" />
-            </button>
-            )}
-            </div>
-            </form>
-            );
-            }
+          </button>
+        )}
+      </div>
+      </div>
+    </form>
+  );
+}
