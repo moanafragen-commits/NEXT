@@ -234,18 +234,15 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
                 <UnreadBadge count={unreadGroupMessages} />
               </Button>
             </Link>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => {
-                if (permission === 'default') {
-                  requestPermission();
-                }
-              }}
-              className="text-gray-400 hover:text-white hover:bg-white/10"
-            >
-              {permission === 'granted' ? <Bell className="w-5 h-5" /> : <BellOff className="w-5 h-5" />}
-            </Button>
+            <Link to={createPageUrl('NotificationSettings')}>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="text-gray-400 hover:text-white hover:bg-white/10"
+              >
+                {permission === 'granted' ? <Bell className="w-5 h-5" /> : <BellOff className="w-5 h-5" />}
+              </Button>
+            </Link>
             <Link to={createPageUrl('CharacterLibrary')}>
               <Button 
                 variant="ghost" 
