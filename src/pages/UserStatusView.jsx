@@ -6,12 +6,16 @@ import { createPageUrl } from '@/utils';
 import { ArrowLeft, X, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
+import StatusViewersList from '@/components/status/StatusViewersList';
+import StatusCharacterReactions from '@/components/status/StatusCharacterReactions';
 
 export default function UserStatusView() {
   const urlParams = new URLSearchParams(window.location.search);
   const userEmail = urlParams.get('userEmail');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [showViewers, setShowViewers] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -70,6 +74,7 @@ export default function UserStatusView() {
     viewMutation.mutate(currentStatus.id);
 
     const timer = setInterval(() => {
+      if (isPaused || showViewers) return;
       setProgress((prev) => {
         if (prev >= 100) {
           if (currentIndex < statuses.length - 1) {
@@ -83,7 +88,7 @@ export default function UserStatusView() {
     }, 100);
 
     return () => clearInterval(timer);
-  }, [currentIndex, currentStatus]);
+  }, [currentIndex, currentStatus, isPaused, showViewers]);
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
@@ -206,13 +211,66 @@ export default function UserStatusView() {
         />
       </div>
 
-      {/* Views */}
-      <div className="fixed bottom-4 left-4 right-4 z-40">
-        <div className="flex items-center justify-center gap-2 bg-black/50 rounded-full px-4 py-2 w-fit mx-auto">
-          <Eye className="w-4 h-4 text-white" />
-          <span className="text-white text-sm">{currentStatus.views_count || 0} Aufrufe</span>
-        </div>
+      {/* Bottom Area */}
+      <div className="fixed bottom-4 left-4 right-4 z-40 space-y-3">
+        {/* Character Reactions - only show for own status */}
+        {user && userEmail === user.email && (
+          <div className="bg-black/50 backdrop-blur-sm rounded-2xl p-3">
+            <p className="text-xs text-white/50 mb-2 text-center">Charakter reagieren lassen</p>
+            <StatusCharacterReactions 
+              statusContent={currentStatus.content}
+              statusType={currentStatus.type}
+              userEmail={user.email}
+            />
+          </div>
+        )}
+
+        {/* Views Button */}
+        {user && userEmail === user.email ? (
+          <button
+            onClick={() => {
+              setShowViewers(true);
+              setIsPaused(true);
+            }}
+            className="flex items-center justify-center gap-2 bg-black/50 rounded-full px-4 py-2 w-fit mx-auto hover:bg-black/70 transition-colors"
+          >
+            <Eye className="w-4 h-4 text-white" />
+            <span className="text-white text-sm">{currentStatus.views_count || 0} Aufrufe</span>
+          </button>
+        ) : (
+          <div className="flex items-center justify-center gap-2 bg-black/50 rounded-full px-4 py-2 w-fit mx-auto">
+            <Eye className="w-4 h-4 text-white" />
+            <span className="text-white text-sm">{currentStatus.views_count || 0} Aufrufe</span>
+          </div>
+        )}
       </div>
+
+      {/* Viewers Sheet */}
+      <AnimatePresence>
+        {showViewers && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                setShowViewers(false);
+                setIsPaused(false);
+              }}
+              className="fixed inset-0 bg-black/40 z-45"
+              style={{ zIndex: 45 }}
+            />
+            <StatusViewersList
+              statusId={currentStatus.id}
+              viewsCount={currentStatus.views_count}
+              onClose={() => {
+                setShowViewers(false);
+                setIsPaused(false);
+              }}
+            />
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
