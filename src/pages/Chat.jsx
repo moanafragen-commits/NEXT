@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNotifications } from '@/components/notifications/NotificationManager';
 import MoodBadge from '@/components/character/MoodBadge';
 import ExportChatButton from '@/components/chat/ExportChatButton';
+import ShareChatButton from '@/components/chat/ShareChatButton';
 import { calculateReplyDelay, getDelayReason } from '@/components/chat/ReplyDelayCalculator';
 import { calculateDecayedStrength } from '@/components/memory/MemoryStrengthBar';
 
@@ -452,7 +453,8 @@ AUFGABEN:
           </Button>
 
           <ExportChatButton messages={messages} characterName={character.name} />
-          
+          <ShareChatButton messages={messages} character={character} />
+
           <Link to={createPageUrl(`CharacterInfo?characterId=${characterId}`)}>
             <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/10">
               <Info className="w-5 h-5" />
@@ -485,12 +487,18 @@ AUFGABEN:
         
         {/* Pinned/Search Info */}
         {(showPinned || showBookmarked || searchQuery) && (
-          <div className="px-4 pb-2">
+          <div className="px-4 pb-2 flex items-center justify-between">
             <div className="text-xs text-gray-400 flex items-center gap-2">
               {showPinned && <span>📌 {pinnedCount} gepinnte Nachricht{pinnedCount !== 1 ? 'en' : ''}</span>}
               {showBookmarked && <span>🔖 {bookmarkedCount} markierte Nachricht{bookmarkedCount !== 1 ? 'en' : ''}</span>}
               {searchQuery && <span>🔍 {filteredMessages.length} Ergebnis{filteredMessages.length !== 1 ? 'se' : ''}</span>}
             </div>
+            <button
+              onClick={() => { setShowPinned(false); setShowBookmarked(false); setShowSearch(false); setSearchQuery(''); }}
+              className="text-xs text-emerald-400 hover:text-emerald-300"
+            >
+              Alle anzeigen
+            </button>
           </div>
         )}
       </header>
