@@ -1403,6 +1403,221 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                 <p className="text-xs text-gray-500">Prägende Erfahrung die das Verhalten und die Einstellung des Charakters beeinflusst</p>
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Diagnose-Zeitpunkt</Label>
+                  <Select 
+                    value={formData.diagnosis_age} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, diagnosis_age: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue placeholder="Wann diagnostiziert?" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
+                      <SelectItem value="kindheit" className="text-white hover:bg-white/10">👶 Kindheit</SelectItem>
+                      <SelectItem value="jugend" className="text-white hover:bg-white/10">🧑 Jugend</SelectItem>
+                      <SelectItem value="junges_erwachsenenalter" className="text-white hover:bg-white/10">🧑‍🎓 Junges Erwachsenenalter</SelectItem>
+                      <SelectItem value="erwachsenenalter" className="text-white hover:bg-white/10">🧑‍💼 Erwachsenenalter</SelectItem>
+                      <SelectItem value="spät_diagnostiziert" className="text-white hover:bg-white/10">🔍 Spät diagnostiziert</SelectItem>
+                      <SelectItem value="nicht_diagnostiziert" className="text-white hover:bg-white/10">❓ Nicht diagnostiziert</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500">Beeinflusst wie lange der Charakter schon damit lebt</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Therapie-Einstellung</Label>
+                  <Select 
+                    value={formData.therapy_attitude} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, therapy_attitude: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue placeholder="Einstellung wählen..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
+                      <SelectItem value="sehr_positiv" className="text-white hover:bg-white/10">💚 Sehr positiv</SelectItem>
+                      <SelectItem value="positiv" className="text-white hover:bg-white/10">👍 Positiv</SelectItem>
+                      <SelectItem value="ambivalent" className="text-white hover:bg-white/10">🤷 Ambivalent</SelectItem>
+                      <SelectItem value="ablehnend" className="text-white hover:bg-white/10">👎 Ablehnend</SelectItem>
+                      <SelectItem value="verweigert" className="text-white hover:bg-white/10">🚫 Verweigert komplett</SelectItem>
+                      <SelectItem value="noch_nie_versucht" className="text-white hover:bg-white/10">❓ Noch nie versucht</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Genesungsstatus</Label>
+                  <Select 
+                    value={formData.recovery_status} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, recovery_status: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
+                      <SelectItem value="nicht_zutreffend" className="text-white hover:bg-white/10">➖ Nicht zutreffend</SelectItem>
+                      <SelectItem value="aktiv_krank" className="text-white hover:bg-white/10">🔴 Aktiv krank</SelectItem>
+                      <SelectItem value="in_behandlung" className="text-white hover:bg-white/10">🟡 In Behandlung</SelectItem>
+                      <SelectItem value="in_genesung" className="text-white hover:bg-white/10">🟢 In Genesung</SelectItem>
+                      <SelectItem value="stabil" className="text-white hover:bg-white/10">✅ Stabil</SelectItem>
+                      <SelectItem value="rückfällig" className="text-white hover:bg-white/10">🔄 Rückfällig</SelectItem>
+                      <SelectItem value="chronisch_stabil" className="text-white hover:bg-white/10">⚖️ Chronisch stabil</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Support-System</Label>
+                  <Select 
+                    value={formData.support_system} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, support_system: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
+                      <SelectItem value="stark" className="text-white hover:bg-white/10">💪 Starkes Netzwerk</SelectItem>
+                      <SelectItem value="mittel" className="text-white hover:bg-white/10">🤝 Mittleres Netzwerk</SelectItem>
+                      <SelectItem value="schwach" className="text-white hover:bg-white/10">🤏 Schwaches Netzwerk</SelectItem>
+                      <SelectItem value="isoliert" className="text-white hover:bg-white/10">🏝️ Isoliert</SelectItem>
+                      <SelectItem value="toxisch" className="text-white hover:bg-white/10">☠️ Toxisches Umfeld</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Support-System Details</Label>
+                <Textarea
+                  value={formData.support_system_details}
+                  onChange={(e) => setFormData(prev => ({ ...prev, support_system_details: e.target.value }))}
+                  placeholder="Wer unterstützt den Charakter? Freunde, Familie, Selbsthilfegruppe? Oder ist er isoliert?"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                />
+              </div>
+
+              {/* Tiefere psychische Themen */}
+              <div className="space-y-1 mt-4 mb-1">
+                <h3 className="text-sm font-semibold text-red-400 flex items-center gap-2">
+                  <HeartCrack className="w-4 h-4" />
+                  Tiefere psychische Themen
+                </h3>
+                <p className="text-xs text-gray-500">Sensible Themen die den Charakter realistischer machen.</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Selbstverletzung</Label>
+                <Textarea
+                  value={formData.self_harm_history}
+                  onChange={(e) => setFormData(prev => ({ ...prev, self_harm_history: e.target.value }))}
+                  placeholder="z.B. 'Hat sich als Teenager geritzt, inzwischen seit 3 Jahren clean. Narben erinnern ihn daran.'"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                />
+                <p className="text-xs text-gray-500">Art, Zeitraum und aktueller Status</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Suizidalität</Label>
+                <Textarea
+                  value={formData.suicidality_history}
+                  onChange={(e) => setFormData(prev => ({ ...prev, suicidality_history: e.target.value }))}
+                  placeholder="z.B. 'Hatte mit 19 einen Suizidversuch. Seitdem in Therapie und stabil, aber dunkle Phasen kommen vor.'"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                />
+                <p className="text-xs text-gray-500">Suizidgedanken oder -versuche in der Vergangenheit</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Dissoziation</Label>
+                  <Select 
+                    value={formData.dissociation} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, dissociation: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
+                      <SelectItem value="keine" className="text-white hover:bg-white/10">➖ Keine</SelectItem>
+                      <SelectItem value="leicht" className="text-white hover:bg-white/10">🌫️ Leicht</SelectItem>
+                      <SelectItem value="mittel" className="text-white hover:bg-white/10">😶‍🌫️ Mittel</SelectItem>
+                      <SelectItem value="stark" className="text-white hover:bg-white/10">🌀 Stark</SelectItem>
+                      <SelectItem value="chronisch" className="text-white hover:bg-white/10">⚠️ Chronisch</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Dissoziation Details</Label>
+                  <Input
+                    value={formData.dissociation_details}
+                    onChange={(e) => setFormData(prev => ({ ...prev, dissociation_details: e.target.value }))}
+                    placeholder="Derealisation, Depersonalisation..."
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Essstörung</Label>
+                <Textarea
+                  value={formData.eating_disorder}
+                  onChange={(e) => setFormData(prev => ({ ...prev, eating_disorder: e.target.value }))}
+                  placeholder="z.B. 'Anorexie in der Jugend, jetzt in Recovery aber immer noch schwieriges Verhältnis zum Essen.'"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Psychotische Symptome</Label>
+                <Textarea
+                  value={formData.psychosis_symptoms}
+                  onChange={(e) => setFormData(prev => ({ ...prev, psychosis_symptoms: e.target.value }))}
+                  placeholder="z.B. Stimmen hören, paranoide Gedanken, Wahnvorstellungen..."
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                />
+              </div>
+
+              {/* Selbst- und Fremdbild */}
+              <div className="space-y-1 mt-4 mb-1">
+                <h3 className="text-sm font-semibold text-indigo-400 flex items-center gap-2">
+                  <Eye className="w-4 h-4" />
+                  Selbst- & Fremdbild
+                </h3>
+                <p className="text-xs text-gray-500">Wie nimmt der Charakter sich und andere wahr?</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Selbstbild</Label>
+                  <Textarea
+                    value={formData.self_image}
+                    onChange={(e) => setFormData(prev => ({ ...prev, self_image: e.target.value }))}
+                    placeholder="Wie sieht sich der Charakter selbst? z.B. 'Hält sich für wertlos trotz Erfolg'"
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Fremdbild</Label>
+                  <Textarea
+                    value={formData.external_image}
+                    onChange={(e) => setFormData(prev => ({ ...prev, external_image: e.target.value }))}
+                    placeholder="Wie sehen andere den Charakter? z.B. 'Wirkt nach außen selbstbewusst und stark'"
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Körperbild</Label>
+                <Textarea
+                  value={formData.body_image}
+                  onChange={(e) => setFormData(prev => ({ ...prev, body_image: e.target.value }))}
+                  placeholder="z.B. Body Dysmorphie, Unsicherheit über bestimmte Körperteile, Komfort mit dem eigenen Körper..."
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                />
+                <p className="text-xs text-gray-500">Beziehung zum eigenen Körper und Aussehen</p>
+              </div>
+
               {/* Schwächen & Ticks Section */}
               <div className="space-y-1 mt-4 mb-1">
                 <h3 className="text-sm font-semibold text-orange-400 flex items-center gap-2">
