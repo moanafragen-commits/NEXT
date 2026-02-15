@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare, Zap, Brain, Shield, Lock, Lightbulb } from 'lucide-react';
+import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare, Zap, Brain, Shield, Lock, Lightbulb, ImagePlus, Briefcase, Clock } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
 import { base44 } from '@/api/base44Client';
 import { CHARACTER_TEMPLATES } from './CharacterTemplates';
@@ -110,6 +110,7 @@ export default function CreateCharacterModal({ open, onClose, onCreated }) {
     relationship_evolution: 'statisch'
   });
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
