@@ -129,9 +129,7 @@ const HUMOR_TYPES = [
   { value: "intelligent", label: "🧠 Intelligent / Witzig" }
 ];
 
-export default function CreateCharacterModal({ open, onClose, onCreated }) {
-  const [showTemplates, setShowTemplates] = useState(true);
-  const [formData, setFormData] = useState({
+const DEFAULT_FORM_DATA = {
     name: '',
     personality: '',
     greeting: '',

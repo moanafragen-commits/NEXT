@@ -5,7 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MessageCircle, Sparkles, Trash2, Star } from 'lucide-react';
+import { Search, MessageCircle, Sparkles, Trash2, Star, Pencil } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from 'framer-motion';
 import BottomNav from '@/components/navigation/BottomNav';
