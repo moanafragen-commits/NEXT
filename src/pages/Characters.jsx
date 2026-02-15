@@ -24,6 +24,8 @@ export default function Characters() {
       await Promise.all(msgs.map(m => base44.entities.ChatMessage.delete(m.id)));
       const memories = await base44.entities.CharacterMemory.filter({ character_id: characterId });
       await Promise.all(memories.map(m => base44.entities.CharacterMemory.delete(m.id)));
+      const statuses = await base44.entities.CharacterStatus.filter({ character_id: characterId });
+      await Promise.all(statuses.map(s => base44.entities.CharacterStatus.delete(s.id)));
       await base44.entities.Character.delete(characterId);
     },
     onSuccess: () => {
