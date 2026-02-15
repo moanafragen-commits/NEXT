@@ -353,6 +353,7 @@ AUFGABEN:
             size="icon" 
             onClick={() => {
               setShowPinned(!showPinned);
+              setShowBookmarked(false);
               setShowSearch(false);
               setSearchQuery('');
             }}
@@ -365,6 +366,27 @@ AUFGABEN:
               </span>
             )}
           </Button>
+
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => {
+              setShowBookmarked(!showBookmarked);
+              setShowPinned(false);
+              setShowSearch(false);
+              setSearchQuery('');
+            }}
+            className={`text-gray-400 hover:text-white hover:bg-white/10 relative ${showBookmarked ? 'text-amber-400' : ''}`}
+          >
+            <Bookmark className={`w-5 h-5 ${showBookmarked ? 'fill-amber-400' : ''}`} />
+            {bookmarkedCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
+                {bookmarkedCount}
+              </span>
+            )}
+          </Button>
+
+          <ExportChatButton messages={messages} characterName={character.name} />
           
           <Link to={createPageUrl(`CharacterInfo?characterId=${characterId}`)}>
             <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/10">
@@ -397,10 +419,11 @@ AUFGABEN:
         )}
         
         {/* Pinned/Search Info */}
-        {(showPinned || searchQuery) && (
+        {(showPinned || showBookmarked || searchQuery) && (
           <div className="px-4 pb-2">
             <div className="text-xs text-gray-400 flex items-center gap-2">
               {showPinned && <span>📌 {pinnedCount} gepinnte Nachricht{pinnedCount !== 1 ? 'en' : ''}</span>}
+              {showBookmarked && <span>🔖 {bookmarkedCount} markierte Nachricht{bookmarkedCount !== 1 ? 'en' : ''}</span>}
               {searchQuery && <span>🔍 {filteredMessages.length} Ergebnis{filteredMessages.length !== 1 ? 'se' : ''}</span>}
             </div>
           </div>
@@ -436,6 +459,7 @@ AUFGABEN:
                 characterAvatar={character.avatar_url}
                 characterName={character.name}
                 onPin={(msg) => togglePinMutation.mutate({ messageId: msg.id, isPinned: msg.is_pinned })}
+                onBookmark={(msg) => toggleBookmarkMutation.mutate({ messageId: msg.id, isBookmarked: msg.is_bookmarked })}
                 onReply={(msg) => setReplyToMessage(msg)}
                 replyToMessage={message.reply_to_id ? messages.find(m => m.id === message.reply_to_id) : null}
               />
