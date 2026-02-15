@@ -468,16 +468,13 @@ export default function Home() {
       {/* Bottom Tab Bar */}
       <nav className="fixed bottom-0 left-0 right-0 z-30 bg-[#0a0a0a] border-t border-white/5">
         <div className="flex items-center justify-around h-16 max-w-lg mx-auto px-2">
-          {/* Home */}
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="flex flex-col items-center justify-center gap-0.5 w-14 h-14 text-white"
-          >
+          {/* Home = Feed */}
+          <Link to={createPageUrl('Feed')} className="flex flex-col items-center justify-center gap-0.5 w-14 h-14 text-white">
             <HomeIcon className="w-6 h-6 fill-white" />
-          </button>
+          </Link>
 
-          {/* Search / Feed */}
-          <Link to={createPageUrl('Feed')} className="flex flex-col items-center justify-center gap-0.5 w-14 h-14 text-gray-400 hover:text-white transition-colors">
+          {/* Lupe = Charaktere */}
+          <Link to={createPageUrl('Characters')} className="flex flex-col items-center justify-center gap-0.5 w-14 h-14 text-gray-400 hover:text-white transition-colors">
             <Search className="w-6 h-6" />
           </Link>
 
@@ -489,16 +486,15 @@ export default function Home() {
             <Plus className="w-7 h-7" />
           </button>
 
-          {/* Favorites / Groups */}
-          <Link to={createPageUrl('GroupChats')} className="flex flex-col items-center justify-center gap-0.5 w-14 h-14 text-gray-400 hover:text-white transition-colors relative">
+          {/* Herz = Aktivitäten (Likes, Kommentare, Shares von KI) */}
+          <Link to={createPageUrl('Activity')} className="flex flex-col items-center justify-center gap-0.5 w-14 h-14 text-gray-400 hover:text-white transition-colors relative">
             <Heart className="w-6 h-6" />
-            <UnreadBadge count={unreadGroupMessages} />
           </Link>
 
-          {/* Profile */}
+          {/* Profil */}
           <Link to={createPageUrl('UserProfile')} className="flex flex-col items-center justify-center gap-0.5 w-14 h-14">
             {user?.avatar_url ? (
-              <img src={user.avatar_url} alt="Profil" className="w-7 h-7 rounded-full object-cover ring-2 ring-white/20" />
+              <img src={user.avatar_url} alt="Profil" className="w-7 h-7 rounded-full object-cover ring-2 ring-emerald-500/50" />
             ) : (
               <div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 ring-2 ring-white/20" />
             )}
