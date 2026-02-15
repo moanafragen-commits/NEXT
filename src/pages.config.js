@@ -67,6 +67,7 @@ import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
 import UserStatusView from './pages/UserStatusView';
 import MemoryTraining from './pages/MemoryTraining';
+import Activity from './pages/Activity';
 
 
 export const PAGES = {
@@ -90,6 +91,7 @@ export const PAGES = {
     "UserProfile": UserProfile,
     "UserStatusView": UserStatusView,
     "MemoryTraining": MemoryTraining,
+    "Activity": Activity,
 }
 
 export const pagesConfig = {
