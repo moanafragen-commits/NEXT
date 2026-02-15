@@ -148,6 +148,8 @@ REGELN:
 - Charaktere können Emojis nutzen passend zu ihrer Persönlichkeit
 - Manche Charaktere können auch gar nicht antworten wenn es nicht zu ihnen passt
 
+Außerdem: Extrahiere wichtige neue Informationen aus der Konversation, die sich die Charaktere merken sollten (z.B. Fakten über den Nutzer, Meinungen anderer Charaktere, gemeinsame Erlebnisse im Chat). Gib für JEDEN Charakter in der Gruppe relevante Erinnerungen zurück.
+
 Chatverlauf:
 ${history}
 
@@ -165,6 +167,18 @@ Verfügbare character_ids: ${activeCharacters.map(c => `${c.name}=${c.id}`).join
               properties: {
                 character_id: { type: "string" },
                 content: { type: "string" }
+              }
+            }
+          },
+          new_memories: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                character_id: { type: "string", description: "Für welchen Charakter ist diese Erinnerung" },
+                memory_text: { type: "string", description: "Was soll sich der Charakter merken" },
+                importance: { type: "number", description: "Wichtigkeit 1-10" },
+                memory_type: { type: "string", enum: ["fact", "preference", "event", "emotion", "relationship", "opinion"] }
               }
             }
           }
