@@ -602,7 +602,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001] max-h-80">
                       <SelectItem value="fröhlich" className="text-white hover:bg-white/10">😊 Fröhlich</SelectItem>
                       <SelectItem value="nachdenklich" className="text-white hover:bg-white/10">🤔 Nachdenklich</SelectItem>
                       <SelectItem value="ruhig" className="text-white hover:bg-white/10">😌 Ruhig</SelectItem>
@@ -611,6 +611,18 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                       <SelectItem value="neutral" className="text-white hover:bg-white/10">😐 Neutral</SelectItem>
                       <SelectItem value="geheimnisvoll" className="text-white hover:bg-white/10">🔮 Geheimnisvoll</SelectItem>
                       <SelectItem value="warm" className="text-white hover:bg-white/10">🤗 Warm</SelectItem>
+                      <SelectItem value="schüchtern" className="text-white hover:bg-white/10">😳 Schüchtern</SelectItem>
+                      <SelectItem value="selbstbewusst" className="text-white hover:bg-white/10">😎 Selbstbewusst</SelectItem>
+                      <SelectItem value="zynisch" className="text-white hover:bg-white/10">🙄 Zynisch</SelectItem>
+                      <SelectItem value="liebevoll" className="text-white hover:bg-white/10">💗 Liebevoll</SelectItem>
+                      <SelectItem value="rebellisch" className="text-white hover:bg-white/10">🤘 Rebellisch</SelectItem>
+                      <SelectItem value="verträumt" className="text-white hover:bg-white/10">🌙 Verträumt</SelectItem>
+                      <SelectItem value="stoisch" className="text-white hover:bg-white/10">🗿 Stoisch</SelectItem>
+                      <SelectItem value="chaotisch" className="text-white hover:bg-white/10">🌀 Chaotisch</SelectItem>
+                      <SelectItem value="beschützend" className="text-white hover:bg-white/10">🛡️ Beschützend</SelectItem>
+                      <SelectItem value="distanziert" className="text-white hover:bg-white/10">🧊 Distanziert</SelectItem>
+                      <SelectItem value="verspielt" className="text-white hover:bg-white/10">🎮 Verspielt</SelectItem>
+                      <SelectItem value="düster" className="text-white hover:bg-white/10">🖤 Düster</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
