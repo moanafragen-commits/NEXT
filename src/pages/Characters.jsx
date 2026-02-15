@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
@@ -9,9 +9,18 @@ import { Search, MessageCircle, Sparkles, Trash2, Star } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from 'framer-motion';
 import BottomNav from '@/components/navigation/BottomNav';
+import CreateCharacterModal from '@/components/chat/CreateCharacterModal';
 
 export default function Characters() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('create') === 'true') {
+      setShowCreateModal(true);
+    }
+  }, []);
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
