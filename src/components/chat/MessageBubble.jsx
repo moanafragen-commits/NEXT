@@ -147,11 +147,7 @@ export default function MessageBubble({ message, characterAvatar, characterName,
               )}
             </div>
           )}
-          {message.read_at && isUser && message.status === 'read' && (
-            <span className="text-[9px] text-gray-600" title={`Gelesen um ${format(new Date(message.read_at), 'HH:mm', { locale: de })}`}>
-              {format(new Date(message.read_at), 'HH:mm', { locale: de })}
-            </span>
-          )}
+
         </div>
 
         {/* Reactions */}
