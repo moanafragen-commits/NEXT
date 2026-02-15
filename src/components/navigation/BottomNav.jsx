@@ -17,6 +17,7 @@ export default function BottomNav({ user }) {
     { icon: Home, page: 'Feed', label: 'Home' },
     { icon: Search, page: 'Characters', label: 'Suche' },
     { icon: MessageCircle, page: 'Home', label: 'Chats' },
+    { icon: Users, page: 'GroupChats', label: 'Gruppen' },
     { icon: Plus, page: null, label: 'Erstellen', isCreate: true },
     { icon: Heart, page: 'Activity', label: 'Aktivität' },
     { icon: null, page: 'UserProfile', label: 'Profil', isProfile: true },
