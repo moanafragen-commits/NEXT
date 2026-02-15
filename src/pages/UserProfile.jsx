@@ -64,6 +64,16 @@ export default function UserProfile() {
     }
   });
 
+  const deletePostMutation = useMutation({
+    mutationFn: async (postId) => {
+      await base44.entities.Post.delete(postId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-posts'] });
+      setSelectedPost(null);
+    }
+  });
+
   const handleAvatarUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
