@@ -223,7 +223,8 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
       {/* Header */}
       <header className="sticky top-0 z-10 bg-[#1a1a1a] border-b border-white/5">
         <div className="flex items-center justify-between p-4">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent flex items-center gap-2">
+            <Star className="w-6 h-6 text-emerald-400 fill-emerald-400" />
             NEXT
           </h1>
           <div className="flex items-center gap-1">
