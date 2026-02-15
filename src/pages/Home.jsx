@@ -267,15 +267,7 @@ export default function Home() {
                 <UnreadBadge count={unreadGroupMessages} />
               </Button>
             </Link>
-            <Link to={createPageUrl('Feed')}>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="text-gray-400 hover:text-white hover:bg-white/10 h-9 w-9"
-              >
-                <MessageCircle className="w-5 h-5" />
-              </Button>
-            </Link>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
@@ -491,6 +483,16 @@ export default function Home() {
         onClose={() => setShowCreateModal(false)}
         onCreated={() => queryClient.invalidateQueries({ queryKey: ['characters'] })}
       />
+
+      {/* Bottom Feed Button */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30">
+        <Link to={createPageUrl('Feed')}>
+          <Button className="bg-[#1a1a1a] hover:bg-[#262626] border border-white/10 text-white rounded-full px-6 h-12 shadow-lg shadow-black/40 flex items-center gap-2">
+            <MessageCircle className="w-5 h-5 text-emerald-400" />
+            <span className="text-sm font-medium">Feed</span>
+          </Button>
+        </Link>
+      </div>
 
       {/* Chat Sidebar */}
       <AnimatePresence>
