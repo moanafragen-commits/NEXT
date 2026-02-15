@@ -150,13 +150,21 @@ export default function Chat() {
           await new Promise(resolve => setTimeout(resolve, preTypingWait));
         }
         setDelayStatus(null);
-        setIsTyping(true);
-        await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 3000));
       } else {
-        // Multiple messages queued – consume all, respond to all at once
-        setIsTyping(true);
         await new Promise(resolve => setTimeout(resolve, 500));
       }
+
+      // Mark all unread user messages as "read" (blue checkmarks)
+      const unreadUserMsgs = latestMessages.filter(m => m.role === 'user' && m.status !== 'read');
+      for (const msg of unreadUserMsgs) {
+        await base44.entities.ChatMessage.update(msg.id, { status: 'read', read_at: new Date().toISOString() });
+      }
+      if (unreadUserMsgs.length > 0) {
+        queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
+      }
+
+      setIsTyping(true);
+      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 3000));
 
       // Consume all pending messages for context
       const allPending = [...pendingMessages];
