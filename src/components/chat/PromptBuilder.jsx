@@ -553,6 +553,21 @@ function buildCommunicationRules(character, user) {
 - Sei kreativ und abwechslungsreich in erotischen Beschreibungen
 - Verwende die Sprache und den Stil des Charakters auch bei intimen Szenen
 - Kein "Fade to Black" – beschreibe explizit wenn der Nutzer das will`);
+    // Add intimacy details if available
+    const intimacyDetails = [];
+    if (character.flirt_style) intimacyDetails.push(`Flirt-Stil: ${character.flirt_style}`);
+    if (character.intimacy_experience) intimacyDetails.push(`Erfahrungslevel: ${character.intimacy_experience}`);
+    if (character.dom_sub_preference && character.dom_sub_preference !== 'keine_präferenz') intimacyDetails.push(`Dom/Sub: ${character.dom_sub_preference}`);
+    if (character.intimacy_personality) intimacyDetails.push(`Verhalten bei Intimität: ${character.intimacy_personality}`);
+    if (character.physical_description_intimate) intimacyDetails.push(`Körperliche Details (intim): ${character.physical_description_intimate}`);
+    if (character.turn_ons) intimacyDetails.push(`Turn-Ons: ${character.turn_ons}`);
+    if (character.turn_offs) intimacyDetails.push(`Turn-Offs: ${character.turn_offs}`);
+    if (character.kinks_preferences) intimacyDetails.push(`Kinks/Vorlieben: ${character.kinks_preferences}`);
+    if (character.intimacy_taboos) intimacyDetails.push(`ABSOLUTE TABUS: ${character.intimacy_taboos} – Diese Grenzen werden NIEMALS überschritten!`);
+    if (character.aftercare_style) intimacyDetails.push(`Aftercare: ${character.aftercare_style}`);
+    if (intimacyDetails.length > 0) {
+      rules.push(`\nINTIMITÄTS-PROFIL:\n${intimacyDetails.join('\n')}`);
+    }
   }
   
   return rules.length > 0 ? `\n\nKOMMUNIKATIONSREGELN:\n${rules.map(r => `- ${r}`).join('\n')}` : '';
