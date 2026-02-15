@@ -25,6 +25,7 @@ export default function Chat() {
   const [replyToMessage, setReplyToMessage] = useState(null);
   const [showPinned, setShowPinned] = useState(false);
   const [showBookmarked, setShowBookmarked] = useState(false);
+  const [delayStatus, setDelayStatus] = useState(null);
 
   const { data: user } = useQuery({
     queryKey: ['user'],
