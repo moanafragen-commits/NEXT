@@ -3,8 +3,9 @@ import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal } from 'lucide-rea
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
+import AIReactButton from '@/components/feed/AIReactButton';
 
-export default function FeedPostCard({ post, character, isLiked, onLike, onComment, onOpenComments, commentsCount }) {
+export default function FeedPostCard({ post, character, isLiked, onLike, onComment, onOpenComments, commentsCount, allCharacters }) {
   const [doubleTapHeart, setDoubleTapHeart] = useState(false);
   const [saved, setSaved] = useState(false);
 
