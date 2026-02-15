@@ -80,6 +80,17 @@ export default function CharacterCard({ character, lastMessage, onClick, onDelet
           <div className="flex items-center gap-1.5 mt-1">
             <Music className="w-3 h-3 text-[#1DB954] flex-shrink-0" />
             <span className="text-[11px] text-[#1DB954] truncate">🎧 {character.current_song}</span>
+            <a
+              href={`https://open.spotify.com/search/${encodeURIComponent(character.current_song)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="flex-shrink-0 w-4 h-4 rounded-full bg-[#1DB954] flex items-center justify-center hover:bg-[#1ed760] transition-colors"
+            >
+              <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 text-black fill-current ml-[1px]">
+                <polygon points="8,5 19,12 8,19" />
+              </svg>
+            </a>
           </div>
         )}
         {(character.tags?.length > 0) && (
