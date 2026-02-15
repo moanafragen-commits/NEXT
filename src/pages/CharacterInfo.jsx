@@ -13,6 +13,7 @@ export default function CharacterInfo() {
   const urlParams = new URLSearchParams(window.location.search);
   const characterId = urlParams.get('characterId');
   const queryClient = useQueryClient();
+  const [showAddMemory, setShowAddMemory] = useState(false);
   
   const { data: character } = useQuery({
     queryKey: ['character', characterId],

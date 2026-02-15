@@ -45,9 +45,12 @@ export default function Chat() {
   });
   
   const { data: memories = [] } = useQuery({
-    queryKey: ['memories', characterId],
-    queryFn: () => base44.entities.CharacterMemory.filter({ character_id: characterId }, '-importance', 20),
-    enabled: !!characterId
+    queryKey: ['memories', characterId, user?.email],
+    queryFn: () => base44.entities.CharacterMemory.filter({ 
+      character_id: characterId,
+      user_email: user.email 
+    }),
+    enabled: !!characterId && !!user
   });
   
   const scrollToBottom = () => {
@@ -99,8 +102,17 @@ export default function Chat() {
                          character.language_preference === 'Mehrsprachig' ? 'Antworte in der Sprache, die der Nutzer verwendet.' : 'Antworte auf Deutsch.';
       const customContext = character.custom_instructions ? `\n\nZusätzliche Anweisungen: ${character.custom_instructions}` : '';
       
-      // Build memory context
-      const memoryContext = memories.length > 0 ? `\n\nWas du über den Nutzer weißt (aus früheren Gesprächen):\n${memories.map(m => `- ${m.content}`).join('\n')}` : '';
+      // Build memory and relationship context
+      const relationMemory = memories.find(m => m.relation_type);
+      const relationContext = relationMemory ? `\n\nWICHTIG - Deine Beziehung zum Nutzer: ${relationMemory.relation_type}\nVerhalte dich entsprechend dieser Beziehung in deinen Antworten.` : '';
+
+      const memoryContext = memories.length > 0 ? `\n\nWas du über den Nutzer weißt:\n${memories
+        .sort((a, b) => {
+          const importanceOrder = { 'hoch': 3, 'mittel': 2, 'niedrig': 1 };
+          return (importanceOrder[b.importance_level] || 2) - (importanceOrder[a.importance_level] || 2);
+        })
+        .map(m => `- [${m.memory_type}] ${m.memory_text || m.content}${m.importance_level === 'hoch' ? ' (SEHR WICHTIG)' : ''}`)
+        .join('\n')}` : '';
       
       // Current date and time
       const now = new Date();
@@ -113,9 +125,9 @@ export default function Chat() {
 
       // Get AI response with memory extraction and image support
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}${memoryContext}${dateTimeContext}${conversationSummary}
+        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}${relationContext}${memoryContext}${dateTimeContext}${conversationSummary}
 
-WICHTIGE VERHALTENSREGELN:
+      WICHTIGE VERHALTENSREGELN:
 - Bleibe IMMER in deiner Rolle als ${character.name}
 - Deine Antworten sollten natürlich und authentisch wirken
 - Beziehe dich auf frühere Gespräche und gemeinsame Erlebnisse
@@ -161,13 +173,15 @@ AUFGABEN:
           if (memory.content && memory.importance >= 5) {
             await base44.entities.CharacterMemory.create({
               character_id: characterId,
-              content: memory.content,
+              user_email: user.email,
+              memory_text: memory.content,
               memory_type: memory.memory_type || 'fact',
-              importance: memory.importance || 5
+              importance_level: memory.importance >= 8 ? 'hoch' : memory.importance >= 5 ? 'mittel' : 'niedrig',
+              last_interaction_date: new Date().toISOString()
             });
           }
         }
-        queryClient.invalidateQueries({ queryKey: ['memories', characterId] });
+        queryClient.invalidateQueries({ queryKey: ['memories', characterId, user.email] });
       }
       
       // Mark user message as read

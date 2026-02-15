@@ -62,6 +62,12 @@ export default function GroupChat() {
     enabled: !!groupId
   });
 
+  const { data: allMemories = [] } = useQuery({
+    queryKey: ['all-memories', user?.email],
+    queryFn: () => base44.entities.CharacterMemory.filter({ user_email: user.email }),
+    enabled: !!user
+  });
+
   const characterMembers = members.filter(m => m.member_type === 'character');
   const userMembers = members.filter(m => m.member_type === 'user');
   const availableCharacters = characters.filter(c => 
