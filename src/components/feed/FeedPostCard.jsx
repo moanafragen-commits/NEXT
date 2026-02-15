@@ -70,6 +70,7 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onComme
             <Link to={createPageUrl(`Chat?characterId=${character?.id}`)}>
               <Send className="w-5 h-5 text-white hover:opacity-60 transition-opacity" />
             </Link>
+            <AIReactButton post={post} postCharacter={character} allCharacters={allCharacters || []} />
           </div>
           <button onClick={() => setSaved(!saved)} className="hover:opacity-60 transition-opacity">
             <Bookmark className={`w-6 h-6 ${saved ? 'fill-white text-white' : 'text-white'}`} />
