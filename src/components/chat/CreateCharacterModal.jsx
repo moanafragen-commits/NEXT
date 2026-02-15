@@ -221,7 +221,11 @@ const DEFAULT_FORM_DATA = {
     relationship_boundaries: '',
     love_language: '',
     relationship_evolution: 'statisch'
-  });
+};
+
+export default function CreateCharacterModal({ open, onClose, onCreated, editCharacter }) {
+  const [showTemplates, setShowTemplates] = useState(!editCharacter);
+  const [formData, setFormData] = useState(editCharacter ? { ...DEFAULT_FORM_DATA, ...editCharacter } : { ...DEFAULT_FORM_DATA });
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
