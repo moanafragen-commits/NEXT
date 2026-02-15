@@ -94,7 +94,9 @@ export default function CreateCharacterModal({ open, onClose, onCreated }) {
     proactive_topics: false,
     secret: '',
     example_dialogues: '',
-    forbidden_topics: ''
+    forbidden_topics: '',
+    initial_relationship: '',
+    relationship_backstory: ''
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -175,7 +177,8 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
       catchphrases: '', mood_default: 'neutral', conversation_style: 'zuhörend',
       empathy_level: 5, knowledge_areas: '', quirks: '', relationship_style: 'unterstützend',
       conflict_behavior: 'diplomatisch', emotional_depth: 5, memory_references: true,
-      proactive_topics: false, secret: '', example_dialogues: '', forbidden_topics: ''
+      proactive_topics: false, secret: '', example_dialogues: '', forbidden_topics: '',
+      initial_relationship: '', relationship_backstory: ''
     });
     onCreated();
     onClose();
@@ -234,12 +237,16 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                 <User className="w-4 h-4 mr-2" />
                 Basis
               </TabsTrigger>
+              <TabsTrigger value="relationship" className="flex-1 data-[state=active]:bg-emerald-600">
+                <Heart className="w-4 h-4 mr-2" />
+                Beziehung
+              </TabsTrigger>
               <TabsTrigger value="biography" className="flex-1 data-[state=active]:bg-emerald-600">
                 <BookOpen className="w-4 h-4 mr-2" />
                 Biografie
               </TabsTrigger>
               <TabsTrigger value="personality" className="flex-1 data-[state=active]:bg-emerald-600">
-                <Heart className="w-4 h-4 mr-2" />
+                <Lightbulb className="w-4 h-4 mr-2" />
                 Details
               </TabsTrigger>
               <TabsTrigger value="behavior" className="flex-1 data-[state=active]:bg-emerald-600">
@@ -380,6 +387,56 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
               </div>
             </TabsContent>
             
+            {/* Relationship Tab */}
+            <TabsContent value="relationship" className="space-y-5">
+              <div className="p-3 bg-pink-500/10 border border-pink-500/20 rounded-lg">
+                <p className="text-xs text-pink-300">💕 Definiere hier, in welcher Beziehung du zu diesem Charakter stehst. Das beeinflusst, wie der Charakter mit dir kommuniziert.</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Beziehungstyp</Label>
+                <Select 
+                  value={formData.initial_relationship} 
+                  onValueChange={(val) => setFormData(prev => ({ ...prev, initial_relationship: val }))}
+                >
+                  <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                    <SelectValue placeholder="Wähle eine Beziehung..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#262626] border-white/10 max-h-80">
+                    <SelectItem value="Bester Freund" className="text-white hover:bg-white/10">👫 Bester Freund</SelectItem>
+                    <SelectItem value="Guter Freund" className="text-white hover:bg-white/10">🤝 Guter Freund</SelectItem>
+                    <SelectItem value="Bekannter" className="text-white hover:bg-white/10">👋 Bekannter</SelectItem>
+                    <SelectItem value="Partner" className="text-white hover:bg-white/10">💑 Partner</SelectItem>
+                    <SelectItem value="Schwarm" className="text-white hover:bg-white/10">💘 Schwarm</SelectItem>
+                    <SelectItem value="Ex-Partner" className="text-white hover:bg-white/10">💔 Ex-Partner</SelectItem>
+                    <SelectItem value="Familienmitglied" className="text-white hover:bg-white/10">👨‍👩‍👧 Familienmitglied</SelectItem>
+                    <SelectItem value="Mentor/Lehrer" className="text-white hover:bg-white/10">🎓 Mentor/Lehrer</SelectItem>
+                    <SelectItem value="Schüler/Mentee" className="text-white hover:bg-white/10">📚 Schüler/Mentee</SelectItem>
+                    <SelectItem value="Arbeitskollege" className="text-white hover:bg-white/10">💼 Arbeitskollege</SelectItem>
+                    <SelectItem value="Chef/Vorgesetzter" className="text-white hover:bg-white/10">👔 Chef/Vorgesetzter</SelectItem>
+                    <SelectItem value="Rivale" className="text-white hover:bg-white/10">⚔️ Rivale</SelectItem>
+                    <SelectItem value="Feind" className="text-white hover:bg-white/10">😤 Feind</SelectItem>
+                    <SelectItem value="Fremder" className="text-white hover:bg-white/10">🚶 Fremder</SelectItem>
+                    <SelectItem value="Fan/Bewunderer" className="text-white hover:bg-white/10">🌟 Fan/Bewunderer</SelectItem>
+                    <SelectItem value="Seelenverwandter" className="text-white hover:bg-white/10">✨ Seelenverwandter</SelectItem>
+                    <SelectItem value="Kindheitsfreund" className="text-white hover:bg-white/10">🧒 Kindheitsfreund</SelectItem>
+                    <SelectItem value="Online-Freund" className="text-white hover:bg-white/10">💬 Online-Freund</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Beziehungs-Geschichte</Label>
+                <Textarea
+                  value={formData.relationship_backstory}
+                  onChange={(e) => setFormData(prev => ({ ...prev, relationship_backstory: e.target.value }))}
+                  placeholder="Wie habt ihr euch kennengelernt? Was verbindet euch? Gibt es gemeinsame Erinnerungen oder besondere Momente?"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[120px]"
+                />
+                <p className="text-xs text-gray-500">Diese Hintergrundgeschichte wird bei der ersten Konversation als Kontext genutzt.</p>
+              </div>
+            </TabsContent>
+
             {/* Biography Tab */}
             <TabsContent value="biography" className="space-y-5">
               <div className="space-y-2">
