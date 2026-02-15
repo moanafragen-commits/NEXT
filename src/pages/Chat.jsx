@@ -3,8 +3,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Phone, Video, MoreVertical, Loader2, Info } from 'lucide-react';
+import { ArrowLeft, Phone, Video, MoreVertical, Loader2, Info, Search, X, Pin } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import MessageBubble from '@/components/chat/MessageBubble';
 import ChatInput from '@/components/chat/ChatInput';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -16,6 +17,10 @@ export default function Chat() {
   const messagesEndRef = useRef(null);
   const queryClient = useQueryClient();
   const [isTyping, setIsTyping] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
+  const [replyToMessage, setReplyToMessage] = useState(null);
+  const [showPinned, setShowPinned] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['user'],
@@ -53,14 +58,25 @@ export default function Chat() {
     scrollToBottom();
   }, [messages, isTyping]);
   
+  const togglePinMutation = useMutation({
+    mutationFn: async ({ messageId, isPinned }) => {
+      await base44.entities.ChatMessage.update(messageId, { is_pinned: !isPinned });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
+    }
+  });
+
   const sendMessageMutation = useMutation({
     mutationFn: async (content) => {
       // Save user message
       await base44.entities.ChatMessage.create({
         character_id: characterId,
         role: 'user',
-        content
+        content,
+        reply_to_id: replyToMessage?.id || null
       });
+      setReplyToMessage(null);
       
       queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
       setIsTyping(true);
@@ -152,6 +168,15 @@ Extrahiere außerdem wichtige neue Informationen über den Nutzer (Name, Vorlieb
   
   const defaultAvatar = character ? `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character.name}` : '';
   
+  // Filter messages based on search or pinned view
+  const filteredMessages = messages.filter(msg => {
+    if (showPinned) return msg.is_pinned;
+    if (searchQuery) return msg.content.toLowerCase().includes(searchQuery.toLowerCase());
+    return true;
+  });
+  
+  const pinnedCount = messages.filter(m => m.is_pinned).length;
+  
   if (!character) {
     return (
       <div className="min-h-screen bg-[#111] flex items-center justify-center">
@@ -184,18 +209,82 @@ Extrahiere außerdem wichtige neue Informationen über den Nutzer (Name, Vorlieb
             </p>
           </div>
           
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => {
+              setShowSearch(!showSearch);
+              setSearchQuery('');
+              setShowPinned(false);
+            }}
+            className="text-gray-400 hover:text-white hover:bg-white/10"
+          >
+            <Search className="w-5 h-5" />
+          </Button>
+          
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => {
+              setShowPinned(!showPinned);
+              setShowSearch(false);
+              setSearchQuery('');
+            }}
+            className={`text-gray-400 hover:text-white hover:bg-white/10 relative ${showPinned ? 'text-emerald-400' : ''}`}
+          >
+            <Pin className="w-5 h-5" />
+            {pinnedCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-emerald-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
+                {pinnedCount}
+              </span>
+            )}
+          </Button>
+          
           <Link to={createPageUrl(`CharacterInfo?characterId=${characterId}`)}>
             <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/10">
               <Info className="w-5 h-5" />
             </Button>
           </Link>
         </div>
+        
+        {/* Search Bar */}
+        {showSearch && (
+          <div className="px-4 pb-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Nachrichten durchsuchen..."
+                className="w-full bg-[#262626] border-0 text-white pl-10 pr-10 rounded-xl placeholder-gray-500 focus-visible:ring-emerald-500/50"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+        
+        {/* Pinned/Search Info */}
+        {(showPinned || searchQuery) && (
+          <div className="px-4 pb-2">
+            <div className="text-xs text-gray-400 flex items-center gap-2">
+              {showPinned && <span>📌 {pinnedCount} gepinnte Nachricht{pinnedCount !== 1 ? 'en' : ''}</span>}
+              {searchQuery && <span>🔍 {filteredMessages.length} Ergebnis{filteredMessages.length !== 1 ? 'se' : ''}</span>}
+            </div>
+          </div>
+        )}
       </header>
       
       {/* Messages */}
       <main className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* Greeting */}
-        {messages.length === 0 && character.greeting && (
+        {!showPinned && !searchQuery && messages.length === 0 && character.greeting && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -209,7 +298,7 @@ Extrahiere außerdem wichtige neue Informationen über den Nutzer (Name, Vorlieb
         )}
         
         <AnimatePresence>
-          {messages.map((message, index) => (
+          {filteredMessages.map((message, index) => (
             <motion.div
               key={message.id}
               initial={{ opacity: 0, y: 10 }}
@@ -220,6 +309,9 @@ Extrahiere außerdem wichtige neue Informationen über den Nutzer (Name, Vorlieb
                 message={message}
                 characterAvatar={character.avatar_url}
                 characterName={character.name}
+                onPin={(msg) => togglePinMutation.mutate({ messageId: msg.id, isPinned: msg.is_pinned })}
+                onReply={(msg) => setReplyToMessage(msg)}
+                replyToMessage={message.reply_to_id ? messages.find(m => m.id === message.reply_to_id) : null}
               />
             </motion.div>
           ))}
@@ -255,6 +347,8 @@ Extrahiere außerdem wichtige neue Informationen über den Nutzer (Name, Vorlieb
         <ChatInput 
           onSend={(content) => sendMessageMutation.mutate(content)}
           isLoading={sendMessageMutation.isPending || isTyping}
+          replyToMessage={replyToMessage}
+          onCancelReply={() => setReplyToMessage(null)}
         />
       </div>
     </div>

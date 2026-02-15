@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Send, Smile, Mic } from 'lucide-react';
+import { Send, Smile, Mic, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
-export default function ChatInput({ onSend, isLoading }) {
+export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelReply }) {
   const [message, setMessage] = useState('');
   
   const handleSubmit = (e) => {
@@ -14,7 +14,25 @@ export default function ChatInput({ onSend, isLoading }) {
   };
   
   return (
-    <form onSubmit={handleSubmit} className="p-3 bg-[#1a1a1a] border-t border-white/5">
+    <form onSubmit={handleSubmit} className="bg-[#1a1a1a]">
+      {replyToMessage && (
+        <div className="px-3 pt-2 pb-1 flex items-start gap-2 bg-[#262626]/50 rounded-t-lg">
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-emerald-400 font-semibold mb-0.5">
+              Antwort auf {replyToMessage.role === 'user' ? 'dich' : 'Nachricht'}
+            </p>
+            <p className="text-xs text-gray-400 truncate">{replyToMessage.content}</p>
+          </div>
+          <button
+            type="button"
+            onClick={onCancelReply}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+      <div className="p-3">
       <div className="flex items-center gap-2">
         <button type="button" className="p-2 text-gray-400 hover:text-gray-300 transition-colors">
           <Smile className="w-6 h-6" />
@@ -43,9 +61,9 @@ export default function ChatInput({ onSend, isLoading }) {
         ) : (
           <button type="button" className="p-2 text-gray-400 hover:text-gray-300 transition-colors">
             <Mic className="w-6 h-6" />
-          </button>
-        )}
-      </div>
-    </form>
-  );
-}
+            </button>
+            )}
+            </div>
+            </form>
+            );
+            }
