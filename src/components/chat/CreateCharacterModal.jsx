@@ -176,6 +176,8 @@ export default function CreateCharacterModal({ open, onClose, onCreated }) {
     trauma: '',
     mental_health: '',
     medications: '',
+    therapist_info: '',
+    clinic_stays: '',
     introversion_level: 5,
     honesty_level: 7,
     loyalty_level: 7,
@@ -359,6 +361,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
       conflict_behavior: 'diplomatisch', emotional_depth: 5, memory_references: true,
       proactive_topics: false, secret: '', example_dialogues: '', forbidden_topics: '',
       trauma: '', mental_health: '', medications: '',
+      therapist_info: '', clinic_stays: '',
       introversion_level: 5, honesty_level: 7, loyalty_level: 7, patience_level: 5,
       energy_level: 'mittel', mood_cycle: 'stabil', addictions: '', phobias: '',
       nervous_ticks: '', triggers: '', coping_mechanisms: '', self_esteem: 5,
@@ -1212,6 +1215,28 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                   className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
                 />
                 <p className="text-xs text-gray-500">Kann Nebenwirkungen und Verhaltensänderungen beeinflussen</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Therapeut/in</Label>
+                <Textarea
+                  value={formData.therapist_info}
+                  onChange={(e) => setFormData(prev => ({ ...prev, therapist_info: e.target.value }))}
+                  placeholder="z.B. 'Geht seit 2 Jahren zur Verhaltenstherapie bei Frau Dr. Müller, anfangs widerwillig, jetzt hilfreich. Sitzungen alle 2 Wochen.'"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
+                />
+                <p className="text-xs text-gray-500">Beeinflusst wie der Charakter über Therapie spricht und ob er Selbstreflexion zeigt</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Klinikaufenthalte</Label>
+                <Textarea
+                  value={formData.clinic_stays}
+                  onChange={(e) => setFormData(prev => ({ ...prev, clinic_stays: e.target.value }))}
+                  placeholder="z.B. '3 Monate in einer psychiatrischen Klinik wegen Burnout. War eine harte aber wichtige Zeit. Will nie wieder hin.'"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
+                />
+                <p className="text-xs text-gray-500">Prägende Erfahrung die das Verhalten und die Einstellung des Charakters beeinflusst</p>
               </div>
 
               {/* Schwächen & Ticks Section */}
