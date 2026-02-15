@@ -16,6 +16,7 @@ export default function BottomNav({ user }) {
   const navItems = [
     { icon: Home, page: 'Feed', label: 'Home' },
     { icon: Search, page: 'Characters', label: 'Suche' },
+    { icon: MessageCircle, page: 'Home', label: 'Chats' },
     { icon: Plus, page: null, label: 'Erstellen', isCreate: true },
     { icon: Heart, page: 'Activity', label: 'Aktivität' },
     { icon: null, page: 'UserProfile', label: 'Profil', isProfile: true },
