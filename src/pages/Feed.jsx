@@ -170,6 +170,7 @@ export default function Feed() {
                   onLike={() => likeMutation.mutate(post.id)}
                   onOpenComments={() => setOpenCommentsPostId(post.id)}
                   commentsCount={post.comments_count || 0}
+                  allCharacters={characters}
                 />
               );
             })}
