@@ -11,14 +11,14 @@ export default function StatusViewersList({ statusId, viewsCount, onClose }) {
     queryFn: async () => {
       const allViews = await base44.entities.UserStatusView.filter({ status_id: statusId });
       // Fetch user details for each viewer
-      const viewers = [];
-      for (const view of allViews) {
-        const users = await base44.entities.User.filter({ email: view.viewer_email });
-        if (users[0]) {
-          viewers.push({ ...view, user: users[0] });
-        }
-      }
-      return viewers;
+      const allUsers = await base44.entities.User.list();
+      const userMap = {};
+      allUsers.forEach(u => { userMap[u.email] = u; });
+      
+      return allViews.map(view => ({
+        ...view,
+        user: userMap[view.viewer_email] || { email: view.viewer_email, full_name: view.viewer_email }
+      }));
     },
     enabled: !!statusId
   });
@@ -56,9 +56,9 @@ export default function StatusViewersList({ statusId, viewsCount, onClose }) {
               />
               <div className="flex-1 min-w-0">
                 <p className="text-white text-sm font-medium truncate">
-                  {view.user.display_name || view.user.full_name}
+                  {view.user.display_name || view.user.full_name || view.user.email}
                 </p>
-                <p className="text-xs text-gray-500">{view.user.email}</p>
+                <p className="text-xs text-gray-500 truncate">{view.user.email}</p>
               </div>
             </div>
           ))

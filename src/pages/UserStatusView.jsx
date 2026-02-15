@@ -168,29 +168,36 @@ export default function UserStatusView() {
               </p>
             </div>
           ) : currentStatus.type === 'image' ? (
-            <div className="relative w-full h-full">
+            <div className="relative w-full h-full flex items-center justify-center">
               <img
                 src={currentStatus.content}
                 alt="Status"
                 className="w-full h-full object-contain"
               />
               {currentStatus.caption && (
-                <div className="absolute bottom-20 left-0 right-0 px-6">
-                  <p className="text-white text-lg font-medium text-center bg-black/50 rounded-xl p-4">
+                <div className="absolute bottom-24 left-0 right-0">
+                  <p className="text-white text-base text-center px-6 py-2" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>
                     {currentStatus.caption}
                   </p>
                 </div>
               )}
             </div>
           ) : currentStatus.type === 'video' ? (
-            <div className="w-full h-full">
+            <div className="relative w-full h-full">
               <video
                 src={currentStatus.content}
                 className="w-full h-full object-contain"
-                controls
                 autoPlay
                 loop
+                playsInline
               />
+              {currentStatus.caption && (
+                <div className="absolute bottom-24 left-0 right-0">
+                  <p className="text-white text-base text-center px-6 py-2" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>
+                    {currentStatus.caption}
+                  </p>
+                </div>
+              )}
             </div>
           ) : null}
         </motion.div>
