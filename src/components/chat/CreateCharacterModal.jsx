@@ -287,7 +287,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
   
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-[#1a1a1a] border-white/10 text-white max-w-2xl max-h-[90vh] overflow-y-auto z-[10000]">
+      <DialogContent className="bg-[#1a1a1a] border-white/10 text-white max-w-2xl max-h-[90vh] overflow-y-auto z-[10000] [&_.select-content-override]:z-[10001]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             <Sparkles className="w-5 h-5 text-emerald-400" />
@@ -460,7 +460,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10 max-h-80">
+                    <SelectContent className="bg-[#262626] border-white/10 max-h-80 z-[10001]">
                       {CATEGORIES.map(cat => (
                         <SelectItem key={cat} value={cat} className="text-white hover:bg-white/10">
                           {cat}
@@ -481,7 +481,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue placeholder="Wählen..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                       <SelectItem value="männlich" className="text-white hover:bg-white/10">♂ Männlich</SelectItem>
                       <SelectItem value="weiblich" className="text-white hover:bg-white/10">♀ Weiblich</SelectItem>
                       <SelectItem value="non-binär" className="text-white hover:bg-white/10">⚧ Non-Binär</SelectItem>
@@ -497,7 +497,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue placeholder="Wählen..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                       <SelectItem value="heterosexuell" className="text-white hover:bg-white/10">Heterosexuell</SelectItem>
                       <SelectItem value="homosexuell" className="text-white hover:bg-white/10">Homosexuell</SelectItem>
                       <SelectItem value="bisexuell" className="text-white hover:bg-white/10">Bisexuell</SelectItem>
