@@ -394,7 +394,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             <Sparkles className="w-5 h-5 text-emerald-400" />
-            Neuen Charakter erstellen
+            {editCharacter ? 'Charakter bearbeiten' : 'Neuen Charakter erstellen'}
           </DialogTitle>
         </DialogHeader>
         
@@ -2416,7 +2416,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
               disabled={!formData.name || !formData.personality || isSaving}
               className="flex-1 bg-emerald-600 hover:bg-emerald-500"
             >
-              {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Erstellen'}
+              {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : editCharacter ? 'Speichern' : 'Erstellen'}
             </Button>
           </div>
         </form>

@@ -14,6 +14,7 @@ import CreateCharacterModal from '@/components/chat/CreateCharacterModal';
 export default function Characters() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingCharacter, setEditingCharacter] = useState(null);
 
   const location = useLocation();
   
@@ -149,6 +150,15 @@ export default function Characters() {
                     </Link>
                     <button
                       onClick={() => {
+                        setEditingCharacter(character);
+                        setShowCreateModal(true);
+                      }}
+                      className="p-1.5 rounded-full text-gray-300 hover:text-blue-500"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => {
                         if (confirm(`"${character.name}" endgültig löschen?`)) {
                           deleteCharacterMutation.mutate(character.id);
                         }
@@ -167,8 +177,9 @@ export default function Characters() {
 
       <CreateCharacterModal
         open={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
+        onClose={() => { setShowCreateModal(false); setEditingCharacter(null); }}
         onCreated={() => queryClient.invalidateQueries({ queryKey: ['characters'] })}
+        editCharacter={editingCharacter}
       />
 
       <BottomNav user={user} />
