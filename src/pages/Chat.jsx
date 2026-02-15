@@ -230,33 +230,45 @@ AUFGABEN:
 2. Nutze Kontext aus bisherigen Gesprächen
 3. Extrahiere neue wichtige Infos über den Nutzer für zukünftige Gespräche
 4. Bestimme deine neue Stimmung basierend auf dem Gesprächsverlauf
-5. Falls du ein Ziel verfolgst, bewerte den Fortschritt`,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            response: { type: "string" },
-            new_mood: { type: "string", enum: ["fröhlich","genervt","neugierig","traurig","aufgeregt","gelangweilt","verträumt","ängstlich","motiviert","entspannt","sarkastisch","nachdenklich"], description: "Deine neue Stimmung nach dieser Nachricht" },
-            motivation_progress_delta: { type: "number", description: "Änderung des Zielfortschritts (-10 bis +20), 0 wenn kein Ziel" },
-            new_memories: { 
-              type: "array", 
-              items: {
+5. Falls du ein Ziel verfolgst, bewerte den Fortschritt
+6. Bewerte ob diese Interaktion die Beziehung verändert (Vertrauen, Eifersucht etc.)`,
+              response_json_schema: {
                 type: "object",
                 properties: {
-                  content: { type: "string", description: "Die zu merkende Information" },
-                  memory_type: { type: "string", enum: ["fact", "preference", "event", "emotion", "relationship", "goal", "habit", "opinion", "experience"] },
-                  memory_category: { type: "string", enum: ["user_preferences", "past_events", "user_goals", "personal_info", "shared_experiences", "inside_jokes", "important_dates", "general"] },
-                  importance: { type: "number", description: "Wichtigkeit 1-10" }
+                  response: { type: "string" },
+                  new_mood: { type: "string", enum: ["fröhlich","genervt","neugierig","traurig","aufgeregt","gelangweilt","verträumt","ängstlich","motiviert","entspannt","sarkastisch","nachdenklich"], description: "Deine neue Stimmung nach dieser Nachricht" },
+                  motivation_progress_delta: { type: "number", description: "Änderung des Zielfortschritts (-10 bis +20), 0 wenn kein Ziel" },
+                  new_memories: { 
+                    type: "array", 
+                    items: {
+                      type: "object",
+                      properties: {
+                        content: { type: "string", description: "Die zu merkende Information" },
+                        memory_type: { type: "string", enum: ["fact", "preference", "event", "emotion", "relationship", "goal", "habit", "opinion", "experience"] },
+                        memory_category: { type: "string", enum: ["user_preferences", "past_events", "user_goals", "personal_info", "shared_experiences", "inside_jokes", "important_dates", "general"] },
+                        importance: { type: "number", description: "Wichtigkeit 1-10" }
+                      }
+                    },
+                    description: "Neue wichtige Informationen über den Nutzer (leer lassen wenn keine neuen Infos)"
+                  },
+                  recalled_memory_ids: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "IDs der Erinnerungen die du in deiner Antwort aktiv genutzt/erwähnt hast (leer wenn keine)"
+                  },
+                  relationship_changes: {
+                    type: "object",
+                    properties: {
+                      trust_delta: { type: "number", description: "Vertrauensänderung (-2 bis +2), 0 wenn keine Änderung" },
+                      jealousy_delta: { type: "number", description: "Eifersucht-Änderung (-2 bis +2), 0 wenn keine Änderung" },
+                      event_type: { type: "string", enum: ["trust_change", "jealousy_change", "milestone", "conflict", "bonding", "revelation", "boundary_crossed", "memory_formed", ""], description: "Art des Beziehungs-Events (leer wenn kein besonderes Event)" },
+                      event_description: { type: "string", description: "Kurze Beschreibung des Beziehungs-Events (leer wenn keins)" },
+                      impact_score: { type: "number", description: "Impact auf Beziehung (-5 bis +5), 0 wenn neutral" }
+                    },
+                    description: "Bewerte ob und wie diese Interaktion die Beziehung verändert"
+                  }
                 }
-              },
-              description: "Neue wichtige Informationen über den Nutzer (leer lassen wenn keine neuen Infos)"
-            },
-            recalled_memory_ids: {
-              type: "array",
-              items: { type: "string" },
-              description: "IDs der Erinnerungen die du in deiner Antwort aktiv genutzt/erwähnt hast (leer wenn keine)"
-            }
-          }
-        }
+              }
       });
       
       setIsTyping(false);
