@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import CharacterCard from '@/components/chat/CharacterCard';
 import CreateCharacterModal from '@/components/chat/CreateCharacterModal';
 import StatusCircle from '@/components/status/StatusCircle';
+import UserStatusCircle from '@/components/status/UserStatusCircle';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotifications } from '@/components/notifications/NotificationManager';
 import UnreadBadge from '@/components/notifications/UnreadBadge';
@@ -82,6 +83,26 @@ export default function Home() {
   const { data: statusViews = [] } = useQuery({
     queryKey: ['status-views', user?.email],
     queryFn: () => base44.entities.StatusView.filter({ user_email: user.email }),
+    enabled: !!user
+  });
+
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ['all-users'],
+    queryFn: () => base44.entities.User.list()
+  });
+
+  const { data: userStatuses = [] } = useQuery({
+    queryKey: ['user-statuses'],
+    queryFn: async () => {
+      const now = new Date();
+      const allStatuses = await base44.entities.UserStatus.list('-created_date', 100);
+      return allStatuses.filter(s => new Date(s.expires_at) > now);
+    }
+  });
+
+  const { data: userStatusViews = [] } = useQuery({
+    queryKey: ['user-status-views', user?.email],
+    queryFn: () => base44.entities.UserStatusView.filter({ viewer_email: user.email }),
     enabled: !!user
   });
   
@@ -225,13 +246,13 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
             >
               {permission === 'granted' ? <Bell className="w-5 h-5" /> : <BellOff className="w-5 h-5" />}
             </Button>
-            <Link to={createPageUrl('CreateStatus')}>
+            <Link to={createPageUrl('Feed')}>
               <Button 
                 variant="ghost" 
                 size="icon"
                 className="text-gray-400 hover:text-white hover:bg-white/10"
               >
-                <Plus className="w-5 h-5" />
+                <MessageCircle className="w-5 h-5" />
               </Button>
             </Link>
             <Link to={createPageUrl('UserProfile')}>
@@ -305,9 +326,32 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
         </header>
 
         {/* Status Bar */}
-        <div className="px-4 py-3 overflow-x-auto">
+        <div className="px-4 py-3 overflow-x-auto border-b border-white/5">
           <div className="flex gap-4">
-            {characters.filter(c => !c.is_archived).slice(0, 10).map(character => {
+            {/* Own Status */}
+            {user && (
+              <UserStatusCircle user={user} isOwn={true} />
+            )}
+
+            {/* Other Users' Status */}
+            {allUsers.filter(u => u.email !== user?.email).map(otherUser => {
+              const userStatusList = userStatuses.filter(s => s.user_email === otherUser.email);
+              if (userStatusList.length === 0) return null;
+              
+              const viewedStatusIds = new Set(userStatusViews.map(v => v.status_id));
+              const hasUnseenStatus = userStatusList.some(s => !viewedStatusIds.has(s.id));
+              
+              return (
+                <UserStatusCircle
+                  key={otherUser.email}
+                  user={otherUser}
+                  hasNewStatus={hasUnseenStatus}
+                />
+              );
+            })}
+
+            {/* Character Status */}
+            {characters.filter(c => !c.is_archived).slice(0, 8).map(character => {
               const characterStatuses = statuses.filter(s => s.character_id === character.id);
               const viewedStatusIds = new Set(statusViews.map(v => v.status_id));
               const hasUnseenStatus = characterStatuses.some(s => !viewedStatusIds.has(s.id));
