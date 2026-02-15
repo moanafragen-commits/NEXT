@@ -80,7 +80,7 @@ export default function CreateUserStatus() {
         content = mediaUrl;
       }
 
-      await base44.entities.UserStatus.create({
+      const status = await base44.entities.UserStatus.create({
         user_email: user.email,
         type: statusType,
         content,
@@ -88,9 +88,47 @@ export default function CreateUserStatus() {
         background_color: statusType === 'text' ? selectedBg : null,
         expires_at: expiresAt.toISOString()
       });
+
+      // Let characters react automatically
+      const allChars = await base44.entities.Character.list('-created_date');
+      const activeChars = allChars.filter(c => !c.is_archived);
+      // Pick random 2-4 characters to react
+      const shuffled = activeChars.sort(() => Math.random() - 0.5);
+      const reactors = shuffled.slice(0, Math.min(Math.floor(Math.random() * 3) + 2, shuffled.length));
+
+      const statusDesc = statusType === 'text'
+        ? `einen Text-Status: "${content}"`
+        : statusType === 'image'
+          ? `ein Bild als Status${caption ? ` mit der Beschreibung "${caption}"` : ''}`
+          : `ein Video als Status${caption ? ` mit der Beschreibung "${caption}"` : ''}`;
+
+      // Fire reactions in parallel, don't block navigation
+      Promise.all(reactors.map(async (char) => {
+        const response = await base44.integrations.Core.InvokeLLM({
+          prompt: `Du bist ${char.name}. ${char.personality}
+Der Nutzer hat ${statusDesc} als Status gepostet.
+Reagiere darauf mit einer kurzen, authentischen Nachricht (1-2 Sätze). Wie eine WhatsApp-Antwort auf eine Story. Bleibe in deiner Rolle.
+${char.writing_style ? `Schreibstil: ${char.writing_style}` : ''}
+${char.current_mood ? `Stimmung: ${char.current_mood}` : ''}`,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              reaction: { type: "string" }
+            }
+          }
+        });
+
+        await base44.entities.ChatMessage.create({
+          character_id: char.id,
+          role: 'assistant',
+          content: response.reaction,
+          status: 'delivered'
+        });
+      })).catch(() => {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-status'] });
+      queryClient.invalidateQueries({ queryKey: ['all-messages'] });
       navigate(createPageUrl('Home'));
     }
   });
