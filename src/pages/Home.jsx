@@ -127,10 +127,13 @@ export default function Home() {
         const memories = await base44.entities.CharacterMemory.filter({ character_id: characterId, user_email: user.email });
         await Promise.all(memories.map(m => base44.entities.CharacterMemory.delete(m.id)));
       }
+      const statuses = await base44.entities.CharacterStatus.filter({ character_id: characterId });
+      await Promise.all(statuses.map(s => base44.entities.CharacterStatus.delete(s.id)));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['all-messages'] });
       queryClient.invalidateQueries({ queryKey: ['memories'] });
+      queryClient.invalidateQueries({ queryKey: ['statuses'] });
     }
   });
   
