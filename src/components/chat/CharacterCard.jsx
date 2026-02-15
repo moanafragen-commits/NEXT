@@ -4,8 +4,31 @@ import { de } from 'date-fns/locale';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export default function CharacterCard({ character, lastMessage, onClick, onDelete }) {
+export default function CharacterCard({ character, lastMessage, onClick, onDelete, onToggleFavorite, onToggleArchive }) {
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character.name}`;
+  const queryClient = useQueryClient();
+
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: async () => {
+      await base44.entities.Character.update(character.id, {
+        is_favorite: !character.is_favorite
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['characters'] });
+    }
+  });
+
+  const toggleArchiveMutation = useMutation({
+    mutationFn: async () => {
+      await base44.entities.Character.update(character.id, {
+        is_archived: !character.is_archived
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['characters'] });
+    }
+  });
   
   return (
     <div 

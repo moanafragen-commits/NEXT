@@ -33,9 +33,7 @@ export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelR
         </div>
       )}
       <div className="flex items-center gap-2">
-        <button type="button" className="p-2 text-gray-400 hover:text-gray-300 transition-colors">
-          <Smile className="w-6 h-6" />
-        </button>
+        <EmojiPicker onSelect={(emoji) => setMessage(prev => prev + emoji)} />
         
         <div className="flex-1 relative">
           <input

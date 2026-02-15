@@ -70,11 +70,12 @@ export default function Chat() {
   const sendMessageMutation = useMutation({
     mutationFn: async (content) => {
       // Save user message
-      await base44.entities.ChatMessage.create({
+      const userMsg = await base44.entities.ChatMessage.create({
         character_id: characterId,
         role: 'user',
         content,
-        reply_to_id: replyToMessage?.id || null
+        reply_to_id: replyToMessage?.id || null,
+        status: 'sent'
       });
       setReplyToMessage(null);
       
@@ -154,11 +155,18 @@ Extrahiere außerdem wichtige neue Informationen über den Nutzer (Name, Vorlieb
         queryClient.invalidateQueries({ queryKey: ['memories', characterId] });
       }
       
+      // Mark user message as read
+      await base44.entities.ChatMessage.update(userMsg.id, {
+        status: 'read',
+        read_at: new Date().toISOString()
+      });
+
       // Save AI response
       await base44.entities.ChatMessage.create({
         character_id: characterId,
         role: 'assistant',
-        content: response.response
+        content: response.response,
+        status: 'delivered'
       });
       
       queryClient.invalidateQueries({ queryKey: ['messages', characterId] });

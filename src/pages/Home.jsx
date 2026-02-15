@@ -3,7 +3,7 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Plus, Search, MessageCircle, Settings, MoreVertical, Send, X, Loader2, Users, User, Bell, BellOff } from 'lucide-react';
+import { Plus, Search, MessageCircle, Settings, MoreVertical, Send, X, Loader2, Users, User, Bell, BellOff, Star, Archive, Inbox } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,6 +19,7 @@ export default function Home() {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [chatMessage, setChatMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [viewFilter, setViewFilter] = useState('all'); // all, favorites, archived
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -84,9 +85,12 @@ export default function Home() {
     }
   });
   
-  const filteredCharacters = characters.filter(c => 
-    c.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCharacters = characters.filter(c => {
+    const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase());
+    if (viewFilter === 'favorites') return matchesSearch && c.is_favorite;
+    if (viewFilter === 'archived') return matchesSearch && c.is_archived;
+    return matchesSearch && !c.is_archived;
+  });
 
   const { data: chatMessages = [] } = useQuery({
     queryKey: ['messages', selectedCharacter?.id],
@@ -236,7 +240,44 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
             />
           </div>
         </div>
-      </header>
+
+        {/* Filter Tabs */}
+        <div className="px-4 pb-3 flex gap-2 overflow-x-auto">
+          <button
+            onClick={() => setViewFilter('all')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+              viewFilter === 'all' 
+                ? 'bg-emerald-600 text-white' 
+                : 'bg-[#262626] text-gray-400 hover:text-white'
+            }`}
+          >
+            <Inbox className="w-4 h-4 inline mr-2" />
+            Alle
+          </button>
+          <button
+            onClick={() => setViewFilter('favorites')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+              viewFilter === 'favorites' 
+                ? 'bg-emerald-600 text-white' 
+                : 'bg-[#262626] text-gray-400 hover:text-white'
+            }`}
+          >
+            <Star className="w-4 h-4 inline mr-2" />
+            Favoriten
+          </button>
+          <button
+            onClick={() => setViewFilter('archived')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+              viewFilter === 'archived' 
+                ? 'bg-emerald-600 text-white' 
+                : 'bg-[#262626] text-gray-400 hover:text-white'
+            }`}
+          >
+            <Archive className="w-4 h-4 inline mr-2" />
+            Archiviert
+          </button>
+        </div>
+        </header>
       
       {/* Character List */}
       <main className="pb-24">
