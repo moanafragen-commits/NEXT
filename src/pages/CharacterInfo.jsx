@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, BookOpen, MessageCircle, Settings, Sparkles, Plus, Brain, Heart, Target, TrendingUp, Dumbbell, Camera, Upload, Loader2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, MessageCircle, Settings, Sparkles, Plus, Brain, Heart, Target, TrendingUp, Dumbbell, Camera, Upload, Loader2, Music } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -13,6 +13,7 @@ import MemoryList from '@/components/memory/MemoryList';
 import MoodBadge from '@/components/character/MoodBadge';
 import RelationshipPanel from '@/components/character/RelationshipPanel';
 import MoodMotivationPanel from '@/components/character/MoodMotivationPanel';
+import SpotifyMusicPanel from '@/components/character/SpotifyMusicPanel';
 
 export default function CharacterInfo() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -225,6 +226,17 @@ export default function CharacterInfo() {
             <Separator className="bg-white/5" />
           </>
         )}
+
+        {/* Spotify / Music Section */}
+        <div className="p-6 space-y-4">
+          <div className="flex items-center gap-2 text-[#1DB954]">
+            <Music className="w-5 h-5" />
+            <h3 className="font-semibold">Spotify & Musik</h3>
+          </div>
+          <SpotifyMusicPanel character={character} />
+        </div>
+
+        <Separator className="bg-white/5" />
 
         {/* Development Link */}
         <div className="px-6 py-4">
