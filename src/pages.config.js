@@ -60,11 +60,11 @@ import GroupChat from './pages/GroupChat';
 import GroupChats from './pages/GroupChats';
 import Home from './pages/Home';
 import Landing from './pages/Landing';
+import NotificationSettings from './pages/NotificationSettings';
 import UserChat from './pages/UserChat';
 import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
 import UserStatusView from './pages/UserStatusView';
-import NotificationSettings from './pages/NotificationSettings';
 
 
 export const PAGES = {
@@ -81,11 +81,11 @@ export const PAGES = {
     "GroupChats": GroupChats,
     "Home": Home,
     "Landing": Landing,
+    "NotificationSettings": NotificationSettings,
     "UserChat": UserChat,
     "UserChats": UserChats,
     "UserProfile": UserProfile,
     "UserStatusView": UserStatusView,
-    "NotificationSettings": NotificationSettings,
 }
 
 export const pagesConfig = {
