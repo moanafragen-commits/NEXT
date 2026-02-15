@@ -32,8 +32,15 @@ export default function UserStatusCircle({ user, hasNewStatus, isOwn = false }) 
                 />
               </div>
             ) : (
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center ring-2 ring-emerald-500">
-                <Plus className="w-8 h-8 text-white" />
+              <div className="w-16 h-16 rounded-full p-0.5 bg-gray-600 relative">
+                <img
+                  src={user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`}
+                  alt="Dein Status"
+                  className="w-full h-full rounded-full object-cover border-2 border-[#111]"
+                />
+                <div className="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center border-2 border-[#111]">
+                  <Plus className="w-3.5 h-3.5 text-white" />
+                </div>
               </div>
             )}
             {hasOwnStatus && (
