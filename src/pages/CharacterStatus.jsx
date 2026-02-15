@@ -3,18 +3,20 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, X, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { ArrowLeft, X, ChevronLeft, ChevronRight, Eye, BarChart3 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 import StatusReactionBar from '@/components/status/StatusReactionBar';
+import StatusInsightsSheet from '@/components/status/StatusInsightsSheet';
 
 export default function CharacterStatus() {
   const urlParams = new URLSearchParams(window.location.search);
   const characterId = urlParams.get('characterId');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [showInsights, setShowInsights] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: character } = useQuery({
@@ -190,16 +192,41 @@ export default function CharacterStatus() {
         {/* Reaction Bar & Views */}
         <div className="absolute bottom-4 left-0 right-0 px-4 z-20 space-y-2">
           <StatusReactionBar
+            statusId={currentStatus.id}
             characterId={characterId}
             characterName={character.name}
             statusCaption={currentStatus.caption}
             statusImageUrl={currentStatus.image_url}
           />
-          <div className="flex items-center justify-center gap-2 text-white/70">
+          <button
+            onClick={() => setShowInsights(true)}
+            className="flex items-center justify-center gap-2 text-white/70 hover:text-white w-full transition-colors"
+          >
             <Eye className="w-3.5 h-3.5" />
             <span className="text-xs">{currentStatus.views_count || 0} Aufrufe</span>
-          </div>
+            <BarChart3 className="w-3.5 h-3.5 ml-1" />
+          </button>
         </div>
+
+        {/* Insights Sheet */}
+        <AnimatePresence>
+          {showInsights && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowInsights(false)}
+                className="fixed inset-0 bg-black/50 z-40"
+              />
+              <StatusInsightsSheet
+                statusId={currentStatus.id}
+                viewsCount={currentStatus.views_count}
+                onClose={() => setShowInsights(false)}
+              />
+            </>
+          )}
+        </AnimatePresence>
 
         {/* Navigation areas */}
         <div className="absolute inset-0 flex">
