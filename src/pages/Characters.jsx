@@ -163,6 +163,10 @@ export default function Characters() {
         )}
       </main>
 
+      {showCreateModal && (
+        <CreateCharacterModal onClose={() => setShowCreateModal(false)} />
+      )}
+
       <BottomNav user={user} />
     </div>
   );
