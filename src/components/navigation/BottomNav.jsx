@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Home, Search, Plus, Heart, User, Image, UserPlus, X } from 'lucide-react';
+import { Home, Search, Plus, Heart, User, Image, UserPlus, X, MessageCircle } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export default function BottomNav({ user }) {
