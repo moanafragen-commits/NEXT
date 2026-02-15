@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, X, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { ArrowLeft, X, ChevronLeft, ChevronRight, Eye, Trash2, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
 import StatusViewersList from '@/components/status/StatusViewersList';
@@ -62,6 +62,32 @@ export default function UserStatusView() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-statuses'] });
+    }
+  });
+
+  const isOwnStatus = user && userEmail === user.email;
+
+  const deleteStatusMutation = useMutation({
+    mutationFn: async (statusId) => {
+      // Delete views for this status
+      const views = await base44.entities.UserStatusView.filter({ status_id: statusId });
+      await Promise.all(views.map(v => base44.entities.UserStatusView.delete(v.id)));
+      // Delete status itself
+      await base44.entities.UserStatus.delete(statusId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-statuses'] });
+      queryClient.invalidateQueries({ queryKey: ['user-status-views'] });
+      queryClient.invalidateQueries({ queryKey: ['own-statuses'] });
+      // If no more statuses, go home
+      if (statuses.length <= 1) {
+        window.location.href = createPageUrl('Home');
+      } else if (currentIndex >= statuses.length - 1) {
+        setCurrentIndex(Math.max(0, currentIndex - 1));
+        setProgress(0);
+      } else {
+        setProgress(0);
+      }
     }
   });
 
@@ -219,24 +245,46 @@ export default function UserStatusView() {
 
       {/* Bottom Area */}
       <div className="fixed bottom-4 left-4 right-4 z-40 space-y-3">
-        {/* Views Button */}
-        {user && userEmail === user.email ? (
-          <button
-            onClick={() => {
-              setShowViewers(true);
-              setIsPaused(true);
-            }}
-            className="flex items-center justify-center gap-2 bg-black/50 rounded-full px-4 py-2 w-fit mx-auto hover:bg-black/70 transition-colors"
-          >
-            <Eye className="w-4 h-4 text-white" />
-            <span className="text-white text-sm">{currentStatus.views_count || 0} Aufrufe</span>
-          </button>
-        ) : (
-          <div className="flex items-center justify-center gap-2 bg-black/50 rounded-full px-4 py-2 w-fit mx-auto">
-            <Eye className="w-4 h-4 text-white" />
-            <span className="text-white text-sm">{currentStatus.views_count || 0} Aufrufe</span>
-          </div>
-        )}
+        <div className="flex items-center justify-center gap-3">
+          {/* Views Button */}
+          {isOwnStatus ? (
+            <button
+              onClick={() => {
+                setShowViewers(true);
+                setIsPaused(true);
+              }}
+              className="flex items-center gap-2 bg-black/50 rounded-full px-4 py-2 hover:bg-black/70 transition-colors"
+            >
+              <Eye className="w-4 h-4 text-white" />
+              <span className="text-white text-sm">{currentStatus.views_count || 0} Aufrufe</span>
+            </button>
+          ) : (
+            <div className="flex items-center gap-2 bg-black/50 rounded-full px-4 py-2">
+              <Eye className="w-4 h-4 text-white" />
+              <span className="text-white text-sm">{currentStatus.views_count || 0} Aufrufe</span>
+            </div>
+          )}
+
+          {/* Delete Button (own status only) */}
+          {isOwnStatus && (
+            <button
+              onClick={() => {
+                if (confirm('Status löschen?')) {
+                  deleteStatusMutation.mutate(currentStatus.id);
+                }
+              }}
+              disabled={deleteStatusMutation.isPending}
+              className="flex items-center gap-2 bg-red-500/30 hover:bg-red-500/50 rounded-full px-4 py-2 transition-colors"
+            >
+              {deleteStatusMutation.isPending ? (
+                <Loader2 className="w-4 h-4 text-white animate-spin" />
+              ) : (
+                <Trash2 className="w-4 h-4 text-white" />
+              )}
+              <span className="text-white text-sm">Löschen</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Viewers Sheet */}
