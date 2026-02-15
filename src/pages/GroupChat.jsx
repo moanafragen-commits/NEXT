@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { ArrowLeft, UserPlus, Settings, Send, Loader2, Users as UsersIcon, Bot } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import ChatInput from '@/components/chat/ChatInput';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -137,12 +138,13 @@ export default function GroupChat() {
   });
 
   const sendMessageMutation = useMutation({
-    mutationFn: async (content) => {
+    mutationFn: async ({ content, imageUrl }) => {
       await base44.entities.GroupChatMessage.create({
         group_id: groupId,
         sender_type: 'user',
         sender_id: user.email,
-        content
+        content,
+        image_url: imageUrl || null
       });
 
       queryClient.invalidateQueries({ queryKey: ['group-messages', groupId] });
@@ -151,12 +153,15 @@ export default function GroupChat() {
       const recentMessages = messages.slice(-15);
       const history = recentMessages.map(m => {
         if (m.sender_type === 'user') {
-          return `Nutzer: ${m.content}`;
+          return `Nutzer: ${m.content}${m.image_url ? ' [Bild gesendet]' : ''}`;
         } else {
           const char = characters.find(c => c.id === m.sender_id);
-          return `${char?.name || 'Unbekannt'}: ${m.content}`;
+          return `${char?.name || 'Unbekannt'}: ${m.content}${m.image_url ? ' [Bild gesendet]' : ''}`;
         }
       }).join('\n');
+
+      const groupContext = group.theme ? `\n\nGruppen-Thema: ${group.theme}` : '';
+      const imageContext = imageUrl ? '\n\n[Der Nutzer hat gerade ein Bild gesendet - Charaktere sollten es kurz erwähnen wenn relevant]' : '';
 
       const activeCharacters = characterMembers.map(m => 
         characters.find(c => c.id === m.member_id)
@@ -170,24 +175,30 @@ export default function GroupChat() {
       const dateTimeContext = `Aktuelles Datum: ${now.toLocaleDateString('de-DE')}, Uhrzeit: ${now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
 
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Du orchestrierst einen Gruppenchat mit mehreren AI-Charakteren und einem Nutzer.
+        prompt: `Du orchestrierst einen Gruppenchat "${group.name}" mit mehreren AI-Charakteren und Nutzern.${groupContext}
 
 Charaktere in der Gruppe:
 ${charDescriptions}
 
-${dateTimeContext}
+WICHTIGE REGELN:
+- Charaktere sollen authentisch und natürlich agieren
+- Sie können sich gegenseitig ansprechen mit @Name
+- Nicht alle müssen immer antworten (1-3 Antworten)
+- Charaktere können unterschiedliche Meinungen haben
+- Sie sollten ihre Persönlichkeit zeigen
+- Kurze, natürliche Antworten (wie echte Gruppenchats)
+${dateTimeContext}${imageContext}
 
-Bisheriger Chatverlauf:
+Bisheriger Chatverlauf (letzte ${recentMessages.length} Nachrichten):
 ${history}
 
-Neue Nachricht vom Nutzer: ${content}
+Neue Nachricht vom Nutzer: ${content}${imageUrl ? ' [Bild gesendet]' : ''}
 
-Entscheide, welche Charaktere auf diese Nachricht reagieren sollten. Die Charaktere können:
+Wähle 1-3 Charaktere die jetzt reagieren sollten. Sie können:
 - Auf den Nutzer antworten
 - Aufeinander reagieren
-- Eine Diskussion führen
-
-Gib 1-3 Antworten zurück (nicht alle müssen immer antworten). Die Charaktere sollen natürlich und wie echte Personen interagieren.`,
+- Eine Diskussion beginnen
+- Meinungen austauschen`,
         response_json_schema: {
           type: "object",
           properties: {
@@ -208,11 +219,24 @@ Gib 1-3 Antworten zurück (nicht alle müssen immer antworten). Die Charaktere s
       setIsTyping(false);
 
       for (const resp of response.responses || []) {
+        // Occasionally add image (5% chance)
+        let aiImageUrl = null;
+        if (Math.random() < 0.05) {
+          try {
+            const char = characters.find(c => c.id === resp.character_id);
+            const imgResponse = await base44.integrations.Core.GenerateImage({
+              prompt: `${char?.name} in group chat: ${resp.content.slice(0, 80)}`
+            });
+            aiImageUrl = imgResponse.url;
+          } catch (e) {}
+        }
+
         await base44.entities.GroupChatMessage.create({
           group_id: groupId,
           sender_type: 'character',
           sender_id: resp.character_id,
-          content: resp.content
+          content: resp.content,
+          image_url: aiImageUrl
         });
         await new Promise(resolve => setTimeout(resolve, 1000));
         queryClient.invalidateQueries({ queryKey: ['group-messages', groupId] });
@@ -220,9 +244,9 @@ Gib 1-3 Antworten zurück (nicht alle müssen immer antworten). Die Charaktere s
     }
   });
 
-  const handleSend = () => {
-    if (!message.trim() || isTyping) return;
-    sendMessageMutation.mutate(message);
+  const handleSend = (content, imageUrl) => {
+    if ((!content?.trim() && !imageUrl) || isTyping) return;
+    sendMessageMutation.mutate({ content: content || '', imageUrl });
     setMessage('');
   };
 
@@ -324,6 +348,14 @@ Gib 1-3 Antworten zurück (nicht alle müssen immer antworten). Die Charaktere s
                       ? 'bg-emerald-600 text-white rounded-br-md'
                       : 'bg-[#262626] text-gray-100 rounded-bl-md'
                   }`}>
+                    {msg.image_url && (
+                      <img 
+                        src={msg.image_url} 
+                        alt="Bild" 
+                        className="rounded-lg max-w-full mb-2 cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => window.open(msg.image_url, '_blank')}
+                      />
+                    )}
                     <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                   </div>
                 </div>
@@ -354,35 +386,11 @@ Gib 1-3 Antworten zurück (nicht alle müssen immer antworten). Die Charaktere s
         <div ref={messagesEndRef} />
       </main>
 
-      <div className="p-4 border-t border-white/5">
-        <div className="flex items-end gap-2">
-          <div className="flex-1 relative">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSend();
-                }
-              }}
-              placeholder="Nachricht schreiben..."
-              className="w-full bg-[#262626] text-white rounded-full px-5 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 placeholder-gray-500"
-              disabled={isTyping}
-            />
-          </div>
-          {message.trim() && (
-            <Button
-              onClick={handleSend}
-              disabled={isTyping}
-              size="icon"
-              className="h-11 w-11 rounded-full bg-emerald-600 hover:bg-emerald-500 flex-shrink-0"
-            >
-              {isTyping ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-            </Button>
-          )}
-        </div>
+      <div className="p-4 border-t border-white/5 bg-[#1a1a1a]">
+        <ChatInput
+          onSend={handleSend}
+          isLoading={isTyping || sendMessageMutation.isPending}
+        />
       </div>
 
       <Dialog open={showAddMember} onOpenChange={setShowAddMember}>
