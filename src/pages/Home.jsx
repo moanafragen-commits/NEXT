@@ -117,14 +117,12 @@ export default function Home() {
     return messages.find(m => m.character_id === characterId);
   };
 
-  const deleteCharacterMutation = useMutation({
+  const deleteChatMutation = useMutation({
     mutationFn: async (characterId) => {
-      await base44.entities.Character.delete(characterId);
-      const messages = await base44.entities.ChatMessage.filter({ character_id: characterId });
-      await Promise.all(messages.map(m => base44.entities.ChatMessage.delete(m.id)));
+      const msgs = await base44.entities.ChatMessage.filter({ character_id: characterId });
+      await Promise.all(msgs.map(m => base44.entities.ChatMessage.delete(m.id)));
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['characters'] });
       queryClient.invalidateQueries({ queryKey: ['all-messages'] });
     }
   });
@@ -419,9 +417,9 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
                   character={character}
                   lastMessage={getLastMessage(character.id)}
                   onClick={() => setSelectedCharacter(character)}
-                  onDelete={(id) => {
-                    if (confirm('Charakter und alle Nachrichten löschen?')) {
-                      deleteCharacterMutation.mutate(id);
+                  onDeleteChat={(id) => {
+                    if (confirm('Chatverlauf löschen? Der Charakter bleibt erhalten.')) {
+                      deleteChatMutation.mutate(id);
                     }
                   }}
                 />
