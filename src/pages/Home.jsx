@@ -466,42 +466,7 @@ export default function Home() {
         onCreated={() => queryClient.invalidateQueries({ queryKey: ['characters'] })}
       />
 
-      {/* Bottom Tab Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-[#0a0a0a] border-t border-white/5">
-        <div className="flex items-center justify-around h-16 max-w-lg mx-auto px-2">
-          {/* Home = Feed */}
-          <Link to={createPageUrl('Feed')} className="flex flex-col items-center justify-center gap-0.5 w-14 h-14 text-white">
-            <HomeIcon className="w-6 h-6 fill-white" />
-          </Link>
-
-          {/* Lupe = Charaktere */}
-          <Link to={createPageUrl('Characters')} className="flex flex-col items-center justify-center gap-0.5 w-14 h-14 text-gray-400 hover:text-white transition-colors">
-            <Search className="w-6 h-6" />
-          </Link>
-
-          {/* Create (center, prominent) */}
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center justify-center w-12 h-12 rounded-xl border-2 border-white/80 text-white hover:bg-white/10 transition-colors"
-          >
-            <Plus className="w-7 h-7" />
-          </button>
-
-          {/* Herz = Aktivitäten (Likes, Kommentare, Shares von KI) */}
-          <Link to={createPageUrl('Activity')} className="flex flex-col items-center justify-center gap-0.5 w-14 h-14 text-gray-400 hover:text-white transition-colors relative">
-            <Heart className="w-6 h-6" />
-          </Link>
-
-          {/* Profil */}
-          <Link to={createPageUrl('UserProfile')} className="flex flex-col items-center justify-center gap-0.5 w-14 h-14">
-            {user?.avatar_url ? (
-              <img src={user.avatar_url} alt="Profil" className="w-7 h-7 rounded-full object-cover ring-2 ring-emerald-500/50" />
-            ) : (
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 ring-2 ring-white/20" />
-            )}
-          </Link>
-        </div>
-      </nav>
+      <BottomNav user={user} />
 
       {/* Chat Sidebar */}
       <AnimatePresence>
