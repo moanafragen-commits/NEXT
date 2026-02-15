@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare, Zap, Brain, Shield, Lock, Lightbulb, ImagePlus, Briefcase, Clock } from 'lucide-react';
+import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare, Zap, Brain, Shield, Lock, Lightbulb, ImagePlus, Briefcase, Clock, HeartCrack } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
 import { base44 } from '@/api/base44Client';
 import { CHARACTER_TEMPLATES } from './CharacterTemplates';
@@ -977,6 +977,48 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
                   />
                 </div>
+              </div>
+
+              {/* Psyche Section */}
+              <div className="space-y-1 mt-4 mb-1">
+                <h3 className="text-sm font-semibold text-purple-400 flex items-center gap-2">
+                  <HeartCrack className="w-4 h-4" />
+                  Psyche & Gesundheit
+                </h3>
+                <p className="text-xs text-gray-500">Diese Details machen den Charakter tiefgründiger und realistischer.</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Trauma & prägende Erlebnisse</Label>
+                <Textarea
+                  value={formData.trauma}
+                  onChange={(e) => setFormData(prev => ({ ...prev, trauma: e.target.value }))}
+                  placeholder="z.B. Verlust eines Elternteils, Mobbing in der Schulzeit, schwerer Unfall..."
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
+                />
+                <p className="text-xs text-gray-500">Beeinflusst emotionale Reaktionen und Trigger des Charakters</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Psychische Erkrankungen</Label>
+                <Textarea
+                  value={formData.mental_health}
+                  onChange={(e) => setFormData(prev => ({ ...prev, mental_health: e.target.value }))}
+                  placeholder="z.B. Depression, Angststörung, ADHS, PTBS, Bipolare Störung..."
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
+                />
+                <p className="text-xs text-gray-500">Der Charakter wird diese realistisch in Gesprächen widerspiegeln</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Medikamente</Label>
+                <Textarea
+                  value={formData.medications}
+                  onChange={(e) => setFormData(prev => ({ ...prev, medications: e.target.value }))}
+                  placeholder="z.B. Antidepressiva, Ritalin, Schlafmittel – und wie der Charakter dazu steht..."
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                />
+                <p className="text-xs text-gray-500">Kann Nebenwirkungen und Verhaltensänderungen beeinflussen</p>
               </div>
             </TabsContent>
 
