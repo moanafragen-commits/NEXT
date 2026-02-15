@@ -408,36 +408,175 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                 <p className="text-xs text-pink-300">💕 Definiere hier, in welcher Beziehung du zu diesem Charakter stehst. Das beeinflusst, wie der Charakter mit dir kommuniziert.</p>
               </div>
 
+              {/* Relationship Type Section */}
+              <div className="space-y-1 mb-1">
+                <h3 className="text-sm font-semibold text-pink-400 flex items-center gap-2">
+                  <Heart className="w-4 h-4" />
+                  Beziehungstyp & Dynamik
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Beziehungstyp</Label>
+                  <Select 
+                    value={formData.initial_relationship} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, initial_relationship: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue placeholder="Wähle eine Beziehung..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10 max-h-80">
+                      <SelectItem value="Bester Freund" className="text-white hover:bg-white/10">👫 Bester Freund</SelectItem>
+                      <SelectItem value="Guter Freund" className="text-white hover:bg-white/10">🤝 Guter Freund</SelectItem>
+                      <SelectItem value="Bekannter" className="text-white hover:bg-white/10">👋 Bekannter</SelectItem>
+                      <SelectItem value="Partner" className="text-white hover:bg-white/10">💑 Partner</SelectItem>
+                      <SelectItem value="Schwarm" className="text-white hover:bg-white/10">💘 Schwarm</SelectItem>
+                      <SelectItem value="Ex-Partner" className="text-white hover:bg-white/10">💔 Ex-Partner</SelectItem>
+                      <SelectItem value="Familienmitglied" className="text-white hover:bg-white/10">👨‍👩‍👧 Familienmitglied</SelectItem>
+                      <SelectItem value="Mentor/Lehrer" className="text-white hover:bg-white/10">🎓 Mentor/Lehrer</SelectItem>
+                      <SelectItem value="Schüler/Mentee" className="text-white hover:bg-white/10">📚 Schüler/Mentee</SelectItem>
+                      <SelectItem value="Arbeitskollege" className="text-white hover:bg-white/10">💼 Arbeitskollege</SelectItem>
+                      <SelectItem value="Chef/Vorgesetzter" className="text-white hover:bg-white/10">👔 Chef/Vorgesetzter</SelectItem>
+                      <SelectItem value="Rivale" className="text-white hover:bg-white/10">⚔️ Rivale</SelectItem>
+                      <SelectItem value="Feind" className="text-white hover:bg-white/10">😤 Feind</SelectItem>
+                      <SelectItem value="Fremder" className="text-white hover:bg-white/10">🚶 Fremder</SelectItem>
+                      <SelectItem value="Fan/Bewunderer" className="text-white hover:bg-white/10">🌟 Fan/Bewunderer</SelectItem>
+                      <SelectItem value="Seelenverwandter" className="text-white hover:bg-white/10">✨ Seelenverwandter</SelectItem>
+                      <SelectItem value="Kindheitsfreund" className="text-white hover:bg-white/10">🧒 Kindheitsfreund</SelectItem>
+                      <SelectItem value="Online-Freund" className="text-white hover:bg-white/10">💬 Online-Freund</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Beziehungsdynamik</Label>
+                  <Select 
+                    value={formData.relationship_dynamic} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, relationship_dynamic: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue placeholder="Dynamik wählen..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10">
+                      <SelectItem value="gleichberechtigt" className="text-white hover:bg-white/10">⚖️ Gleichberechtigt</SelectItem>
+                      <SelectItem value="dominant" className="text-white hover:bg-white/10">👑 Dominant</SelectItem>
+                      <SelectItem value="unterwürfig" className="text-white hover:bg-white/10">🙇 Unterwürfig</SelectItem>
+                      <SelectItem value="beschützend" className="text-white hover:bg-white/10">🛡️ Beschützend</SelectItem>
+                      <SelectItem value="abhängig" className="text-white hover:bg-white/10">🔗 Abhängig</SelectItem>
+                      <SelectItem value="unabhängig" className="text-white hover:bg-white/10">🦅 Unabhängig</SelectItem>
+                      <SelectItem value="wechselseitig" className="text-white hover:bg-white/10">🔄 Wechselseitig</SelectItem>
+                      <SelectItem value="einseitig" className="text-white hover:bg-white/10">➡️ Einseitig</SelectItem>
+                      <SelectItem value="konkurrierend" className="text-white hover:bg-white/10">🏁 Konkurrierend</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Bindungsstil</Label>
+                  <Select 
+                    value={formData.attachment_style} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, attachment_style: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10">
+                      <SelectItem value="sicher" className="text-white hover:bg-white/10">🟢 Sicher</SelectItem>
+                      <SelectItem value="ängstlich" className="text-white hover:bg-white/10">🟡 Ängstlich</SelectItem>
+                      <SelectItem value="vermeidend" className="text-white hover:bg-white/10">🔴 Vermeidend</SelectItem>
+                      <SelectItem value="desorganisiert" className="text-white hover:bg-white/10">🟠 Desorganisiert</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500">Beeinflusst wie der Charakter Nähe und Distanz handhabt</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Liebessprache</Label>
+                  <Select 
+                    value={formData.love_language} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, love_language: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue placeholder="Auswählen..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10">
+                      <SelectItem value="Worte der Bestätigung" className="text-white hover:bg-white/10">💬 Worte der Bestätigung</SelectItem>
+                      <SelectItem value="Geschenke" className="text-white hover:bg-white/10">🎁 Geschenke</SelectItem>
+                      <SelectItem value="Hilfsbereitschaft" className="text-white hover:bg-white/10">🤲 Hilfsbereitschaft</SelectItem>
+                      <SelectItem value="Körperkontakt" className="text-white hover:bg-white/10">🤗 Körperkontakt</SelectItem>
+                      <SelectItem value="Zweisamkeit" className="text-white hover:bg-white/10">👫 Zweisamkeit</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500">Wie drückt der Charakter Zuneigung aus?</p>
+                </div>
+              </div>
+
+              {/* Emotional Sliders */}
+              <div className="space-y-1 mt-4 mb-1">
+                <h3 className="text-sm font-semibold text-pink-400 flex items-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  Emotionale Eigenschaften
+                </h3>
+              </div>
+
+              <div className="space-y-4 p-4 bg-[#262626] rounded-xl border border-white/5">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-gray-300">Vertrauen</Label>
+                    <span className="text-sm text-pink-400">{formData.trust_level}/10</span>
+                  </div>
+                  <Slider
+                    value={[formData.trust_level]}
+                    onValueChange={([val]) => setFormData(prev => ({ ...prev, trust_level: val }))}
+                    min={1} max={10} step={1}
+                    className="[&_[role=slider]]:bg-pink-500"
+                  />
+                  <p className="text-xs text-gray-500">1 = sehr misstrauisch • 10 = blindes Vertrauen</p>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-gray-300">Eifersucht</Label>
+                    <span className="text-sm text-pink-400">{formData.jealousy_level}/10</span>
+                  </div>
+                  <Slider
+                    value={[formData.jealousy_level]}
+                    onValueChange={([val]) => setFormData(prev => ({ ...prev, jealousy_level: val }))}
+                    min={1} max={10} step={1}
+                    className="[&_[role=slider]]:bg-pink-500"
+                  />
+                  <p className="text-xs text-gray-500">1 = überhaupt nicht eifersüchtig • 10 = extrem eifersüchtig</p>
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label className="text-gray-300">Beziehungstyp</Label>
+                <Label className="text-gray-300">Beziehungsentwicklung</Label>
                 <Select 
-                  value={formData.initial_relationship} 
-                  onValueChange={(val) => setFormData(prev => ({ ...prev, initial_relationship: val }))}
+                  value={formData.relationship_evolution} 
+                  onValueChange={(val) => setFormData(prev => ({ ...prev, relationship_evolution: val }))}
                 >
                   <SelectTrigger className="bg-[#262626] border-white/10 text-white">
-                    <SelectValue placeholder="Wähle eine Beziehung..." />
+                    <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#262626] border-white/10 max-h-80">
-                    <SelectItem value="Bester Freund" className="text-white hover:bg-white/10">👫 Bester Freund</SelectItem>
-                    <SelectItem value="Guter Freund" className="text-white hover:bg-white/10">🤝 Guter Freund</SelectItem>
-                    <SelectItem value="Bekannter" className="text-white hover:bg-white/10">👋 Bekannter</SelectItem>
-                    <SelectItem value="Partner" className="text-white hover:bg-white/10">💑 Partner</SelectItem>
-                    <SelectItem value="Schwarm" className="text-white hover:bg-white/10">💘 Schwarm</SelectItem>
-                    <SelectItem value="Ex-Partner" className="text-white hover:bg-white/10">💔 Ex-Partner</SelectItem>
-                    <SelectItem value="Familienmitglied" className="text-white hover:bg-white/10">👨‍👩‍👧 Familienmitglied</SelectItem>
-                    <SelectItem value="Mentor/Lehrer" className="text-white hover:bg-white/10">🎓 Mentor/Lehrer</SelectItem>
-                    <SelectItem value="Schüler/Mentee" className="text-white hover:bg-white/10">📚 Schüler/Mentee</SelectItem>
-                    <SelectItem value="Arbeitskollege" className="text-white hover:bg-white/10">💼 Arbeitskollege</SelectItem>
-                    <SelectItem value="Chef/Vorgesetzter" className="text-white hover:bg-white/10">👔 Chef/Vorgesetzter</SelectItem>
-                    <SelectItem value="Rivale" className="text-white hover:bg-white/10">⚔️ Rivale</SelectItem>
-                    <SelectItem value="Feind" className="text-white hover:bg-white/10">😤 Feind</SelectItem>
-                    <SelectItem value="Fremder" className="text-white hover:bg-white/10">🚶 Fremder</SelectItem>
-                    <SelectItem value="Fan/Bewunderer" className="text-white hover:bg-white/10">🌟 Fan/Bewunderer</SelectItem>
-                    <SelectItem value="Seelenverwandter" className="text-white hover:bg-white/10">✨ Seelenverwandter</SelectItem>
-                    <SelectItem value="Kindheitsfreund" className="text-white hover:bg-white/10">🧒 Kindheitsfreund</SelectItem>
-                    <SelectItem value="Online-Freund" className="text-white hover:bg-white/10">💬 Online-Freund</SelectItem>
+                  <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectItem value="statisch" className="text-white hover:bg-white/10">⏸️ Statisch – bleibt wie sie ist</SelectItem>
+                    <SelectItem value="sich_annähernd" className="text-white hover:bg-white/10">💞 Sich annähernd</SelectItem>
+                    <SelectItem value="sich_entfernend" className="text-white hover:bg-white/10">💨 Sich entfernend</SelectItem>
+                    <SelectItem value="schwankend" className="text-white hover:bg-white/10">🌊 Schwankend – mal nah, mal fern</SelectItem>
+                    <SelectItem value="sich_vertiefend" className="text-white hover:bg-white/10">🌹 Sich vertiefend</SelectItem>
+                    <SelectItem value="kompliziert" className="text-white hover:bg-white/10">🔀 Kompliziert</SelectItem>
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-gray-500">Bestimmt wie sich die Beziehung im Laufe der Gespräche verändert</p>
+              </div>
+
+              {/* Backstory Section */}
+              <div className="space-y-1 mt-4 mb-1">
+                <h3 className="text-sm font-semibold text-pink-400 flex items-center gap-2">
+                  <BookOpen className="w-4 h-4" />
+                  Gemeinsame Geschichte
+                </h3>
               </div>
 
               <div className="space-y-2">
@@ -446,9 +585,60 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                   value={formData.relationship_backstory}
                   onChange={(e) => setFormData(prev => ({ ...prev, relationship_backstory: e.target.value }))}
                   placeholder="Wie habt ihr euch kennengelernt? Was verbindet euch? Gibt es gemeinsame Erinnerungen oder besondere Momente?"
-                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[120px]"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[100px]"
                 />
-                <p className="text-xs text-gray-500">Diese Hintergrundgeschichte wird bei der ersten Konversation als Kontext genutzt.</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Aktuelles Szenario</Label>
+                <Textarea
+                  value={formData.relationship_scenario}
+                  onChange={(e) => setFormData(prev => ({ ...prev, relationship_scenario: e.target.value }))}
+                  placeholder="Was ist gerade los zwischen euch? z.B. 'Haben uns nach einem Streit wieder versöhnt' oder 'Planen zusammen einen Urlaub'"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Gemeinsame Erinnerungen</Label>
+                <Textarea
+                  value={formData.shared_memories}
+                  onChange={(e) => setFormData(prev => ({ ...prev, shared_memories: e.target.value }))}
+                  placeholder="z.B. 'Der Roadtrip nach Italien letzten Sommer', 'Die durchgemachte Nacht vor der Prüfung'"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Insider-Witze</Label>
+                  <Textarea
+                    value={formData.inside_jokes}
+                    onChange={(e) => setFormData(prev => ({ ...prev, inside_jokes: e.target.value }))}
+                    placeholder="Witze die nur ihr versteht..."
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Kosenamen</Label>
+                  <Textarea
+                    value={formData.pet_names}
+                    onChange={(e) => setFormData(prev => ({ ...prev, pet_names: e.target.value }))}
+                    placeholder="z.B. 'Schatz', 'Buddy', 'Kleines'"
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Grenzen in der Beziehung</Label>
+                <Textarea
+                  value={formData.relationship_boundaries}
+                  onChange={(e) => setFormData(prev => ({ ...prev, relationship_boundaries: e.target.value }))}
+                  placeholder="z.B. 'Spricht nicht über seine Familie', 'Wird bei Eifersucht abweisend', 'Braucht viel Freiraum'"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
+                />
+                <p className="text-xs text-gray-500">Grenzen die der Charakter in der Beziehung setzt und respektiert</p>
               </div>
             </TabsContent>
 
