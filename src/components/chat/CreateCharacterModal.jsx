@@ -719,6 +719,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-gray-300">Interessen & Hobbies</Label>
                 <Input
@@ -728,25 +729,169 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                   className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
                 />
               </div>
-              
-              {/* First Impression */}
-              <div className="space-y-1 mt-2 mb-1">
-                <h3 className="text-sm font-semibold text-emerald-400 flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4" />
-                  Erster Eindruck
-                </h3>
-              </div>
-
               <div className="space-y-2">
-                <Label className="text-gray-300">Begrüßung</Label>
-                <Textarea
-                  value={formData.greeting}
-                  onChange={(e) => setFormData(prev => ({ ...prev, greeting: e.target.value }))}
-                  placeholder="Die erste Nachricht die der Charakter sendet, wenn man einen neuen Chat startet..."
-                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                <Label className="text-gray-300">Wissensgebiete</Label>
+                <Input
+                  value={formData.knowledge_areas}
+                  onChange={(e) => setFormData(prev => ({ ...prev, knowledge_areas: e.target.value }))}
+                  placeholder="Physik, Geschichte, Kochen..."
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
                 />
-                <p className="text-xs text-gray-500">Tipp: Eine gute Begrüßung spiegelt die Persönlichkeit wider und lädt zum Gespräch ein</p>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-gray-300">Lieblingsthemen</Label>
+              <Input
+                value={formData.favorite_topics}
+                onChange={(e) => setFormData(prev => ({ ...prev, favorite_topics: e.target.value }))}
+                placeholder="Worüber spricht der Charakter gerne? Technologie, Philosophie, Sport..."
+                className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-gray-300">Abneigungen</Label>
+              <Input
+                value={formData.dislikes}
+                onChange={(e) => setFormData(prev => ({ ...prev, dislikes: e.target.value }))}
+                placeholder="Was mag der Charakter nicht?"
+                className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
+              />
+            </div>
+
+            {/* Kommunikation Section */}
+            <div className="space-y-1 mt-2 mb-1">
+              <h3 className="text-sm font-semibold text-emerald-400 flex items-center gap-2">
+                <MessageSquare className="w-4 h-4" />
+                Kommunikation
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-gray-300">Antwortlänge</Label>
+                <Select 
+                  value={formData.response_length} 
+                  onValueChange={(val) => setFormData(prev => ({ ...prev, response_length: val }))}
+                >
+                  <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
+                    {RESPONSE_LENGTHS.map(len => (
+                      <SelectItem key={len.value} value={len.value} className="text-white hover:bg-white/10">
+                        {len.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-gray-300">Gesprächsstil</Label>
+                <Select 
+                  value={formData.conversation_style} 
+                  onValueChange={(val) => setFormData(prev => ({ ...prev, conversation_style: val }))}
+                >
+                  <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#262626] border-white/10 z-[10001] max-h-80">
+                    <SelectItem value="aktiv_fragend" className="text-white hover:bg-white/10">❓ Aktiv fragend</SelectItem>
+                    <SelectItem value="zuhörend" className="text-white hover:bg-white/10">👂 Zuhörend</SelectItem>
+                    <SelectItem value="erzählend" className="text-white hover:bg-white/10">📖 Erzählend</SelectItem>
+                    <SelectItem value="beratend" className="text-white hover:bg-white/10">💡 Beratend</SelectItem>
+                    <SelectItem value="diskutierend" className="text-white hover:bg-white/10">💬 Diskutierend</SelectItem>
+                    <SelectItem value="spielerisch" className="text-white hover:bg-white/10">🎮 Spielerisch</SelectItem>
+                    <SelectItem value="provokant" className="text-white hover:bg-white/10">⚡ Provokant</SelectItem>
+                    <SelectItem value="therapeutisch" className="text-white hover:bg-white/10">🧘 Therapeutisch</SelectItem>
+                    <SelectItem value="flirtend" className="text-white hover:bg-white/10">😘 Flirtend</SelectItem>
+                    <SelectItem value="sarkastisch_neckend" className="text-white hover:bg-white/10">😏 Sarkastisch neckend</SelectItem>
+                    <SelectItem value="tröstend" className="text-white hover:bg-white/10">🤗 Tröstend</SelectItem>
+                    <SelectItem value="konfrontativ" className="text-white hover:bg-white/10">⚔️ Konfrontativ</SelectItem>
+                    <SelectItem value="chaotisch_sprunghaft" className="text-white hover:bg-white/10">🌀 Chaotisch / Sprunghaft</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-gray-300">Emoji-Nutzung</Label>
+                <Select 
+                  value={formData.emoji_usage} 
+                  onValueChange={(val) => setFormData(prev => ({ ...prev, emoji_usage: val }))}
+                >
+                  <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
+                    {EMOJI_USAGE.map(e => (
+                      <SelectItem key={e.value} value={e.value} className="text-white hover:bg-white/10">
+                        {e.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-gray-300">Humor-Art</Label>
+                <Select 
+                  value={formData.humor_type} 
+                  onValueChange={(val) => setFormData(prev => ({ ...prev, humor_type: val }))}
+                >
+                  <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                    <SelectValue placeholder="Auswählen..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
+                    {HUMOR_TYPES.map(h => (
+                      <SelectItem key={h.value} value={h.value} className="text-white hover:bg-white/10">
+                        {h.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-gray-300">Sprachliche Eigenheiten</Label>
+              <Input
+                value={formData.speech_patterns}
+                onChange={(e) => setFormData(prev => ({ ...prev, speech_patterns: e.target.value }))}
+                placeholder="z.B. Verwendet oft 'Alter', spricht im Dialekt, benutzt Fachbegriffe..."
+                className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-gray-300">Wiederkehrende Sprüche</Label>
+              <Input
+                value={formData.catchphrases}
+                onChange={(e) => setFormData(prev => ({ ...prev, catchphrases: e.target.value }))}
+                placeholder="z.B. 'Das ist der Weg!', 'Nicht schlecht, Herr Specht'"
+                className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
+              />
+            </div>
+              
+            {/* Erster Eindruck */}
+            <div className="space-y-1 mt-2 mb-1">
+              <h3 className="text-sm font-semibold text-emerald-400 flex items-center gap-2">
+                <MessageSquare className="w-4 h-4" />
+                Erster Eindruck
+              </h3>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-gray-300">Begrüßung</Label>
+              <Textarea
+                value={formData.greeting}
+                onChange={(e) => setFormData(prev => ({ ...prev, greeting: e.target.value }))}
+                placeholder="Die erste Nachricht die der Charakter sendet, wenn man einen neuen Chat startet..."
+                className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+              />
+              <p className="text-xs text-gray-500">Tipp: Eine gute Begrüßung spiegelt die Persönlichkeit wider und lädt zum Gespräch ein</p>
+            </div>
             </TabsContent>
             
             {/* Relationship Tab */}
