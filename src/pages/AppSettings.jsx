@@ -181,6 +181,21 @@ export default function AppSettings() {
           </button>
         </div>
 
+        {/* Save Button */}
+        {hasChanges && (
+          <div className="mx-4 mt-6">
+            <button
+              onClick={handleSave}
+              disabled={saveMutation.isPending}
+              className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-colors ${
+                isDark ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-black text-white hover:bg-black/90'
+              }`}
+            >
+              {saveMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Änderungen speichern'}
+            </button>
+          </div>
+        )}
+
         {/* Info */}
         <div className="text-center mt-8 px-4">
           <p className={`text-xs ${isDark ? 'text-gray-600' : 'text-gray-300'}`}>
