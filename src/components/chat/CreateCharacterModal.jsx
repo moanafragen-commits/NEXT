@@ -21,35 +21,48 @@ const CATEGORIES = [
   "Romantisch", "Humorvoll", "Philosophisch", "Andere"
 ];
 const WRITING_STYLES = [
-  { value: "formell", label: "Formell" },
-  { value: "informell", label: "Informell" },
-  { value: "humorvoll", label: "Humorvoll" },
-  { value: "sarkastisch", label: "Sarkastisch" },
-  { value: "poetisch", label: "Poetisch" },
-  { value: "wissenschaftlich", label: "Wissenschaftlich" },
-  { value: "freundlich", label: "Freundlich" },
-  { value: "mysteriös", label: "Mysteriös" }
+  { value: "formell", label: "📝 Formell" },
+  { value: "informell", label: "💬 Informell" },
+  { value: "humorvoll", label: "😄 Humorvoll" },
+  { value: "sarkastisch", label: "😏 Sarkastisch" },
+  { value: "poetisch", label: "🌸 Poetisch" },
+  { value: "wissenschaftlich", label: "🔬 Wissenschaftlich" },
+  { value: "freundlich", label: "😊 Freundlich" },
+  { value: "mysteriös", label: "🔮 Mysteriös" },
+  { value: "dramatisch", label: "🎭 Dramatisch" },
+  { value: "minimalistisch", label: "✨ Minimalistisch" },
+  { value: "umgangssprachlich", label: "🗣️ Umgangssprachlich" },
+  { value: "philosophisch", label: "🤔 Philosophisch" },
+  { value: "romantisch", label: "💕 Romantisch" },
+  { value: "aggressiv", label: "🔥 Aggressiv" },
+  { value: "kindlich", label: "🧸 Kindlich" },
+  { value: "weise", label: "🦉 Weise" }
 ];
 const RESPONSE_LENGTHS = [
-  { value: "kurz", label: "Kurz & knapp" },
-  { value: "mittel", label: "Mittel" },
-  { value: "ausführlich", label: "Ausführlich" }
+  { value: "kurz", label: "⚡ Kurz & knapp (1-2 Sätze)" },
+  { value: "mittel", label: "💬 Mittel (3-5 Sätze)" },
+  { value: "ausführlich", label: "📖 Ausführlich (Absätze)" }
 ];
 const LANGUAGES = ["Deutsch", "Englisch", "Mehrsprachig"];
 const EMOJI_USAGE = [
-  { value: "nie", label: "Nie" },
-  { value: "selten", label: "Selten" },
-  { value: "gelegentlich", label: "Gelegentlich" },
-  { value: "häufig", label: "Häufig" }
+  { value: "nie", label: "🚫 Nie" },
+  { value: "selten", label: "😶 Selten" },
+  { value: "gelegentlich", label: "🙂 Gelegentlich" },
+  { value: "häufig", label: "😍 Häufig" },
+  { value: "exzessiv", label: "🤯 Exzessiv (jeder Satz)" }
 ];
 const HUMOR_TYPES = [
-  { value: "keiner", label: "Keiner" },
-  { value: "trocken", label: "Trocken" },
-  { value: "wortspiele", label: "Wortspiele" },
-  { value: "slapstick", label: "Slapstick" },
-  { value: "ironisch", label: "Ironisch" },
-  { value: "dunkel", label: "Dunkel" },
-  { value: "kindlich", label: "Kindlich" }
+  { value: "keiner", label: "😐 Keiner" },
+  { value: "trocken", label: "🏜️ Trocken" },
+  { value: "wortspiele", label: "🔤 Wortspiele" },
+  { value: "slapstick", label: "🤡 Slapstick" },
+  { value: "ironisch", label: "😏 Ironisch" },
+  { value: "dunkel", label: "🖤 Dunkel" },
+  { value: "kindlich", label: "🧒 Kindlich" },
+  { value: "absurd", label: "🦆 Absurd" },
+  { value: "selbstironisch", label: "🪞 Selbstironisch" },
+  { value: "neckend", label: "😜 Neckend / Flirtend" },
+  { value: "intelligent", label: "🧠 Intelligent / Witzig" }
 ];
 
 export default function CreateCharacterModal({ open, onClose, onCreated }) {
