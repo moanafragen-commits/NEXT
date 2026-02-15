@@ -36,7 +36,18 @@ const WRITING_STYLES = [
   { value: "romantisch", label: "💕 Romantisch" },
   { value: "aggressiv", label: "🔥 Aggressiv" },
   { value: "kindlich", label: "🧸 Kindlich" },
-  { value: "weise", label: "🦉 Weise" }
+  { value: "weise", label: "🦉 Weise" },
+  { value: "melancholisch", label: "🌧️ Melancholisch" },
+  { value: "provokant", label: "⚡ Provokant" },
+  { value: "motivierend", label: "💪 Motivierend" },
+  { value: "therapeutisch", label: "🧘 Therapeutisch" },
+  { value: "erzählerisch", label: "📖 Erzählerisch" },
+  { value: "flirtend", label: "😘 Flirtend" },
+  { value: "gothic", label: "🖤 Gothic" },
+  { value: "slang", label: "🤙 Slang / Jugendsprache" },
+  { value: "eloquent", label: "🎩 Eloquent / Gehoben" },
+  { value: "chaotisch", label: "🌀 Chaotisch" },
+  { value: "trocken", label: "🏜️ Trocken / Deadpan" },
 ];
 const RESPONSE_LENGTHS = [
   { value: "kurz", label: "⚡ Kurz & knapp (1-2 Sätze)" },
