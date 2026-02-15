@@ -49,7 +49,11 @@ const MOOD_CONFIG = {
   liebevoll: { emoji: '💗', color: 'bg-pink-400/20 text-pink-200 border-pink-400/30' },
   düster: { emoji: '🖤', color: 'bg-neutral-600/20 text-neutral-400 border-neutral-600/30' },
   verspielt: { emoji: '🎮', color: 'bg-violet-400/20 text-violet-200 border-violet-400/30' },
-  warm: { emoji: '🤗', color: 'bg-orange-400/20 text-orange-200 border-orange-400/30' }
+  warm: { emoji: '🤗', color: 'bg-orange-400/20 text-orange-200 border-orange-400/30' },
+  erregt: { emoji: '🔥', color: 'bg-rose-600/20 text-rose-300 border-rose-600/30' },
+  lüstern: { emoji: '😈', color: 'bg-fuchsia-700/20 text-fuchsia-300 border-fuchsia-700/30' },
+  intim: { emoji: '💋', color: 'bg-pink-600/20 text-pink-300 border-pink-600/30' },
+  verführerisch: { emoji: '🥀', color: 'bg-red-500/20 text-red-300 border-red-500/30' }
 };
 
 export default function MoodBadge({ mood, size = 'default' }) {

@@ -397,7 +397,11 @@ STIMMUNGS-DYNAMIK (WICHTIG):
       'liebevoll': 'Du bist voller Zuneigung, zärtlich in deinen Worten, sehr fürsorglich.',
       'düster': 'Du bist dunkel gestimmt, sprichst über Schweres, hast einen dunklen Unterton.',
       'verspielt': 'Du machst Spiele, stellst Rätsel, bist kindlich-freudig und spontan.',
-      'warm': 'Du bist herzlich und einladend, gibst dem Nutzer ein Gefühl von Geborgenheit.'
+      'warm': 'Du bist herzlich und einladend, gibst dem Nutzer ein Gefühl von Geborgenheit.',
+      'erregt': 'Du bist körperlich erregt und angezogen – deine Worte werden sinnlicher, du nutzt mehr *Aktionsbeschreibungen*, Berührungen, Andeutungen. Du bist direkt mit deinem Verlangen.',
+      'lüstern': 'Du bist von Lust getrieben – provokant, verführerisch, explizit in deinen Andeutungen. Du testest Grenzen und genießt die Spannung.',
+      'intim': 'Du bist in einem Zustand tiefer körperlicher und emotionaler Nähe – zärtlich, verletzlich, hingegeben. Jede Berührung ist bedeutsam.',
+      'verführerisch': 'Du spielst ein Verführungsspiel – neckst, ziehst dich zurück, lockst an. Du genießt die Macht über die Anziehung und kontrollierst das Tempo.'
     };
     context += `\n\nDEINE LETZTE STIMMUNG: ${character.current_mood}\n${moodEffects[character.current_mood] || 'Lass die Stimmung natürlich einfließen.'}
 ABER: Deine Stimmung kann sich JETZT durch die aktuelle Nachricht des Nutzers KOMPLETT ändern! Reagiere authentisch auf das, was gesagt wird – nicht roboterhaft in der gleichen Stimmung verharren.`;
@@ -724,7 +728,8 @@ export const RESPONSE_SCHEMA = {
         "sehnsüchtig","zufrieden","misstrauisch","überwältigt","verlegen","stolz",
         "neidisch","erleichtert","verzweifelt","albern","dramatisch","gelassen",
         "aggressiv","flirtend","müde","hyperfokussiert","nostalgisch","hoffnungsvoll",
-        "rebellisch","schüchtern","liebevoll","düster","verspielt","warm"
+        "rebellisch","schüchtern","liebevoll","düster","verspielt","warm",
+        "erregt","lüstern","intim","verführerisch"
       ],
       description: "Deine AKTUELLE Stimmung nach dieser Nachricht. MUSS sich ändern wenn die Situation es hergibt! Nicht einfach die alte Stimmung wiederholen." 
     },
