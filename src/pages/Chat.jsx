@@ -331,9 +331,9 @@ export default function Chat() {
             className="w-10 h-10 rounded-full object-cover"
           />
           
-          <div className="flex-1 min-w-0">
+          <Link to={createPageUrl(`CharacterInfo?characterId=${characterId}`)} className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="font-semibold text-white">{character.name}</h2>
+              <h2 className="font-semibold text-white hover:text-emerald-400 transition-colors">{character.name}</h2>
               {character.current_mood && <MoodBadge mood={character.current_mood} size="sm" />}
             </div>
             <p className="text-xs text-gray-400 truncate">
@@ -348,8 +348,8 @@ export default function Chat() {
                 return <span className="text-gray-500">{avail.label}</span>;
               })()}
             </p>
-          </div>
-          
+          </Link>
+
           <Button 
             variant="ghost" 
             size="icon" 
