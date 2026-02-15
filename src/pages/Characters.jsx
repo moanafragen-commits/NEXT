@@ -15,12 +15,14 @@ export default function Characters() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
 
+  const location = useLocation();
+  
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(location.search);
     if (urlParams.get('create') === 'true') {
       setShowCreateModal(true);
     }
-  }, []);
+  }, [location.search]);
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({

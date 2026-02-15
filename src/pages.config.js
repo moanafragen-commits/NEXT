@@ -47,6 +47,8 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import Activity from './pages/Activity';
+import AppSettings from './pages/AppSettings';
 import CharacterDevelopment from './pages/CharacterDevelopment';
 import CharacterInfo from './pages/CharacterInfo';
 import CharacterLibrary from './pages/CharacterLibrary';
@@ -54,26 +56,26 @@ import CharacterStatus from './pages/CharacterStatus';
 import Characters from './pages/Characters';
 import Chat from './pages/Chat';
 import ChatView from './pages/ChatView';
+import CreatePost from './pages/CreatePost';
 import CreateStatus from './pages/CreateStatus';
 import CreateUserStatus from './pages/CreateUserStatus';
 import Feed from './pages/Feed';
 import GroupChat from './pages/GroupChat';
 import GroupChats from './pages/GroupChats';
+import Home from './pages/Home';
 import Landing from './pages/Landing';
+import MemoryTraining from './pages/MemoryTraining';
 import NotificationSettings from './pages/NotificationSettings';
 import UserChat from './pages/UserChat';
 import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
 import UserStatusView from './pages/UserStatusView';
-import MemoryTraining from './pages/MemoryTraining';
-import Activity from './pages/Activity';
-import CreatePost from './pages/CreatePost';
-import AppSettings from './pages/AppSettings';
-import Home from './pages/Home';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "Activity": Activity,
+    "AppSettings": AppSettings,
     "CharacterDevelopment": CharacterDevelopment,
     "CharacterInfo": CharacterInfo,
     "CharacterLibrary": CharacterLibrary,
@@ -81,22 +83,20 @@ export const PAGES = {
     "Characters": Characters,
     "Chat": Chat,
     "ChatView": ChatView,
+    "CreatePost": CreatePost,
     "CreateStatus": CreateStatus,
     "CreateUserStatus": CreateUserStatus,
     "Feed": Feed,
     "GroupChat": GroupChat,
     "GroupChats": GroupChats,
+    "Home": Home,
     "Landing": Landing,
+    "MemoryTraining": MemoryTraining,
     "NotificationSettings": NotificationSettings,
     "UserChat": UserChat,
     "UserChats": UserChats,
     "UserProfile": UserProfile,
     "UserStatusView": UserStatusView,
-    "MemoryTraining": MemoryTraining,
-    "Activity": Activity,
-    "CreatePost": CreatePost,
-    "AppSettings": AppSettings,
-    "Home": Home,
 }
 
 export const pagesConfig = {
