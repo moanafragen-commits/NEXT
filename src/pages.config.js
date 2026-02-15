@@ -61,6 +61,8 @@ import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
 import CharacterStatus from './pages/CharacterStatus';
 import CreateStatus from './pages/CreateStatus';
+import CreateUserStatus from './pages/CreateUserStatus';
+import UserStatusView from './pages/UserStatusView';
 
 
 export const PAGES = {
@@ -78,6 +80,8 @@ export const PAGES = {
     "UserProfile": UserProfile,
     "CharacterStatus": CharacterStatus,
     "CreateStatus": CreateStatus,
+    "CreateUserStatus": CreateUserStatus,
+    "UserStatusView": UserStatusView,
 }
 
 export const pagesConfig = {
