@@ -13,7 +13,7 @@ import { useNotifications } from '@/components/notifications/NotificationManager
 import MoodBadge from '@/components/character/MoodBadge';
 import ExportChatButton from '@/components/chat/ExportChatButton';
 import ShareChatButton from '@/components/chat/ShareChatButton';
-import { calculateReplyDelay, getDelayReason } from '@/components/chat/ReplyDelayCalculator';
+import { calculateReplyDelay, getDelayReason, getCharacterAvailability, isRepeatNag } from '@/components/chat/ReplyDelayCalculator';
 import { buildFullPrompt, RESPONSE_SCHEMA } from '@/components/chat/PromptBuilder';
 
 export default function Chat() {
@@ -101,8 +101,11 @@ export default function Chat() {
       
       queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
       
-      // Realistic reply delay based on character traits
-      const delay = calculateReplyDelay(character);
+      // Check if user is nagging / sending follow-up
+      const isNag = isRepeatNag(messages, content);
+      
+      // Realistic reply delay based on character traits & availability
+      const delay = calculateReplyDelay(character, isNag);
       const reason = getDelayReason(character);
       setDelayStatus(reason);
       
@@ -341,9 +344,12 @@ export default function Chat() {
                 <span className="text-emerald-400">schreibt...</span>
               ) : delayStatus ? (
                 <span className="text-amber-400">{delayStatus}</span>
-              ) : (
-                character.status || 'online'
-              )}
+              ) : (() => {
+                const avail = getCharacterAvailability(character);
+                if (avail.status === 'online') return <span className="text-emerald-400">online</span>;
+                if (avail.status === 'away') return <span className="text-amber-400">{avail.label}</span>;
+                return <span className="text-gray-500">{avail.label}</span>;
+              })()}
             </p>
           </div>
           

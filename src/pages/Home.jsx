@@ -20,7 +20,7 @@ import UserStatusCircle from '@/components/status/UserStatusCircle';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotifications } from '@/components/notifications/NotificationManager';
 import UnreadBadge from '@/components/notifications/UnreadBadge';
-import { calculateReplyDelay, getDelayReason } from '@/components/chat/ReplyDelayCalculator';
+import { calculateReplyDelay, getDelayReason, getCharacterAvailability, isRepeatNag } from '@/components/chat/ReplyDelayCalculator';
 import { getTagColor } from '@/components/chat/TagManager';
 import BottomNav from '@/components/navigation/BottomNav';
 
@@ -170,8 +170,11 @@ export default function Home() {
 
           await queryClient.invalidateQueries({ queryKey: ['messages', charId] });
 
+          // Check if nagging
+          const isNag = isRepeatNag(chatMessages, content);
+          
           // Realistic reply delay
-          const delay = calculateReplyDelay(selectedCharacter);
+          const delay = calculateReplyDelay(selectedCharacter, isNag);
           const preTypingWait = Math.max(0, delay - 3000);
           if (preTypingWait > 0) {
             await new Promise(resolve => setTimeout(resolve, Math.min(preTypingWait, 15000)));
@@ -504,7 +507,14 @@ export default function Home() {
                 <div className="flex-1">
                   <h3 className="font-semibold">{selectedCharacter.name}</h3>
                   <p className="text-xs text-gray-500">
-                    {isTyping ? <span className="text-emerald-400">schreibt...</span> : 'online'}
+                    {isTyping ? (
+                      <span className="text-emerald-400">schreibt...</span>
+                    ) : (() => {
+                      const avail = getCharacterAvailability(selectedCharacter);
+                      if (avail.status === 'online') return <span className="text-emerald-400">online</span>;
+                      if (avail.status === 'away') return <span className="text-amber-400">{avail.label}</span>;
+                      return <span className="text-gray-500">{avail.label}</span>;
+                    })()}
                   </p>
                 </div>
                 <Link to={createPageUrl(`Chat?characterId=${selectedCharacter.id}`)}>
