@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, BookOpen, MessageCircle, Settings, Sparkles, Plus, Brain, Heart, Target, TrendingUp } from 'lucide-react';
+import { ArrowLeft, BookOpen, MessageCircle, Settings, Sparkles, Plus, Brain, Heart, Target, TrendingUp, Dumbbell } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -210,14 +210,26 @@ export default function CharacterInfo() {
               <Brain className="w-5 h-5" />
               <h3 className="font-semibold">Erinnerungen & Beziehung</h3>
             </div>
-            <Button
-              onClick={() => { setEditingMemory(null); setShowMemoryModal(true); }}
-              size="sm"
-              className="bg-emerald-600 hover:bg-emerald-500"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Hinzufügen
-            </Button>
+            <div className="flex items-center gap-2">
+              <Link to={createPageUrl(`MemoryTraining?characterId=${characterId}`)}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10"
+                >
+                  <Dumbbell className="w-4 h-4 mr-1.5" />
+                  Training
+                </Button>
+              </Link>
+              <Button
+                onClick={() => { setEditingMemory(null); setShowMemoryModal(true); }}
+                size="sm"
+                className="bg-emerald-600 hover:bg-emerald-500"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Hinzufügen
+              </Button>
+            </div>
           </div>
           
           {memories.length === 0 ? (
