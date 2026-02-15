@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { motion } from 'framer-motion';
-import AddMemoryModal from '@/components/memory/AddMemoryModal';
+import EditMemoryModal from '@/components/memory/EditMemoryModal';
+import MemoryList from '@/components/memory/MemoryList';
 import MoodBadge from '@/components/character/MoodBadge';
 import RelationshipPanel from '@/components/character/RelationshipPanel';
 import MoodMotivationPanel from '@/components/character/MoodMotivationPanel';
@@ -17,7 +18,8 @@ export default function CharacterInfo() {
   const urlParams = new URLSearchParams(window.location.search);
   const characterId = urlParams.get('characterId');
   const queryClient = useQueryClient();
-  const [showAddMemory, setShowAddMemory] = useState(false);
+  const [showMemoryModal, setShowMemoryModal] = useState(false);
+  const [editingMemory, setEditingMemory] = useState(null);
   
   const { data: character } = useQuery({
     queryKey: ['character', characterId],
@@ -45,24 +47,16 @@ export default function CharacterInfo() {
     enabled: !!characterId
   });
   
-  const deleteMemoryMutation = useMutation({
-    mutationFn: (memoryId) => base44.entities.CharacterMemory.delete(memoryId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['memories', characterId] });
-    }
-  });
+  const handleEditMemory = (memory) => {
+    setEditingMemory(memory);
+    setShowMemoryModal(true);
+  };
   
   if (!character) return null;
   
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character.name}`;
   
-  const memoryTypeLabels = {
-    fact: '📌 Fakt',
-    preference: '❤️ Vorliebe',
-    event: '📅 Ereignis',
-    emotion: '😊 Emotion',
-    relationship: '🤝 Beziehung'
-  };
+
   
   return (
     <div className="min-h-screen bg-[#111] text-white">
