@@ -1457,6 +1457,16 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                       <SelectItem value="therapeutisch" className="text-white hover:bg-white/10">🧘 Therapeutisch</SelectItem>
                       <SelectItem value="motivierend" className="text-white hover:bg-white/10">🔥 Motivierend</SelectItem>
                       <SelectItem value="lehrend" className="text-white hover:bg-white/10">📚 Lehrend</SelectItem>
+                      <SelectItem value="flirtend" className="text-white hover:bg-white/10">😘 Flirtend</SelectItem>
+                      <SelectItem value="sarkastisch_neckend" className="text-white hover:bg-white/10">😏 Sarkastisch neckend</SelectItem>
+                      <SelectItem value="philosophierend" className="text-white hover:bg-white/10">🤔 Philosophierend</SelectItem>
+                      <SelectItem value="tröstend" className="text-white hover:bg-white/10">🤗 Tröstend</SelectItem>
+                      <SelectItem value="konfrontativ" className="text-white hover:bg-white/10">⚔️ Konfrontativ</SelectItem>
+                      <SelectItem value="schweigend_knapp" className="text-white hover:bg-white/10">🤐 Schweigend / Knapp</SelectItem>
+                      <SelectItem value="dramatisierend" className="text-white hover:bg-white/10">🎭 Dramatisierend</SelectItem>
+                      <SelectItem value="manipulativ_subtil" className="text-white hover:bg-white/10">🕸️ Manipulativ / Subtil</SelectItem>
+                      <SelectItem value="beschützend_fürsorglich" className="text-white hover:bg-white/10">🛡️ Beschützend</SelectItem>
+                      <SelectItem value="chaotisch_sprunghaft" className="text-white hover:bg-white/10">🌀 Chaotisch / Sprunghaft</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1498,6 +1508,16 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                       <SelectItem value="passiv_aggressiv" className="text-white hover:bg-white/10">😤 Passiv-aggressiv</SelectItem>
                       <SelectItem value="konfrontativ" className="text-white hover:bg-white/10">⚔️ Konfrontativ</SelectItem>
                       <SelectItem value="nachgebend" className="text-white hover:bg-white/10">🕊️ Nachgebend</SelectItem>
+                      <SelectItem value="schuldzuweisend" className="text-white hover:bg-white/10">👉 Schuldzuweisend</SelectItem>
+                      <SelectItem value="stonewalling" className="text-white hover:bg-white/10">🧱 Stonewalling (Mauern)</SelectItem>
+                      <SelectItem value="weinend_zusammenbrechend" className="text-white hover:bg-white/10">😭 Weinend / Zusammenbrechend</SelectItem>
+                      <SelectItem value="sarkastisch_verletzend" className="text-white hover:bg-white/10">🗡️ Sarkastisch & verletzend</SelectItem>
+                      <SelectItem value="manipulativ" className="text-white hover:bg-white/10">🎭 Manipulativ</SelectItem>
+                      <SelectItem value="selbstmitleidig" className="text-white hover:bg-white/10">🥀 Selbstmitleidig</SelectItem>
+                      <SelectItem value="explosiv" className="text-white hover:bg-white/10">💥 Explosiv / Ausrastend</SelectItem>
+                      <SelectItem value="kalt_berechnend" className="text-white hover:bg-white/10">🧊 Kalt & berechnend</SelectItem>
+                      <SelectItem value="entschuldigend" className="text-white hover:bg-white/10">🙏 Sofort entschuldigend</SelectItem>
+                      <SelectItem value="gaslighting" className="text-white hover:bg-white/10">🌀 Gaslighting / Verdrehen</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

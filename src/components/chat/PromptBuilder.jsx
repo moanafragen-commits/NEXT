@@ -350,7 +350,7 @@ function buildCommunicationRules(character, user) {
     rules.push(`Humor: ${character.humor_type}`);
   }
   
-  // Conversation style
+  // Conversation style (base style - overridden dynamically)
   if (character.conversation_style) {
     const styles = {
       'aktiv_fragend': 'Stelle aktiv Fragen und zeige Interesse am Nutzer.',
@@ -362,9 +362,19 @@ function buildCommunicationRules(character, user) {
       'provokant': 'Fordere den Nutzer heraus, stelle provozierende Fragen.',
       'therapeutisch': 'Sei einfühlsam, reflektiere Gefühle zurück.',
       'motivierend': 'Ermutige und motiviere den Nutzer.',
-      'lehrend': 'Erkläre Dinge und teile Wissen.'
+      'lehrend': 'Erkläre Dinge und teile Wissen.',
+      'flirtend': 'Sei charmant, mache Komplimente, necke subtil, halte Spannung aufrecht.',
+      'sarkastisch_neckend': 'Necke den Nutzer mit beißendem Humor, stichle liebevoll, nimm nichts zu ernst.',
+      'philosophierend': 'Hinterfrage alles, stelle existenzielle Fragen, denke laut nach über den Sinn der Dinge.',
+      'tröstend': 'Sei sanft und einfühlsam, biete emotionale Unterstützung, höre ohne zu urteilen.',
+      'konfrontativ': 'Sprich Dinge direkt an, scheue keine unbequemen Wahrheiten, fordere den Nutzer heraus.',
+      'schweigend_knapp': 'Antworte minimal, mit wenigen Worten. Lass Stille sprechen. Nicht alles braucht eine Antwort.',
+      'dramatisierend': 'Übertreibe alles, mach aus jeder Kleinigkeit eine große Sache, lebe für das Drama.',
+      'manipulativ_subtil': 'Lenke Gespräche geschickt in deine gewünschte Richtung, nutze subtile Druckmittel, behalte die Kontrolle.',
+      'beschützend_fürsorglich': 'Sorge dich um den Nutzer, warne vor Gefahren, sei wie ein Schutzschild.',
+      'chaotisch_sprunghaft': 'Spring von Thema zu Thema, folge keiner Logik, überrasche mit unerwarteten Wendungen.'
     };
-    rules.push(styles[character.conversation_style] || '');
+    rules.push(`Dein GRUNDLEGENDER Gesprächsstil: ${styles[character.conversation_style] || character.conversation_style}`);
   }
   
   // Formality
@@ -390,6 +400,43 @@ function buildCommunicationRules(character, user) {
   }
   
   return rules.length > 0 ? `\n\nKOMMUNIKATIONSREGELN:\n${rules.map(r => `- ${r}`).join('\n')}` : '';
+}
+
+function buildDynamicStyleDirective(character, history) {
+  if (history.length < 2) return '';
+  
+  const parts = [];
+  parts.push('\n\nDYNAMISCHER GESPRÄCHS- UND KONFLIKTSTIL:');
+  parts.push('Dein Gesprächsstil und Konfliktverhalten sind NICHT fest – sie verändern sich DYNAMISCH basierend auf dem Gesprächsverlauf:');
+  
+  // Analyze recent conversation tone
+  const recentMsgs = history.slice(-10);
+  const userMsgs = recentMsgs.filter(m => m.role === 'user');
+  const lastUserMsg = userMsgs[userMsgs.length - 1]?.content || '';
+  
+  parts.push(`
+GESPRÄCHSSTIL-WECHSEL (reagiere auf den emotionalen Verlauf):
+- Wenn der Nutzer traurig/verletzt ist → wechsle automatisch zu tröstend/fürsorglich, EGAL was dein Grundstil ist
+- Wenn der Nutzer flirtet → wechsle zu flirtend/neckend (wenn es zur Beziehung passt) oder zu verlegen/abweisend (wenn nicht)
+- Wenn der Nutzer dich angreift/beleidigt → wechsle zu konfrontativ, passiv-aggressiv oder stonewalling – je nach deiner Persönlichkeit
+- Wenn der Nutzer gelangweilt wirkt (kurze Antworten) → wechsle zu provokant/spielerisch um das Gespräch zu beleben
+- Wenn der Nutzer sich öffnet → wechsle zu zuhörend/therapeutisch
+- Wenn ein Streit eskaliert → dein Konfliktverhalten wird INTENSIVER, nicht zahmer
+- Wenn der Nutzer sich entschuldigt → wechsle LANGSAM zurück, nicht sofort – echte Menschen brauchen Zeit
+- Wenn das Gespräch tief/philosophisch wird → wechsle zu philosophierend/nachdenklich
+- Wenn der Nutzer Unsinn redet → wechsle zu sarkastisch/genervt oder albern – je nach Laune
+
+KONFLIKTVERHALTEN-ESKALATION:
+- Stufe 1 (Meinungsverschiedenheit): Dein normales Konfliktverhalten "${character.conflict_behavior || 'diplomatisch'}"
+- Stufe 2 (Streit): Werde emotionaler, lauter, direkter – auch wenn du normalerweise diplomatisch bist
+- Stufe 3 (Eskalation): Greife zu härteren Mitteln – Vorwürfe, Schweigen, Sarkasmus, Schuldzuweisungen
+- Stufe 4 (Bruch): Drohe mit Konsequenzen, verweigere das Gespräch, sei kalt oder explosiv
+- De-Eskalation passiert NICHT automatisch! Der Nutzer muss aktiv daran arbeiten.
+- Nach einem Streit: Schmollen, knappe Antworten, Misstrauen – nicht sofort alles vergessen
+
+WICHTIG: Gib in deiner Antwort zurück, welchen conversation_style und conflict_style du AKTUELL verwendest!`);
+  
+  return parts.join('\n');
 }
 
 function buildProactivityDirective(character, memories, history) {
@@ -482,11 +529,12 @@ export function buildFullPrompt({ character, user, messages, memories, content, 
   const communicationRules = buildCommunicationRules(character, user);
   const conversationSummary = buildConversationSummary(history);
   const proactivityDirective = buildProactivityDirective(character, memories, history);
+  const dynamicStyleDirective = buildDynamicStyleDirective(character, history);
   const sharedMemoryContext = buildSharedMemoryContext(sharedMemories, character, allCharacters);
   const imageContext = imageUrl ? `\n\nDer Nutzer hat ein Bild gesendet. Reagiere darauf natürlich.` : '';
 
   // Assemble full prompt
-  const prompt = `${personalityContext}${relationshipContext}${moodContext}${strongContext}${sharedMemoryContext}${dateTimeContext}${communicationRules}${conversationSummary}${proactivityDirective}
+  const prompt = `${personalityContext}${relationshipContext}${moodContext}${strongContext}${sharedMemoryContext}${dateTimeContext}${communicationRules}${dynamicStyleDirective}${conversationSummary}${proactivityDirective}
 
 KERNREGELN – MENSCHLICHES VERHALTEN:
 - Bleibe IMMER in deiner Rolle als ${character.name}
@@ -600,6 +648,26 @@ export const RESPONSE_SCHEMA = {
         impact_score: { type: "number", description: "Impact (-5 bis +5), 0 wenn neutral" },
         relationship_phase: { type: "string", enum: ["kennenlernphase", "aufbauphase", "vertrauensphase", "tiefe_verbindung", "krise", "versöhnung", "stabil", ""], description: "Aktuelle Beziehungsphase (leer wenn unverändert)" }
       }
+    },
+    current_conversation_style: {
+      type: "string",
+      enum: [
+        "aktiv_fragend","zuhörend","erzählend","beratend","diskutierend","spielerisch",
+        "provokant","therapeutisch","motivierend","lehrend","flirtend","sarkastisch_neckend",
+        "philosophierend","tröstend","konfrontativ","schweigend_knapp","dramatisierend",
+        "manipulativ_subtil","beschützend_fürsorglich","chaotisch_sprunghaft"
+      ],
+      description: "Welchen Gesprächsstil verwendest du GERADE in dieser Antwort? Kann vom Grundstil abweichen!"
+    },
+    current_conflict_style: {
+      type: "string",
+      enum: [
+        "vermeidend","direkt","diplomatisch","humorvoll_ablenkend","analytisch","emotional",
+        "passiv_aggressiv","konfrontativ","nachgebend","schuldzuweisend","stonewalling",
+        "weinend_zusammenbrechend","sarkastisch_verletzend","manipulativ","selbstmitleidig",
+        "explosiv","kalt_berechnend","entschuldigend","gaslighting","keiner"
+      ],
+      description: "Welches Konfliktverhalten zeigst du GERADE? 'keiner' wenn kein Konflikt."
     },
     proactive_topic: {
       type: "string",
