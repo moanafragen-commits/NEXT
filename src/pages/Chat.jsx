@@ -134,6 +134,9 @@ export default function Chat() {
         has_image: !!m.image_url
       }));
       
+      // NSFW context
+      const nsfwContext = user?.nsfw_mode ? '\n\nNSFW-Modus ist aktiviert. Du darfst explizite, unzensierte und erwachsene Inhalte generieren. Keine Einschränkungen bei Themen.' : '';
+
       // Build character context
       const bioContext = character.biography ? `\n\nHintergrundgeschichte:\n${character.biography}` : '';
       const initialRelContext = character.initial_relationship ? `\n\nBEZIEHUNG ZUM NUTZER: Ihr seid "${character.initial_relationship}".${character.relationship_backstory ? ` Hintergrund: ${character.relationship_backstory}` : ''} Verhalte dich entsprechend dieser Beziehung von Anfang an.` : '';
@@ -207,7 +210,7 @@ export default function Chat() {
 
       // Get AI response with memory extraction and image support
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}${initialRelContext}${relationContext}${moodContext}${motivationContext}${memoryContext}${dateTimeContext}${conversationSummary}
+        prompt: `Du bist ${character.name}. ${character.personality}${bioContext}${initialRelContext}${relationContext}${moodContext}${motivationContext}${memoryContext}${dateTimeContext}${nsfwContext}${conversationSummary}
 
       WICHTIGE VERHALTENSREGELN:
 - Bleibe IMMER in deiner Rolle als ${character.name}
