@@ -715,7 +715,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue placeholder="Dynamik wählen..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                       <SelectItem value="gleichberechtigt" className="text-white hover:bg-white/10">⚖️ Gleichberechtigt</SelectItem>
                       <SelectItem value="dominant" className="text-white hover:bg-white/10">👑 Dominant</SelectItem>
                       <SelectItem value="unterwürfig" className="text-white hover:bg-white/10">🙇 Unterwürfig</SelectItem>
@@ -740,7 +740,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                       <SelectItem value="sicher" className="text-white hover:bg-white/10">🟢 Sicher</SelectItem>
                       <SelectItem value="ängstlich" className="text-white hover:bg-white/10">🟡 Ängstlich</SelectItem>
                       <SelectItem value="vermeidend" className="text-white hover:bg-white/10">🔴 Vermeidend</SelectItem>
@@ -758,7 +758,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue placeholder="Auswählen..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                       <SelectItem value="Worte der Bestätigung" className="text-white hover:bg-white/10">💬 Worte der Bestätigung</SelectItem>
                       <SelectItem value="Geschenke" className="text-white hover:bg-white/10">🎁 Geschenke</SelectItem>
                       <SelectItem value="Hilfsbereitschaft" className="text-white hover:bg-white/10">🤲 Hilfsbereitschaft</SelectItem>
@@ -817,7 +817,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                   <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#262626] border-white/10">
+                  <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                     <SelectItem value="statisch" className="text-white hover:bg-white/10">⏸️ Statisch – bleibt wie sie ist</SelectItem>
                     <SelectItem value="sich_annähernd" className="text-white hover:bg-white/10">💞 Sich annähernd</SelectItem>
                     <SelectItem value="sich_entfernend" className="text-white hover:bg-white/10">💨 Sich entfernend</SelectItem>
