@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen } from 'lucide-react';
+import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const CATEGORIES = ["Freund", "Mentor", "Fantasie", "Berühmtheit", "Assistent", "Andere"];
@@ -27,6 +27,21 @@ const RESPONSE_LENGTHS = [
   { value: "ausführlich", label: "Ausführlich" }
 ];
 const LANGUAGES = ["Deutsch", "Englisch", "Mehrsprachig"];
+const EMOJI_USAGE = [
+  { value: "nie", label: "Nie" },
+  { value: "selten", label: "Selten" },
+  { value: "gelegentlich", label: "Gelegentlich" },
+  { value: "häufig", label: "Häufig" }
+];
+const HUMOR_TYPES = [
+  { value: "keiner", label: "Keiner" },
+  { value: "trocken", label: "Trocken" },
+  { value: "wortspiele", label: "Wortspiele" },
+  { value: "slapstick", label: "Slapstick" },
+  { value: "ironisch", label: "Ironisch" },
+  { value: "dunkel", label: "Dunkel" },
+  { value: "kindlich", label: "Kindlich" }
+];
 
 export default function CreateCharacterModal({ open, onClose, onCreated }) {
   const [formData, setFormData] = useState({
@@ -41,7 +56,20 @@ export default function CreateCharacterModal({ open, onClose, onCreated }) {
     response_length: 'mittel',
     creativity: 50,
     language_preference: 'Deutsch',
-    custom_instructions: ''
+    custom_instructions: '',
+    interests: '',
+    favorite_topics: '',
+    dislikes: '',
+    speech_patterns: '',
+    emoji_usage: 'gelegentlich',
+    humor_type: '',
+    values: '',
+    fears: '',
+    goals: '',
+    occupation: '',
+    age: '',
+    background_culture: '',
+    formality_level: 5
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -105,7 +133,10 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
     setFormData({
       name: '', personality: '', greeting: '', status: '', category: 'Andere',
       avatar_url: '', biography: '', writing_style: 'freundlich', response_length: 'mittel',
-      creativity: 50, language_preference: 'Deutsch', custom_instructions: ''
+      creativity: 50, language_preference: 'Deutsch', custom_instructions: '',
+      interests: '', favorite_topics: '', dislikes: '', speech_patterns: '',
+      emoji_usage: 'gelegentlich', humor_type: '', values: '', fears: '', goals: '',
+      occupation: '', age: '', background_culture: '', formality_level: 5
     });
     onCreated();
     onClose();
@@ -133,6 +164,10 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
               <TabsTrigger value="biography" className="flex-1 data-[state=active]:bg-emerald-600">
                 <BookOpen className="w-4 h-4 mr-2" />
                 Biografie
+              </TabsTrigger>
+              <TabsTrigger value="personality" className="flex-1 data-[state=active]:bg-emerald-600">
+                <Heart className="w-4 h-4 mr-2" />
+                Details
               </TabsTrigger>
               <TabsTrigger value="behavior" className="flex-1 data-[state=active]:bg-emerald-600">
                 <Settings className="w-4 h-4 mr-2" />
@@ -263,9 +298,154 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                 <Textarea
                   value={formData.biography}
                   onChange={(e) => setFormData(prev => ({ ...prev, biography: e.target.value }))}
-                  placeholder="Erzähle die Geschichte des Charakters: Wo kommt er her? Was hat er erlebt? Was sind seine Ziele, Ängste, Träume? Welche wichtigen Ereignisse haben ihn geprägt?"
-                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[250px]"
+                  placeholder="Erzähle die Geschichte des Charakters: Wo kommt er her? Was hat er erlebt? Welche wichtigen Ereignisse haben ihn geprägt?"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[150px]"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Alter</Label>
+                  <Input
+                    value={formData.age}
+                    onChange={(e) => setFormData(prev => ({ ...prev, age: e.target.value }))}
+                    placeholder="z.B. 28 Jahre oder Anfang 30"
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Beruf</Label>
+                  <Input
+                    value={formData.occupation}
+                    onChange={(e) => setFormData(prev => ({ ...prev, occupation: e.target.value }))}
+                    placeholder="z.B. Softwareentwickler"
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Kultureller Hintergrund</Label>
+                <Input
+                  value={formData.background_culture}
+                  onChange={(e) => setFormData(prev => ({ ...prev, background_culture: e.target.value }))}
+                  placeholder="z.B. Aufgewachsen in Berlin, deutsche Familie"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Werte & Überzeugungen</Label>
+                <Textarea
+                  value={formData.values}
+                  onChange={(e) => setFormData(prev => ({ ...prev, values: e.target.value }))}
+                  placeholder="Was ist dem Charakter wichtig? Ehrlichkeit, Freiheit, Familie..."
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Ziele & Träume</Label>
+                  <Textarea
+                    value={formData.goals}
+                    onChange={(e) => setFormData(prev => ({ ...prev, goals: e.target.value }))}
+                    placeholder="Was möchte der Charakter erreichen?"
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Ängste & Unsicherheiten</Label>
+                  <Textarea
+                    value={formData.fears}
+                    onChange={(e) => setFormData(prev => ({ ...prev, fears: e.target.value }))}
+                    placeholder="Wovor hat der Charakter Angst?"
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
+                  />
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Personality Details Tab */}
+            <TabsContent value="personality" className="space-y-5">
+              <div className="space-y-2">
+                <Label className="text-gray-300">Interessen & Hobbies</Label>
+                <Input
+                  value={formData.interests}
+                  onChange={(e) => setFormData(prev => ({ ...prev, interests: e.target.value }))}
+                  placeholder="z.B. Gaming, Lesen, Kochen, Reisen (kommagetrennt)"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Lieblingsthemen</Label>
+                <Textarea
+                  value={formData.favorite_topics}
+                  onChange={(e) => setFormData(prev => ({ ...prev, favorite_topics: e.target.value }))}
+                  placeholder="Worüber spricht der Charakter gerne? Technologie, Philosophie, Sport..."
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Abneigungen</Label>
+                <Textarea
+                  value={formData.dislikes}
+                  onChange={(e) => setFormData(prev => ({ ...prev, dislikes: e.target.value }))}
+                  placeholder="Was mag der Charakter nicht? Themen, Verhaltensweisen..."
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Sprachliche Eigenheiten</Label>
+                <Textarea
+                  value={formData.speech_patterns}
+                  onChange={(e) => setFormData(prev => ({ ...prev, speech_patterns: e.target.value }))}
+                  placeholder="z.B. Verwendet oft 'Alter', spricht im Dialekt, benutzt Fachbegriffe, Lieblingsphrasen..."
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[80px]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Emoji-Nutzung</Label>
+                  <Select 
+                    value={formData.emoji_usage} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, emoji_usage: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10">
+                      {EMOJI_USAGE.map(e => (
+                        <SelectItem key={e.value} value={e.value} className="text-white hover:bg-white/10">
+                          {e.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Humor-Art</Label>
+                  <Select 
+                    value={formData.humor_type} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, humor_type: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue placeholder="Auswählen..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10">
+                      {HUMOR_TYPES.map(h => (
+                        <SelectItem key={h.value} value={h.value} className="text-white hover:bg-white/10">
+                          {h.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </TabsContent>
             
@@ -343,6 +523,22 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                   className="[&_[role=slider]]:bg-emerald-500"
                 />
                 <p className="text-xs text-gray-500">Niedrig = präzise & vorhersehbar, Hoch = kreativ & überraschend</p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <Label className="text-gray-300">Formalität</Label>
+                  <span className="text-sm text-emerald-400">{formData.formality_level}/10</span>
+                </div>
+                <Slider
+                  value={[formData.formality_level]}
+                  onValueChange={([val]) => setFormData(prev => ({ ...prev, formality_level: val }))}
+                  min={1}
+                  max={10}
+                  step={1}
+                  className="[&_[role=slider]]:bg-emerald-500"
+                />
+                <p className="text-xs text-gray-500">1 = sehr locker & casual, 10 = sehr förmlich & höflich</p>
               </div>
               
               <div className="space-y-2">
