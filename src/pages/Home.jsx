@@ -22,6 +22,7 @@ import { useNotifications } from '@/components/notifications/NotificationManager
 import UnreadBadge from '@/components/notifications/UnreadBadge';
 import { calculateReplyDelay, getDelayReason } from '@/components/chat/ReplyDelayCalculator';
 import { getTagColor } from '@/components/chat/TagManager';
+import BottomNav from '@/components/navigation/BottomNav';
 
 export default function Home() {
   const [showCreateModal, setShowCreateModal] = useState(false);
