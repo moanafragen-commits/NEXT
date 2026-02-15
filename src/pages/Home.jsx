@@ -297,7 +297,7 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
         </div>
 
         {/* Filter Tabs */}
-        <div className="px-4 pb-3 flex gap-2 overflow-x-auto">
+        <div className="px-4 pb-3 flex gap-2 overflow-x-auto scrollbar-hide">
           <button
             onClick={() => setViewFilter('all')}
             className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
@@ -335,8 +335,8 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
         </header>
 
         {/* Status Bar */}
-        <div className="px-4 py-3 overflow-x-auto border-b border-white/5">
-          <div className="flex gap-4">
+        <div className="px-4 py-3 overflow-x-auto border-b border-white/5 scrollbar-hide">
+          <div className="flex gap-3">
             {/* Own Status */}
             {user && (
               <UserStatusCircle user={user} isOwn={true} />
