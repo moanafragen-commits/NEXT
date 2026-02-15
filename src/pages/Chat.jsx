@@ -84,6 +84,22 @@ export default function Chat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
+
+  // Mark unread assistant messages as read when opening the chat
+  useEffect(() => {
+    if (!messages.length || !characterId) return;
+    const unreadAssistantMsgs = messages.filter(m => m.role === 'assistant' && m.status !== 'read');
+    if (unreadAssistantMsgs.length === 0) return;
+    
+    const markAsRead = async () => {
+      for (const msg of unreadAssistantMsgs) {
+        await base44.entities.ChatMessage.update(msg.id, { status: 'read', read_at: new Date().toISOString() });
+      }
+      queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
+      queryClient.invalidateQueries({ queryKey: ['all-messages'] });
+    };
+    markAsRead();
+  }, [messages, characterId]);
   
   const togglePinMutation = useMutation({
     mutationFn: async ({ messageId, isPinned }) => {
