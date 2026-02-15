@@ -3,12 +3,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Camera, Loader2, Save, Clock } from 'lucide-react';
+import { ArrowLeft, Camera, Loader2, Save, Clock, ShieldAlert } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { motion } from 'framer-motion';
 
 const PREDEFINED_STATUSES = [
@@ -44,7 +45,8 @@ export default function UserProfile() {
     display_name: '',
     avatar_url: '',
     bio: '',
-    status: ''
+    status: '',
+    nsfw_mode: false
   });
   
   const [statusExpiry, setStatusExpiry] = useState(null);
@@ -55,7 +57,8 @@ export default function UserProfile() {
         display_name: user.display_name || '',
         avatar_url: user.avatar_url || '',
         bio: user.bio || '',
-        status: user.status || 'online'
+        status: user.status || 'online',
+        nsfw_mode: user.nsfw_mode || false
       });
       
       // Check if status is custom or predefined
@@ -280,6 +283,30 @@ export default function UserProfile() {
               rows={4}
               className="bg-[#262626] border-white/10 text-white placeholder-gray-500 focus-visible:ring-emerald-500/50 resize-none"
             />
+          </div>
+
+          {/* NSFW Modus */}
+          <div className="bg-[#1a1a1a] rounded-xl p-4 border border-white/5 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
+                  <ShieldAlert className="w-5 h-5 text-red-400" />
+                </div>
+                <div>
+                  <Label className="text-white text-sm font-medium">NSFW-Modus</Label>
+                  <p className="text-xs text-gray-500 mt-0.5">Erwachseneninhalte & unzensierte Antworten</p>
+                </div>
+              </div>
+              <Switch
+                checked={formData.nsfw_mode}
+                onCheckedChange={(val) => setFormData(prev => ({ ...prev, nsfw_mode: val }))}
+              />
+            </div>
+            {formData.nsfw_mode && (
+              <p className="text-xs text-red-400/80 bg-red-500/5 rounded-lg p-2.5">
+                ⚠️ NSFW-Modus aktiviert. Charaktere können explizitere und unzensierte Antworten geben. Nur für Nutzer ab 18 Jahren.
+              </p>
+            )}
           </div>
 
           {/* Save Button */}
