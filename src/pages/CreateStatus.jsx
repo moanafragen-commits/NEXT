@@ -58,8 +58,14 @@ Der Bildprompt sollte spezifisch und visuell ansprechend sein.`,
       });
 
       // Generate image
+      const styleHint = char.writing_style === 'poetisch' ? 'artistic, dreamy, atmospheric, poetic' :
+                       char.writing_style === 'humorvoll' ? 'fun, lighthearted, casual, bright' :
+                       char.writing_style === 'mysteriös' ? 'dark, mysterious, moody, atmospheric' :
+                       char.writing_style === 'wissenschaftlich' ? 'clean, modern, professional' :
+                       'natural, authentic, realistic';
+
       const imageResponse = await base44.integrations.Core.GenerateImage({
-        prompt: promptResponse.image_prompt
+        prompt: `${promptResponse.image_prompt}. Style: ${styleHint}. Character: ${char.name} - ${char.personality.slice(0, 100)}. High quality, authentic to character's personality and aesthetic.`
       });
 
       // Create status with 24h expiry

@@ -224,8 +224,12 @@ Wähle 1-3 Charaktere die jetzt reagieren sollten. Sie können:
         if (Math.random() < 0.05) {
           try {
             const char = characters.find(c => c.id === resp.character_id);
+            const styleHint = char?.writing_style === 'poetisch' ? 'artistic, dreamy' :
+                             char?.writing_style === 'mysteriös' ? 'dark, mysterious' :
+                             char?.writing_style === 'humorvoll' ? 'fun, casual' : 'natural, authentic';
+            
             const imgResponse = await base44.integrations.Core.GenerateImage({
-              prompt: `${char?.name} in group chat: ${resp.content.slice(0, 80)}`
+              prompt: `Photo fitting ${char?.name}'s personality: ${char?.personality?.slice(0, 80)}. ${styleHint}. Context: ${resp.content.slice(0, 80)}. Authentic to character.`
             });
             aiImageUrl = imgResponse.url;
           } catch (e) {}

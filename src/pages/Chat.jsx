@@ -180,8 +180,19 @@ AUFGABEN:
       let aiImageUrl = null;
       if (Math.random() < 0.15 && character.category !== 'Assistent') { // 15% chance
         try {
+          const styleHint = character.writing_style === 'poetisch' ? 'artistic, dreamy, poetic atmosphere' :
+                           character.writing_style === 'humorvoll' ? 'fun, casual, lighthearted' :
+                           character.writing_style === 'mysteriös' ? 'mysterious, dark, atmospheric' :
+                           character.writing_style === 'wissenschaftlich' ? 'clean, professional, modern' : 
+                           'natural, authentic';
+          
+          const categoryStyle = character.category === 'Fantasie' ? 'fantasy, magical elements' :
+                               character.category === 'Berühmtheit' ? 'stylish, glamorous' :
+                               character.category === 'Mentor' ? 'wise, inspiring' :
+                               character.category === 'Freund' ? 'friendly, casual' : '';
+
           const imgResponse = await base44.integrations.Core.GenerateImage({
-            prompt: `${character.name}, ${character.personality}. Create an image that fits the context: ${response.response.slice(0, 100)}`,
+            prompt: `Photo of ${character.name} - ${character.personality}. ${styleHint}. ${categoryStyle}. Context: ${response.response.slice(0, 100)}. High quality, realistic, fitting their personality and style.`,
             existing_image_urls: imageUrl ? [imageUrl] : undefined
           });
           aiImageUrl = imgResponse.url;
