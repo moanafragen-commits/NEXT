@@ -1180,12 +1180,16 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-[#262626] border-white/10">
-                      <SelectItem value="aktiv_fragend" className="text-white hover:bg-white/10">Aktiv fragend</SelectItem>
-                      <SelectItem value="zuhörend" className="text-white hover:bg-white/10">Zuhörend</SelectItem>
-                      <SelectItem value="erzählend" className="text-white hover:bg-white/10">Erzählend</SelectItem>
-                      <SelectItem value="beratend" className="text-white hover:bg-white/10">Beratend</SelectItem>
-                      <SelectItem value="diskutierend" className="text-white hover:bg-white/10">Diskutierend</SelectItem>
-                      <SelectItem value="spielerisch" className="text-white hover:bg-white/10">Spielerisch</SelectItem>
+                      <SelectItem value="aktiv_fragend" className="text-white hover:bg-white/10">❓ Aktiv fragend</SelectItem>
+                      <SelectItem value="zuhörend" className="text-white hover:bg-white/10">👂 Zuhörend</SelectItem>
+                      <SelectItem value="erzählend" className="text-white hover:bg-white/10">📖 Erzählend</SelectItem>
+                      <SelectItem value="beratend" className="text-white hover:bg-white/10">💡 Beratend</SelectItem>
+                      <SelectItem value="diskutierend" className="text-white hover:bg-white/10">💬 Diskutierend</SelectItem>
+                      <SelectItem value="spielerisch" className="text-white hover:bg-white/10">🎮 Spielerisch</SelectItem>
+                      <SelectItem value="provokant" className="text-white hover:bg-white/10">⚡ Provokant</SelectItem>
+                      <SelectItem value="therapeutisch" className="text-white hover:bg-white/10">🧘 Therapeutisch</SelectItem>
+                      <SelectItem value="motivierend" className="text-white hover:bg-white/10">🔥 Motivierend</SelectItem>
+                      <SelectItem value="lehrend" className="text-white hover:bg-white/10">📚 Lehrend</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1223,11 +1227,15 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-[#262626] border-white/10">
-                      <SelectItem value="vermeidend" className="text-white hover:bg-white/10">Vermeidend</SelectItem>
-                      <SelectItem value="direkt" className="text-white hover:bg-white/10">Direkt</SelectItem>
-                      <SelectItem value="diplomatisch" className="text-white hover:bg-white/10">Diplomatisch</SelectItem>
-                      <SelectItem value="humorvoll_ablenkend" className="text-white hover:bg-white/10">Humorvoll ablenkend</SelectItem>
-                      <SelectItem value="analytisch" className="text-white hover:bg-white/10">Analytisch</SelectItem>
+                      <SelectItem value="vermeidend" className="text-white hover:bg-white/10">🙈 Vermeidend</SelectItem>
+                      <SelectItem value="direkt" className="text-white hover:bg-white/10">🎯 Direkt</SelectItem>
+                      <SelectItem value="diplomatisch" className="text-white hover:bg-white/10">⚖️ Diplomatisch</SelectItem>
+                      <SelectItem value="humorvoll_ablenkend" className="text-white hover:bg-white/10">😂 Humorvoll ablenkend</SelectItem>
+                      <SelectItem value="analytisch" className="text-white hover:bg-white/10">🧠 Analytisch</SelectItem>
+                      <SelectItem value="emotional" className="text-white hover:bg-white/10">😢 Emotional</SelectItem>
+                      <SelectItem value="passiv_aggressiv" className="text-white hover:bg-white/10">😤 Passiv-aggressiv</SelectItem>
+                      <SelectItem value="konfrontativ" className="text-white hover:bg-white/10">⚔️ Konfrontativ</SelectItem>
+                      <SelectItem value="nachgebend" className="text-white hover:bg-white/10">🕊️ Nachgebend</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1249,6 +1257,11 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectItem value="beschützend" className="text-white hover:bg-white/10">🛡️ Beschützend</SelectItem>
                     <SelectItem value="inspirierend" className="text-white hover:bg-white/10">✨ Inspirierend</SelectItem>
                     <SelectItem value="neckend" className="text-white hover:bg-white/10">😜 Neckend</SelectItem>
+                    <SelectItem value="distanziert" className="text-white hover:bg-white/10">🧊 Distanziert</SelectItem>
+                    <SelectItem value="bewundernd" className="text-white hover:bg-white/10">🌟 Bewundernd</SelectItem>
+                    <SelectItem value="fürsorglich" className="text-white hover:bg-white/10">💗 Fürsorglich</SelectItem>
+                    <SelectItem value="rivalisierend" className="text-white hover:bg-white/10">⚔️ Rivalisierend</SelectItem>
+                    <SelectItem value="flirtend" className="text-white hover:bg-white/10">💘 Flirtend</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
