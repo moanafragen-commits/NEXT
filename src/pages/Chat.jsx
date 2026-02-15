@@ -271,18 +271,8 @@ export default function Chat() {
         await base44.entities.Character.update(characterId, { current_motivation: response.proactive_topic });
       }
       
-      // Generate response image occasionally
-      let aiImageUrl = null;
-      if (Math.random() < 0.15 && character.category !== 'Assistent') {
-        try {
-          const styleHint = character.writing_style === 'poetisch' ? 'artistic, dreamy' : character.writing_style === 'humorvoll' ? 'fun, lighthearted' : character.writing_style === 'mysteriös' ? 'mysterious, atmospheric' : 'natural, authentic';
-          const imgResponse = await base44.integrations.Core.GenerateImage({ prompt: `Portrait of ${character.name}. ${styleHint}. Context: ${response.response.slice(0, 100)}. High quality, cinematic.`, existing_image_urls: lastImage ? [lastImage] : undefined });
-          aiImageUrl = imgResponse.url;
-        } catch (e) { /* ignore */ }
-      }
-
       // Save AI response
-      await base44.entities.ChatMessage.create({ character_id: characterId, role: 'assistant', content: response.response, image_url: aiImageUrl, status: 'delivered' });
+      await base44.entities.ChatMessage.create({ character_id: characterId, role: 'assistant', content: response.response, status: 'delivered' });
       
       queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
       queryClient.invalidateQueries({ queryKey: ['all-messages'] });
