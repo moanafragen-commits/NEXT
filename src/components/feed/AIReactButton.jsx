@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Bot, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 export default function AIReactButton({ post, postCharacter, allCharacters }) {
@@ -18,7 +17,7 @@ export default function AIReactButton({ post, postCharacter, allCharacters }) {
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: `Ein Instagram-Post von "${postCharacter?.name}" mit der Caption: "${post.content}"
 
-Folgende KI-Charaktere sehen diesen Post. Entscheide für jeden, ob sie liken und/oder kommentieren würden. Die Reaktionen sollen authentisch und persönlich zur jeweiligen Persönlichkeit passen.
+Folgende KI-Charaktere sehen diesen Post. Entscheide für jeden, ob sie liken und/oder kommentieren würden.
 
 Charaktere:
 ${otherChars.map(c => `- ${c.name} (ID: ${c.id}): ${c.personality?.slice(0, 120)}`).join('\n')}
@@ -56,11 +55,7 @@ Generiere realistische Reaktionen. Kommentare sollen kurz und natürlich sein (1
           }
         }
         if (reaction.should_comment && reaction.comment_text) {
-          await base44.entities.Comment.create({
-            post_id: post.id,
-            user_email: reaction.character_id,
-            content: reaction.comment_text
-          });
+          await base44.entities.Comment.create({ post_id: post.id, user_email: reaction.character_id, content: reaction.comment_text });
           newComments++;
         }
       }
@@ -80,11 +75,10 @@ Generiere realistische Reaktionen. Kommentare sollen kurz und natürlich sein (1
       queryClient.invalidateQueries({ queryKey: ['likes'] });
       queryClient.invalidateQueries({ queryKey: ['comments'] });
       if (count > 0) toast.success(`${count} neue Reaktion${count > 1 ? 'en' : ''}!`);
-      else toast('Keine neuen Reaktionen');
     },
     onError: () => {
       setGenerating(false);
-      toast.error('Fehler bei KI-Reaktionen');
+      toast.error('Fehler');
     }
   });
 
@@ -96,9 +90,9 @@ Generiere realistische Reaktionen. Kommentare sollen kurz und natürlich sein (1
       title="KI-Charaktere reagieren lassen"
     >
       {generating ? (
-        <Loader2 className="w-5 h-5 text-purple-400 animate-spin" />
+        <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
       ) : (
-        <Bot className="w-5 h-5 text-purple-400" />
+        <Bot className="w-5 h-5 text-gray-500" />
       )}
     </button>
   );

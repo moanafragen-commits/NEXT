@@ -5,7 +5,7 @@ import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import AIReactButton from '@/components/feed/AIReactButton';
 
-export default function FeedPostCard({ post, character, isLiked, onLike, onComment, onOpenComments, commentsCount, allCharacters }) {
+export default function FeedPostCard({ post, character, isLiked, onLike, onOpenComments, commentsCount, allCharacters }) {
   const [doubleTapHeart, setDoubleTapHeart] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -19,20 +19,20 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onComme
   };
 
   return (
-    <div className="bg-[#1a1a1a] border-b border-white/5">
+    <div className="bg-white border-b border-gray-100">
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2.5">
         <Link to={createPageUrl(`Chat?characterId=${character?.id}`)} className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 p-[2px]">
+          <div className="w-8 h-8 rounded-full ring-[1.5px] ring-gray-200 overflow-hidden">
             <img
               src={character?.avatar_url || defaultAvatar}
               alt={character?.name}
-              className="w-full h-full rounded-full object-cover border-2 border-[#1a1a1a]"
+              className="w-full h-full object-cover"
             />
           </div>
-          <span className="text-sm font-semibold text-white">{character?.name}</span>
+          <span className="text-[13px] font-semibold text-black">{character?.name}</span>
         </Link>
-        <button className="text-gray-400 hover:text-white">
+        <button className="text-gray-500 hover:text-black">
           <MoreHorizontal className="w-5 h-5" />
         </button>
       </div>
@@ -44,7 +44,6 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onComme
           alt={post.content}
           className="w-full aspect-square object-cover"
         />
-        {/* Double-tap heart animation */}
         {doubleTapHeart && (
           <motion.div
             initial={{ scale: 0, opacity: 1 }}
@@ -62,41 +61,41 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onComme
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-4">
             <button onClick={onLike} className="hover:opacity-60 transition-opacity">
-              <Heart className={`w-6 h-6 ${isLiked ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+              <Heart className={`w-6 h-6 ${isLiked ? 'fill-red-500 text-red-500' : 'text-black'}`} />
             </button>
             <button onClick={onOpenComments} className="hover:opacity-60 transition-opacity">
-              <MessageCircle className="w-6 h-6 text-white" />
+              <MessageCircle className="w-6 h-6 text-black" />
             </button>
             <Link to={createPageUrl(`Chat?characterId=${character?.id}`)}>
-              <Send className="w-5 h-5 text-white hover:opacity-60 transition-opacity" />
+              <Send className="w-5 h-5 text-black hover:opacity-60 transition-opacity" />
             </Link>
             <AIReactButton post={post} postCharacter={character} allCharacters={allCharacters || []} />
           </div>
           <button onClick={() => setSaved(!saved)} className="hover:opacity-60 transition-opacity">
-            <Bookmark className={`w-6 h-6 ${saved ? 'fill-white text-white' : 'text-white'}`} />
+            <Bookmark className={`w-6 h-6 ${saved ? 'fill-black text-black' : 'text-black'}`} />
           </button>
         </div>
 
         {/* Likes */}
-        <p className="text-sm font-semibold text-white mb-1">
+        <p className="text-[13px] font-semibold text-black mb-1">
           {post.likes_count || 0} Gefällt mir
         </p>
 
         {/* Caption */}
-        <div className="text-sm text-gray-200 mb-1">
-          <span className="font-semibold text-white mr-1.5">{character?.name}</span>
+        <div className="text-[13px] text-black mb-1">
+          <span className="font-semibold mr-1.5">{character?.name}</span>
           {post.content}
         </div>
 
         {/* Comments preview */}
         {(commentsCount > 0) && (
-          <button onClick={onOpenComments} className="text-sm text-gray-500 mb-1">
+          <button onClick={onOpenComments} className="text-[13px] text-gray-400 mb-1">
             Alle {commentsCount} Kommentare ansehen
           </button>
         )}
 
         {/* Time */}
-        <p className="text-[10px] text-gray-500 uppercase mt-1">{timeAgo}</p>
+        <p className="text-[10px] text-gray-400 uppercase mt-1">{timeAgo}</p>
       </div>
     </div>
   );

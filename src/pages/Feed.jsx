@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
-import { ArrowLeft, RefreshCw, Loader2 } from 'lucide-react';
-import { Button } from "@/components/ui/button";
+import { Loader2 } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import FeedPostCard from '@/components/feed/FeedPostCard';
 import FeedCommentSheet from '@/components/feed/FeedCommentSheet';
-import GeneratePostButton from '@/components/feed/GeneratePostButton';
-import StatusCircle from '@/components/status/StatusCircle';
+import BottomNav from '@/components/navigation/BottomNav';
 
 export default function Feed() {
   const [openCommentsPostId, setOpenCommentsPostId] = useState(null);
@@ -20,7 +16,7 @@ export default function Feed() {
     queryFn: () => base44.auth.me()
   });
 
-  const { data: posts = [], isLoading, isFetching } = useQuery({
+  const { data: posts = [], isLoading } = useQuery({
     queryKey: ['posts'],
     queryFn: () => base44.entities.Post.list('-created_date', 50)
   });
@@ -38,21 +34,6 @@ export default function Feed() {
   const { data: likes = [] } = useQuery({
     queryKey: ['likes'],
     queryFn: () => base44.entities.PostLike.list()
-  });
-
-  const { data: statuses = [] } = useQuery({
-    queryKey: ['statuses'],
-    queryFn: async () => {
-      const now = new Date();
-      const all = await base44.entities.CharacterStatus.filter({}, '-created_date', 100);
-      return all.filter(s => new Date(s.expires_at) > now);
-    }
-  });
-
-  const { data: statusViews = [] } = useQuery({
-    queryKey: ['status-views', user?.email],
-    queryFn: () => base44.entities.StatusView.filter({ user_email: user.email }),
-    enabled: !!user
   });
 
   const getCharacter = (id) => characters.find(c => c.id === id);
@@ -92,68 +73,24 @@ export default function Feed() {
 
   const openPost = openCommentsPostId ? posts.find(p => p.id === openCommentsPostId) : null;
 
-  // Characters with active statuses for the story bar
-  const charactersWithStatuses = characters.filter(c => !c.is_archived).filter(c => {
-    return statuses.some(s => s.character_id === c.id);
-  });
-
   return (
-    <div className="min-h-screen bg-[#111] text-white">
+    <div className="min-h-screen bg-white text-black">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-[#111]/95 backdrop-blur-lg border-b border-white/5">
-        <div className="max-w-lg mx-auto flex items-center justify-between px-4 py-3">
-          <Link to={createPageUrl('Home')}>
-            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/10">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <h1 className="text-lg font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
-            Feed
-          </h1>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => queryClient.invalidateQueries({ queryKey: ['posts'] })}
-              className="text-gray-400 hover:text-white hover:bg-white/10"
-            >
-              <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
-            </Button>
-          </div>
+      <header className="sticky top-0 z-10 bg-white border-b border-gray-200">
+        <div className="flex items-center justify-center px-4 py-3">
+          <h1 className="text-xl font-bold tracking-tight">aspect</h1>
         </div>
       </header>
 
-      <div className="max-w-lg mx-auto">
-        {/* Stories bar */}
-        {charactersWithStatuses.length > 0 && (
-          <div className="px-4 py-3 overflow-x-auto scrollbar-hide border-b border-white/5">
-            <div className="flex gap-3">
-              {charactersWithStatuses.map(character => {
-                const charStatuses = statuses.filter(s => s.character_id === character.id);
-                const viewedIds = new Set(statusViews.map(v => v.status_id));
-                const hasUnseen = charStatuses.some(s => !viewedIds.has(s.id));
-                return (
-                  <StatusCircle key={character.id} character={character} hasNewStatus={hasUnseen} />
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Generate button */}
-        <div className="px-4 py-3 flex justify-center">
-          <GeneratePostButton characters={characters.filter(c => !c.is_archived)} />
-        </div>
-
-        {/* Feed */}
+      <div className="max-w-lg mx-auto pb-16">
         {isLoading ? (
           <div className="flex justify-center py-20">
-            <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+            <Loader2 className="w-8 h-8 text-gray-400 animate-spin" />
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-20 px-6">
-            <p className="text-gray-400 text-lg mb-2">Noch keine Posts</p>
-            <p className="text-gray-500 text-sm">Tippe auf "Neuer Post" um deinen Charakteren Bilder generieren zu lassen!</p>
+            <p className="text-gray-500 text-lg mb-2">Noch keine Posts</p>
+            <p className="text-gray-400 text-sm">Tippe auf + um deinen ersten Post zu erstellen</p>
           </div>
         ) : (
           <div>
@@ -178,7 +115,6 @@ export default function Feed() {
         )}
       </div>
 
-      {/* Comment sheet */}
       <AnimatePresence>
         {openPost && (
           <FeedCommentSheet
@@ -192,6 +128,8 @@ export default function Feed() {
           />
         )}
       </AnimatePresence>
+
+      <BottomNav user={user} />
     </div>
   );
 }
