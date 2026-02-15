@@ -7,7 +7,6 @@ import { ArrowLeft, X, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
 import StatusViewersList from '@/components/status/StatusViewersList';
-import StatusCharacterReactions from '@/components/status/StatusCharacterReactions';
 
 export default function UserStatusView() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -213,18 +212,6 @@ export default function UserStatusView() {
 
       {/* Bottom Area */}
       <div className="fixed bottom-4 left-4 right-4 z-40 space-y-3">
-        {/* Character Reactions - only show for own status */}
-        {user && userEmail === user.email && (
-          <div className="bg-black/50 backdrop-blur-sm rounded-2xl p-3">
-            <p className="text-xs text-white/50 mb-2 text-center">Charakter reagieren lassen</p>
-            <StatusCharacterReactions 
-              statusContent={currentStatus.content}
-              statusType={currentStatus.type}
-              userEmail={user.email}
-            />
-          </div>
-        )}
-
         {/* Views Button */}
         {user && userEmail === user.email ? (
           <button
