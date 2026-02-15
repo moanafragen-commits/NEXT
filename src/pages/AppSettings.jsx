@@ -35,16 +35,23 @@ export default function AppSettings() {
     }
   }, [user]);
 
+  const [hasChanges, setHasChanges] = useState(false);
+
   const saveMutation = useMutation({
     mutationFn: (data) => base44.auth.updateMe(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user'] });
+      setHasChanges(false);
     }
   });
 
   const toggleSetting = (key, value) => {
     setSettings(prev => ({ ...prev, [key]: value }));
-    saveMutation.mutate({ [key]: value });
+    setHasChanges(true);
+  };
+
+  const handleSave = () => {
+    saveMutation.mutate(settings);
   };
 
   const handleLogout = () => {
