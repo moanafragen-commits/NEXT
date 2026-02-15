@@ -3,7 +3,7 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Plus, Search, MessageCircle, Settings, MoreVertical, Send, X, Loader2, Users, User, Bell, BellOff, Star, Archive, Inbox, Grid, Sparkles } from 'lucide-react';
+import { Plus, Search, MessageCircle, Settings, MoreVertical, Send, X, Loader2, Users, User, Bell, BellOff, Star, Archive, Inbox, Grid, Sparkles, Contact } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -312,6 +312,14 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
 
         {/* Filter Tabs */}
         <div className="px-4 pb-3 flex gap-2 overflow-x-auto scrollbar-hide">
+          <Link to={createPageUrl('Characters')}>
+            <button
+              className="px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors bg-[#262626] text-gray-400 hover:text-white"
+            >
+              <Contact className="w-4 h-4 inline mr-2" />
+              Charaktere
+            </button>
+          </Link>
           <button
             onClick={() => setViewFilter('all')}
             className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
