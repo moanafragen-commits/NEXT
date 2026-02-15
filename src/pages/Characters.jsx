@@ -69,12 +69,12 @@ export default function Characters() {
   const defaultAvatar = (name) => `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${name}`;
 
   return (
-    <div className="min-h-screen bg-white text-black">
-      <header className="sticky top-0 z-10 bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-white text-black auto-theme">
+      <header className="sticky top-0 z-10 bg-white border-b border-gray-200 auto-theme-header">
         <div className="px-4 py-3">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-base font-semibold">Entdecken</h1>
-            <span className="text-xs text-gray-400">{characters.length} Charakter{characters.length !== 1 ? 'e' : ''}</span>
+            <span className="text-xs text-gray-400 auto-theme-text-secondary">{characters.length} Charakter{characters.length !== 1 ? 'e' : ''}</span>
           </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -82,7 +82,7 @@ export default function Characters() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Suchen..."
-              className="bg-gray-100 border-0 text-black pl-10 rounded-xl placeholder-gray-400 focus-visible:ring-gray-300 h-10 text-sm"
+              className="bg-gray-100 border-0 text-black pl-10 rounded-xl placeholder-gray-400 focus-visible:ring-gray-300 h-10 text-sm auto-theme-input"
             />
           </div>
         </div>

@@ -99,9 +99,9 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className="min-h-screen bg-white text-black auto-theme">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white border-b border-gray-200">
+      <header className="sticky top-0 z-10 bg-white border-b border-gray-200 auto-theme-header">
         <div className="flex items-center justify-between px-4 py-3">
           <button onClick={() => window.history.back()}>
             <ArrowLeft className="w-6 h-6" />
