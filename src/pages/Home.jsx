@@ -69,6 +69,21 @@ export default function Home() {
     queryKey: ['all-messages'],
     queryFn: () => base44.entities.ChatMessage.list('-created_date', 100)
   });
+
+  const { data: statuses = [] } = useQuery({
+    queryKey: ['statuses'],
+    queryFn: async () => {
+      const now = new Date();
+      const allStatuses = await base44.entities.CharacterStatus.filter({}, '-created_date', 100);
+      return allStatuses.filter(s => new Date(s.expires_at) > now);
+    }
+  });
+
+  const { data: statusViews = [] } = useQuery({
+    queryKey: ['status-views', user?.email],
+    queryFn: () => base44.entities.StatusView.filter({ user_email: user.email }),
+    enabled: !!user
+  });
   
   const getLastMessage = (characterId) => {
     return messages.find(m => m.character_id === characterId);
@@ -292,13 +307,19 @@ Antworte als ${selectedCharacter.name}. Bleibe in deiner Rolle.`,
         {/* Status Bar */}
         <div className="px-4 py-3 overflow-x-auto">
           <div className="flex gap-4">
-            {characters.filter(c => !c.is_archived).slice(0, 10).map(character => (
-              <StatusCircle
-                key={character.id}
-                character={character}
-                hasNewStatus={true}
-              />
-            ))}
+            {characters.filter(c => !c.is_archived).slice(0, 10).map(character => {
+              const characterStatuses = statuses.filter(s => s.character_id === character.id);
+              const viewedStatusIds = new Set(statusViews.map(v => v.status_id));
+              const hasUnseenStatus = characterStatuses.some(s => !viewedStatusIds.has(s.id));
+              
+              return (
+                <StatusCircle
+                  key={character.id}
+                  character={character}
+                  hasNewStatus={hasUnseenStatus}
+                />
+              );
+            })}
           </div>
         </div>
 
