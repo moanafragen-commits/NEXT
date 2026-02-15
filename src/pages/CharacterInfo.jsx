@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, BookOpen, MessageCircle, Settings, Sparkles, Plus, Brain, Heart, Target } from 'lucide-react';
+import { ArrowLeft, BookOpen, MessageCircle, Settings, Sparkles, Plus, Brain, Heart, Target, TrendingUp } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -166,6 +166,18 @@ export default function CharacterInfo() {
             <Separator className="bg-white/5" />
           </>
         )}
+
+        {/* Development Link */}
+        <div className="px-6 py-4">
+          <Link to={createPageUrl(`CharacterDevelopment?characterId=${characterId}`)}>
+            <Button className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white">
+              <TrendingUp className="w-4 h-4 mr-2" />
+              Charakterentwicklung ansehen
+            </Button>
+          </Link>
+        </div>
+
+        <Separator className="bg-white/5" />
 
         {/* Behavior Settings */}
         <div className="p-6 space-y-4">
