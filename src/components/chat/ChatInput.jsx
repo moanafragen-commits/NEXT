@@ -92,7 +92,6 @@ export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelR
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Nachricht schreiben..."
             className="w-full bg-[#262626] text-white rounded-full px-5 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 placeholder-gray-500"
-            disabled={isLoading}
           />
         </div>
         
