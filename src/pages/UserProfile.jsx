@@ -24,8 +24,9 @@ export default function UserProfile() {
   });
 
   const { data: posts = [] } = useQuery({
-    queryKey: ['user-posts'],
-    queryFn: () => base44.entities.Post.list('-created_date', 100)
+    queryKey: ['user-posts', user?.email],
+    queryFn: () => base44.entities.Post.filter({ created_by: user.email }, '-created_date', 100),
+    enabled: !!user
   });
 
   const { data: characters = [] } = useQuery({
