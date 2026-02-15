@@ -121,7 +121,7 @@ export default function MessageBubble({ message, characterAvatar, characterName,
         </div>
         <div className={`flex items-center gap-1.5 mt-1 ${isUser ? 'justify-end' : 'justify-start'}`}>
           <span className="text-[10px] text-gray-500">
-            {new Date(message.created_date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}
+            {new Date(message.created_date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' })}
           </span>
           {isUser && message.status && (
             <div className="flex items-center gap-0.5">
