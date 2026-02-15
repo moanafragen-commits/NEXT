@@ -12,7 +12,7 @@ export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelR
   
   const handleSubmit = (e) => {
     e.preventDefault();
-    if ((message.trim() || imageUrl) && !isLoading) {
+    if (message.trim() || imageUrl) {
       onSend(message, imageUrl);
       setMessage('');
       setImageUrl(null);
@@ -78,7 +78,7 @@ export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelR
           variant="ghost"
           size="icon"
           onClick={() => fileInputRef.current?.click()}
-          disabled={uploading || isLoading}
+          disabled={uploading}
           className="text-gray-400 hover:text-white hover:bg-white/10"
         >
           {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Image className="w-5 h-5" />}
@@ -100,7 +100,6 @@ export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelR
           <Button 
             type="submit" 
             size="icon"
-            disabled={isLoading}
             className="h-11 w-11 rounded-full bg-emerald-600 hover:bg-emerald-500 transition-all"
           >
             <Send className="w-5 h-5" />
