@@ -296,7 +296,7 @@ AUFGABEN:
   }
   
   return (
-    <div className="min-h-screen bg-[#111] flex flex-col">
+    <div className="h-screen bg-[#111] flex flex-col overflow-hidden">
       {/* Header */}
       <header className="sticky top-0 z-10 bg-[#1a1a1a] border-b border-white/5">
         <div className="flex items-center gap-3 p-3">
@@ -395,7 +395,7 @@ AUFGABEN:
       </header>
       
       {/* Messages */}
-      <main className="flex-1 overflow-y-auto p-4 space-y-4">
+      <main className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         {/* Greeting */}
         {!showPinned && !searchQuery && messages.length === 0 && character.greeting && (
           <motion.div
@@ -456,7 +456,7 @@ AUFGABEN:
       </main>
       
       {/* Input */}
-      <div className="sticky bottom-0 bg-[#1a1a1a] border-t border-white/5 p-4">
+      <div className="shrink-0 bg-[#1a1a1a] border-t border-white/5 p-4">
         <ChatInput 
           onSend={(content, imageUrl) => sendMessageMutation.mutate({ content, imageUrl })}
           isLoading={sendMessageMutation.isPending || isTyping}
