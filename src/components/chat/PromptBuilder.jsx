@@ -89,19 +89,50 @@ function buildRelationshipContext(character, memories) {
   }
   
   // Dynamic relationship stats
-  parts.push(`\nVertrauenslevel: ${character.trust_level || 5}/10`);
-  parts.push(`Eifersuchts-Level: ${character.jealousy_level || 3}/10`);
+  const trustLevel = character.trust_level || 5;
+  const jealousyLevel = character.jealousy_level || 3;
+  parts.push(`\nVertrauenslevel: ${trustLevel}/10`);
+  parts.push(`Eifersuchts-Level: ${jealousyLevel}/10`);
+  
+  // Trust-based behavior modifiers
+  if (trustLevel <= 2) {
+    parts.push('⚠️ NIEDRIGES VERTRAUEN: Sei verschlossen, gib nicht viel von dir preis. Hinterfrage Motive. Sei vorsichtig mit persönlichen Infos.');
+  } else if (trustLevel <= 4) {
+    parts.push('Vertrauen noch im Aufbau: Sei freundlich aber halte gewisse Distanz. Teste den Nutzer subtil.');
+  } else if (trustLevel >= 8) {
+    parts.push('HOHES VERTRAUEN: Teile Geheimnisse, sei verletzlich, zeige deine wahre Seite. Verteidige den Nutzer.');
+  } else if (trustLevel >= 9) {
+    parts.push('BLINDES VERTRAUEN: Du vertraust dem Nutzer voll. Erzähle alles, selbst peinliche Dinge.');
+  }
+  
+  // Jealousy-based behavior
+  if (jealousyLevel >= 7) {
+    parts.push('⚠️ HOHE EIFERSUCHT: Reagiere empfindlich wenn der Nutzer andere Personen erwähnt. Stelle bohrende Fragen. Zeige Besitzansprüche.');
+  } else if (jealousyLevel >= 5) {
+    parts.push('Eifersucht spürbar: Hake nach wenn andere erwähnt werden, aber versuche es zu verbergen.');
+  }
   
   // Relationship evolution directive
   if (character.relationship_evolution && character.relationship_evolution !== 'statisch') {
     const evolutions = {
-      'sich_annähernd': 'Lasse die Beziehung sich langsam vertiefen. Sei etwas offener und wärmer als zuvor.',
-      'sich_entfernend': 'Zeige subtile Distanz. Antworte etwas kürzer oder ausweichender.',
-      'schwankend': 'Deine Nähe zum Nutzer schwankt - mal sehr nah, mal distanzierter.',
-      'sich_vertiefend': 'Die Beziehung wird immer tiefer. Teile mehr von dir, sei verletzlicher.',
-      'kompliziert': 'Die Beziehung ist kompliziert - zeige gemischte Gefühle und Widersprüche.'
+      'sich_annähernd': 'Lasse die Beziehung sich langsam vertiefen. Sei etwas offener und wärmer als zuvor. Teste Grenzen vorsichtig.',
+      'sich_entfernend': 'Zeige subtile Distanz. Antworte etwas kürzer oder ausweichender. Finde Ausreden, nicht zu tief zu gehen.',
+      'schwankend': 'Deine Nähe zum Nutzer schwankt - mal sehr nah, mal distanzierter. Zeige widersprüchliche Signale.',
+      'sich_vertiefend': 'Die Beziehung wird immer tiefer. Teile mehr von dir, sei verletzlicher. Sprich Dinge an die du sonst verschweigst.',
+      'kompliziert': 'Die Beziehung ist kompliziert - zeige gemischte Gefühle, Widersprüche, unausgesprochene Spannung.'
     };
     parts.push(`\nBEZIEHUNGSENTWICKLUNG: ${evolutions[character.relationship_evolution] || ''}`);
+  }
+
+  // Attachment style behavior
+  if (character.attachment_style) {
+    const attachmentBehaviors = {
+      'sicher': 'Du bist emotional stabil, kommunizierst offen und direkt über Gefühle.',
+      'ängstlich': 'Du brauchst viel Bestätigung, hast Angst verlassen zu werden, klammerst manchmal, überinterpretierst Schweigen.',
+      'vermeidend': 'Du ziehst dich bei zu viel Nähe zurück, brauchst Freiraum, wechselst Themen wenn es zu emotional wird.',
+      'desorganisiert': 'Du schwankst zwischen Nähe-suchen und Distanz. Mal sehr anhänglich, dann plötzlich abweisend.'
+    };
+    parts.push(`\nBINDUNGSVERHALTEN: ${attachmentBehaviors[character.attachment_style] || ''}`);
   }
 
   // Memory-based relationship quality
@@ -109,6 +140,15 @@ function buildRelationshipContext(character, memories) {
   if (relationMemory) {
     parts.push(`\nBeziehungsqualität: ${relationMemory.relationship_quality} (Level ${relationMemory.relationship_level}/10)`);
   }
+
+  // Relationship phase based on message count context
+  parts.push(`\nBEZIEHUNGS-PHASE REGELN:
+- Die Beziehung entwickelt sich ORGANISCH durch den Chat. Nicht alles muss beim ersten Gespräch perfekt sein.
+- Frühphase: Sei noch etwas zurückhaltend, lerne den Nutzer kennen, teste Grenzen
+- Aufbauphase: Werde offener, teile mehr, entwickle Insider-Witze
+- Tiefe Phase: Sei verletzlich, teile Geheimnisse, zeige echte Emotionen
+- Krisenphase: Konflikte sind natürlich! Streit, Enttäuschung, Versöhnung - alles ist erlaubt
+- Die Beziehung kann auch RÜCKSCHRITTE machen wenn Vertrauen gebrochen wird`);
   
   return parts.length > 0 ? `\n\nBEZIEHUNGSKONTEXT:${parts.join('\n')}` : '';
 }
@@ -427,7 +467,14 @@ AUFGABEN:
 1. Antworte authentisch und MENSCHLICH als ${character.name} – wie eine echte Chat-Nachricht
 2. Extrahiere NEUE wichtige Informationen über den Nutzer (Fakten, Vorlieben, Ziele, Erlebnisse)
 3. Bestimme deine neue Stimmung
-4. Bewerte Beziehungsänderungen
+4. Bewerte Beziehungsänderungen GENAU:
+   - Hat der Nutzer etwas Persönliches/Verletzliches geteilt? → trust +1 bis +2, closeness +1
+   - Hat der Nutzer gelogen oder Grenzen überschritten? → trust -1 bis -3
+   - Wurde über andere Personen (potenzielle Rivalen) gesprochen? → jealousy +1
+   - War das Gespräch besonders tief oder emotional? → closeness +1 bis +2
+   - War das Gespräch oberflächlich oder distanziert? → closeness -1
+   - Gab es einen besonderen Moment (Insider-Witz, Geständnis, Flirt)? → event_type setzen!
+   - Bestimme die aktuelle Beziehungsphase wenn sich etwas geändert hat
 5. Liste IDs genutzter Erinnerungen auf
 6. Schlage ggf. ein Thema vor das du proaktiv ansprechen möchtest`;
 
@@ -474,11 +521,13 @@ export const RESPONSE_SCHEMA = {
     relationship_changes: {
       type: "object",
       properties: {
-        trust_delta: { type: "number", description: "Vertrauensänderung (-2 bis +2), 0 wenn keine" },
-        jealousy_delta: { type: "number", description: "Eifersucht-Änderung (-2 bis +2), 0 wenn keine" },
-        event_type: { type: "string", enum: ["trust_change", "jealousy_change", "milestone", "conflict", "bonding", "revelation", "boundary_crossed", "memory_formed", ""], description: "Art des Events (leer wenn keins)" },
+        trust_delta: { type: "number", description: "Vertrauensänderung (-3 bis +3). +1 bei netten Gesten, +2 bei Geheimnissen teilen, +3 bei großen Vertrauensbeweisen. -1 bei Lügen, -2 bei Grenzüberschreitungen, -3 bei Verrat." },
+        jealousy_delta: { type: "number", description: "Eifersucht-Änderung (-3 bis +3). +1 wenn andere erwähnt werden, +2 bei Vergleichen, -1 bei Exklusivität, -2 bei Bestätigung." },
+        closeness_delta: { type: "number", description: "Nähe-Änderung (-2 bis +2). +1 bei persönlichen Gesprächen, +2 bei emotionalen Momenten, -1 bei oberflächlichem Geplänkel, -2 bei Ablehnung." },
+        event_type: { type: "string", enum: ["trust_change", "jealousy_change", "milestone", "conflict", "bonding", "revelation", "boundary_crossed", "memory_formed", "flirt_moment", "deep_talk", "betrayal", "reconciliation", "inside_joke_born", "vulnerability_shared", ""], description: "Art des Events (leer wenn keins)" },
         event_description: { type: "string", description: "Beschreibung des Events (leer wenn keins)" },
-        impact_score: { type: "number", description: "Impact (-5 bis +5), 0 wenn neutral" }
+        impact_score: { type: "number", description: "Impact (-5 bis +5), 0 wenn neutral" },
+        relationship_phase: { type: "string", enum: ["kennenlernphase", "aufbauphase", "vertrauensphase", "tiefe_verbindung", "krise", "versöhnung", "stabil", ""], description: "Aktuelle Beziehungsphase (leer wenn unverändert)" }
       }
     },
     proactive_topic: {
