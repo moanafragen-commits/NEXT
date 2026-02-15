@@ -1074,7 +1074,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                       {EMOJI_USAGE.map(e => (
                         <SelectItem key={e.value} value={e.value} className="text-white hover:bg-white/10">
                           {e.label}
@@ -1092,7 +1092,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue placeholder="Auswählen..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                       {HUMOR_TYPES.map(h => (
                         <SelectItem key={h.value} value={h.value} className="text-white hover:bg-white/10">
                           {h.label}
@@ -1165,7 +1165,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                       {RESPONSE_LENGTHS.map(len => (
                         <SelectItem key={len.value} value={len.value} className="text-white hover:bg-white/10">
                           {len.label}
@@ -1186,7 +1186,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                       {LANGUAGES.map(lang => (
                         <SelectItem key={lang} value={lang} className="text-white hover:bg-white/10">
                           {lang}
@@ -1204,7 +1204,7 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     <SelectTrigger className="bg-[#262626] border-white/10 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#262626] border-white/10">
+                    <SelectContent className="bg-[#262626] border-white/10 z-[10001]">
                       <SelectItem value="aktiv_fragend" className="text-white hover:bg-white/10">❓ Aktiv fragend</SelectItem>
                       <SelectItem value="zuhörend" className="text-white hover:bg-white/10">👂 Zuhörend</SelectItem>
                       <SelectItem value="erzählend" className="text-white hover:bg-white/10">📖 Erzählend</SelectItem>
