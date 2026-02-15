@@ -14,9 +14,9 @@ export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelR
   };
   
   return (
-    <form onSubmit={handleSubmit} className="bg-[#1a1a1a]">
+    <form onSubmit={handleSubmit}>
       {replyToMessage && (
-        <div className="px-3 pt-2 pb-1 flex items-start gap-2 bg-[#262626]/50 rounded-t-lg">
+        <div className="mb-2 p-2 flex items-start gap-2 bg-[#262626]/50 rounded-lg">
           <div className="flex-1 min-w-0">
             <p className="text-xs text-emerald-400 font-semibold mb-0.5">
               Antwort auf {replyToMessage.role === 'user' ? 'dich' : 'Nachricht'}
@@ -32,7 +32,6 @@ export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelR
           </button>
         </div>
       )}
-      <div className="p-3">
       <div className="flex items-center gap-2">
         <button type="button" className="p-2 text-gray-400 hover:text-gray-300 transition-colors">
           <Smile className="w-6 h-6" />
@@ -63,7 +62,6 @@ export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelR
             <Mic className="w-6 h-6" />
           </button>
         )}
-      </div>
       </div>
     </form>
   );
