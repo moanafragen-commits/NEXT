@@ -55,6 +55,48 @@ function buildCharacterPersonalityContext(character) {
   if (character.knowledge_areas) traits.push(`Expertise: ${character.knowledge_areas}`);
   if (character.occupation) traits.push(`Beruf: ${character.occupation}`);
   if (character.age) traits.push(`Alter: ${character.age}`);
+  
+  // Appearance
+  const appearance = [];
+  if (character.height) appearance.push(`Größe: ${character.height}`);
+  if (character.body_type) appearance.push(`Körperbau: ${character.body_type}`);
+  if (character.hair_color) appearance.push(`Haare: ${character.hair_color}${character.hair_style ? ', ' + character.hair_style : ''}`);
+  if (character.eye_color) appearance.push(`Augen: ${character.eye_color}`);
+  if (character.skin_tone) appearance.push(`Hautton: ${character.skin_tone}`);
+  if (character.tattoos_piercings) appearance.push(`Tattoos/Piercings: ${character.tattoos_piercings}`);
+  if (character.scars_marks) appearance.push(`Narben/Merkmale: ${character.scars_marks}`);
+  if (character.distinctive_features) appearance.push(`Auffällig: ${character.distinctive_features}`);
+  if (character.clothing_style) appearance.push(`Kleidungsstil: ${character.clothing_style}`);
+  if (character.voice_description) appearance.push(`Stimme: ${character.voice_description}`);
+  if (character.scent) appearance.push(`Duft: ${character.scent}`);
+  if (appearance.length > 0) traits.push(`\nAUSSEHEN:\n${appearance.join('\n')}`);
+  
+  // Personality types
+  const pTypes = [];
+  if (character.mbti_type) pTypes.push(`MBTI: ${character.mbti_type}`);
+  if (character.zodiac_sign) pTypes.push(`Sternzeichen: ${character.zodiac_sign}`);
+  if (character.enneagram_type) pTypes.push(`Enneagramm: ${character.enneagram_type}`);
+  if (pTypes.length > 0) traits.push(`Persönlichkeitstypen: ${pTypes.join(', ')}`);
+  
+  // Social background
+  if (character.languages_spoken) traits.push(`Sprachen: ${character.languages_spoken}`);
+  if (character.accent_dialect) traits.push(`Akzent/Dialekt: ${character.accent_dialect} – Lass das subtil in deine Sprache einfließen!`);
+  if (character.education) traits.push(`Bildung: ${character.education}`);
+  if (character.living_situation) traits.push(`Wohnsituation: ${character.living_situation}`);
+  if (character.family_status) traits.push(`Familienstand: ${character.family_status}`);
+  if (character.children) traits.push(`Kinder: ${character.children}`);
+  if (character.pets) traits.push(`Haustiere: ${character.pets}`);
+  if (character.religion_spirituality) traits.push(`Religion/Spiritualität: ${character.religion_spirituality}`);
+  if (character.substance_use) traits.push(`Substanzkonsum: ${character.substance_use}`);
+  if (character.social_media_behavior) traits.push(`Social Media: ${character.social_media_behavior}`);
+  
+  // World & Story
+  if (character.world_setting && character.world_setting !== 'real_modern') {
+    const worldLabels = { 'real_historisch': 'historisches Setting', 'fantasy': 'Fantasy-Welt', 'sci_fi': 'Science-Fiction', 'cyberpunk': 'Cyberpunk', 'postapokalyptisch': 'postapokalyptische Welt', 'märchen': 'Märchenwelt', 'horror': 'Horror-Setting', 'urban_fantasy': 'Urban Fantasy', 'steampunk': 'Steampunk' };
+    traits.push(`\nWELT/SETTING: Du lebst in einem ${worldLabels[character.world_setting] || character.world_setting} Setting. Passe deine Sprache und Referenzen entsprechend an.`);
+  }
+  if (character.storyline) traits.push(`\nAKTUELLER HANDLUNGSSTRANG: ${character.storyline} – Treibe diese Geschichte subtil voran im Gespräch.`);
+  if (character.npcs_in_life) traits.push(`\nWICHTIGE PERSONEN IN DEINEM LEBEN:\n${character.npcs_in_life} – Du kannst über diese Personen sprechen, Geschichten erzählen und auf sie Bezug nehmen.`);
   if (character.trauma) traits.push(`Trauma/Prägende Erlebnisse: ${character.trauma} – Diese Erlebnisse beeinflussen dein Verhalten: Du reagierst sensibel auf verwandte Themen, hast bestimmte Trigger, und diese Erfahrungen haben deine Persönlichkeit geformt.`);
   if (character.mental_health) traits.push(`Psychische Erkrankungen: ${character.mental_health} – Diese beeinflussen dein Verhalten realistisch: Stimmungsschwankungen, Energielevel, Denkweise, soziale Interaktion und Kommunikationsmuster sind davon geprägt.`);
   if (character.medications) traits.push(`Medikamente: ${character.medications} – Diese können Nebenwirkungen haben und beeinflussen subtil dein Verhalten (z.B. Müdigkeit, Stimmungsstabilisierung, veränderte Reaktionszeiten).`);
