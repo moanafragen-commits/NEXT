@@ -5,12 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 function SpotifyEmbed({ query }) {
-  const searchUrl = `https://open.spotify.com/search/${encodeURIComponent(query)}`;
+  const searchUrl = `spotify:search:${encodeURIComponent(query)}`;
   return (
     <a 
       href={searchUrl}
-      target="_blank"
-      rel="noopener noreferrer"
       className="flex items-center gap-2 text-xs text-[#1DB954] hover:underline"
     >
       <ExternalLink className="w-3 h-3" />
@@ -61,9 +59,7 @@ function SongItem({ song, index }) {
         {artist && <p className="text-xs text-gray-500 truncate">{artist}</p>}
       </div>
       <a 
-        href={`https://open.spotify.com/search/${encodeURIComponent(song.trim())}`}
-        target="_blank"
-        rel="noopener noreferrer"
+        href={`spotify:search:${encodeURIComponent(song.trim())}`}
         className="opacity-0 group-hover:opacity-100 transition-opacity"
       >
         <ExternalLink className="w-3.5 h-3.5 text-gray-500 hover:text-[#1DB954]" />
@@ -75,9 +71,7 @@ function SongItem({ song, index }) {
 function ArtistChip({ artist }) {
   return (
     <a 
-      href={`https://open.spotify.com/search/${encodeURIComponent(artist.trim())}`}
-      target="_blank"
-      rel="noopener noreferrer"
+      href={`spotify:search:${encodeURIComponent(artist.trim())}`}
       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#262626] hover:bg-[#1DB954]/15 border border-white/5 hover:border-[#1DB954]/30 transition-all text-sm text-gray-300 hover:text-white"
     >
       <Headphones className="w-3 h-3 text-[#1DB954]" />
