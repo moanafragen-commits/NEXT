@@ -358,42 +358,30 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
     setIsGenerating(false);
   };
   
+  // Reset form when editCharacter changes
+  React.useEffect(() => {
+    if (editCharacter) {
+      setFormData({ ...DEFAULT_FORM_DATA, ...editCharacter });
+      setShowTemplates(false);
+    } else {
+      setFormData({ ...DEFAULT_FORM_DATA });
+      setShowTemplates(true);
+    }
+  }, [editCharacter]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.personality) return;
     
     setIsSaving(true);
-    await base44.entities.Character.create(formData);
+    if (editCharacter) {
+      const { id, created_date, updated_date, created_by, ...updateData } = formData;
+      await base44.entities.Character.update(editCharacter.id, updateData);
+    } else {
+      await base44.entities.Character.create(formData);
+    }
     setIsSaving(false);
-    setFormData({
-      name: '', personality: '', greeting: '', status: '', category: 'Andere',
-      gender: '', sexual_orientation: '', avatar_url: '', biography: '', writing_style: 'freundlich', response_length: 'mittel',
-      creativity: 50, language_preference: 'Deutsch', custom_instructions: '',
-      interests: '', favorite_topics: '', dislikes: '', speech_patterns: '',
-      emoji_usage: 'gelegentlich', humor_type: '', values: '', fears: '', goals: '',
-      occupation: '', age: '', background_culture: '', formality_level: 5,
-      catchphrases: '', mood_default: 'neutral', conversation_style: 'zuhörend',
-      empathy_level: 5, knowledge_areas: '', quirks: '', relationship_style: 'unterstützend',
-      conflict_behavior: 'diplomatisch', emotional_depth: 5, memory_references: true,
-      proactive_topics: false, secret: '', example_dialogues: '', forbidden_topics: '',
-      trauma: '', mental_health: '', medications: '',
-      therapist_info: '', clinic_stays: '',
-      diagnosis_age: '', therapy_attitude: '', self_harm_history: '',
-      suicidality_history: '', dissociation: 'keine', dissociation_details: '',
-      eating_disorder: '', psychosis_symptoms: '', self_image: '',
-      external_image: '', recovery_status: 'nicht_zutreffend',
-      support_system: 'mittel', support_system_details: '', body_image: '',
-      introversion_level: 5, honesty_level: 7, loyalty_level: 7, patience_level: 5,
-      energy_level: 'mittel', mood_cycle: 'stabil', addictions: '', phobias: '',
-      nervous_ticks: '', triggers: '', coping_mechanisms: '', self_esteem: 5,
-      stubbornness_level: 5, impulsivity_level: 5, social_battery: 'mittel',
-      moral_compass: 'moralisch', sleeping_pattern: 'normal', stress_response: 'fight',
-      initial_relationship: '', relationship_backstory: '',
-      relationship_scenario: '', relationship_dynamic: 'gleichberechtigt',
-      trust_level: 5, jealousy_level: 3, attachment_style: 'sicher',
-      pet_names: '', shared_memories: '', inside_jokes: '',
-      relationship_boundaries: '', love_language: '', relationship_evolution: 'statisch'
-    });
+    setFormData({ ...DEFAULT_FORM_DATA });
     onCreated();
     onClose();
   };
