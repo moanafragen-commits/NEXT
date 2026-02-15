@@ -8,10 +8,18 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import TagManager from './TagManager';
+import { getCharacterAvailability } from './ReplyDelayCalculator';
 
 export default function CharacterCard({ character, lastMessage, onClick, onDelete, onDeleteChat, onToggleFavorite, onToggleArchive }) {
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character.name}`;
   const queryClient = useQueryClient();
+  const availability = getCharacterAvailability(character);
+  
+  const statusColor = availability.status === 'online' 
+    ? 'bg-emerald-500' 
+    : availability.status === 'away' 
+      ? 'bg-amber-500' 
+      : 'bg-gray-500';
 
   const toggleFavoriteMutation = useMutation({
     mutationFn: async () => {
@@ -48,7 +56,7 @@ export default function CharacterCard({ character, lastMessage, onClick, onDelet
           alt={character.name}
           className="w-14 h-14 rounded-full object-cover ring-2 ring-emerald-500/20"
         />
-        <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-[#111]" />
+        <div className={`absolute bottom-0 right-0 w-3.5 h-3.5 ${statusColor} rounded-full border-2 border-[#111]`} />
       </Link>
       
       <Link 
@@ -64,7 +72,9 @@ export default function CharacterCard({ character, lastMessage, onClick, onDelet
           )}
         </div>
         <p className="text-sm text-gray-400 truncate mt-0.5">
-          {lastMessage?.content || character.status || character.greeting || character.personality?.slice(0, 50) + '...'}
+          {availability.status === 'offline' ? (
+            <span className="text-gray-500">{availability.label}</span>
+          ) : lastMessage?.content || character.status || character.greeting || character.personality?.slice(0, 50) + '...'}
         </p>
         {(character.tags?.length > 0) && (
           <div className="mt-1">
