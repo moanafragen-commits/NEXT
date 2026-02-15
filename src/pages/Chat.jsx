@@ -105,12 +105,19 @@ export default function Chat() {
       setDelayStatus(reason);
       
       // Wait before "typing" to simulate realistic behavior
-      const typingDelay = Math.min(delay, 60000); // show status for up to 1 min, then start typing
+      const typingDelay = Math.min(delay, 60000);
       const preTypingWait = Math.max(0, delay - typingDelay);
       
       if (preTypingWait > 0) {
         await new Promise(resolve => setTimeout(resolve, preTypingWait));
       }
+      
+      // Character "reads" the message now → blue checkmarks
+      await base44.entities.ChatMessage.update(userMsg.id, {
+        status: 'read',
+        read_at: new Date().toISOString()
+      });
+      queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
       
       setDelayStatus(null);
       setIsTyping(true);
