@@ -342,8 +342,38 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
             
             {/* Basic Tab */}
             <TabsContent value="basic" className="space-y-5">
+              {/* KI-Generierung Banner */}
+              <div className="p-3 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-emerald-300 font-medium">✨ KI-Assistent</p>
+                    <p className="text-[11px] text-gray-400 mt-0.5">Gib Name + Kategorie ein und lass die KI den Rest generieren</p>
+                  </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={generateAll}
+                    disabled={!formData.name || isGenerating}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-xs"
+                  >
+                    {isGenerating ? (
+                      <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                    ) : (
+                      <Wand2 className="w-3.5 h-3.5 mr-1.5" />
+                    )}
+                    Alles generieren
+                  </Button>
+                </div>
+              </div>
+
               {/* Avatar Upload */}
-              <div className="flex items-center gap-6">
+              <div className="space-y-1 mb-1">
+                <h3 className="text-sm font-semibold text-emerald-400 flex items-center gap-2">
+                  <ImagePlus className="w-4 h-4" />
+                  Avatar
+                </h3>
+              </div>
+              <div className="flex items-center gap-4">
                 <div className="relative group">
                   <img 
                     src={formData.avatar_url || defaultAvatar || 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=default'}
@@ -365,16 +395,38 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                   </label>
                 </div>
                 <div className="flex-1 space-y-2">
-                  <Label className="text-gray-300">Oder Avatar-URL eingeben</Label>
                   <Input
                     value={formData.avatar_url}
                     onChange={(e) => setFormData(prev => ({ ...prev, avatar_url: e.target.value }))}
-                    placeholder="https://..."
-                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
+                    placeholder="Avatar-URL eingeben..."
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500 text-sm"
                   />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={generateAvatar}
+                    disabled={!formData.name || isGeneratingAvatar}
+                    className="w-full border-white/10 text-gray-300 hover:text-white hover:bg-white/5 text-xs"
+                  >
+                    {isGeneratingAvatar ? (
+                      <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+                    )}
+                    Avatar mit KI generieren
+                  </Button>
                 </div>
               </div>
               
+              {/* Identity Section */}
+              <div className="space-y-1 mt-2 mb-1">
+                <h3 className="text-sm font-semibold text-emerald-400 flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Identität
+                </h3>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-gray-300">Name *</Label>
@@ -385,7 +437,6 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                     className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
                   />
                 </div>
-                
                 <div className="space-y-2">
                   <Label className="text-gray-300">Kategorie</Label>
                   <Select 
@@ -406,21 +457,51 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                 </div>
               </div>
 
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Geschlecht</Label>
+                  <Select 
+                    value={formData.gender} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, gender: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue placeholder="Wählen..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10">
+                      <SelectItem value="männlich" className="text-white hover:bg-white/10">♂ Männlich</SelectItem>
+                      <SelectItem value="weiblich" className="text-white hover:bg-white/10">♀ Weiblich</SelectItem>
+                      <SelectItem value="non-binär" className="text-white hover:bg-white/10">⚧ Non-Binär</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Alter</Label>
+                  <Input
+                    value={formData.age}
+                    onChange={(e) => setFormData(prev => ({ ...prev, age: e.target.value }))}
+                    placeholder="z.B. 25"
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Beruf</Label>
+                  <Input
+                    value={formData.occupation}
+                    onChange={(e) => setFormData(prev => ({ ...prev, occupation: e.target.value }))}
+                    placeholder="z.B. Arzt"
+                    className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
+                  />
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label className="text-gray-300">Geschlecht</Label>
-                <Select 
-                  value={formData.gender} 
-                  onValueChange={(val) => setFormData(prev => ({ ...prev, gender: val }))}
-                >
-                  <SelectTrigger className="bg-[#262626] border-white/10 text-white">
-                    <SelectValue placeholder="Auswählen..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-[#262626] border-white/10">
-                    <SelectItem value="männlich" className="text-white hover:bg-white/10">♂ Männlich</SelectItem>
-                    <SelectItem value="weiblich" className="text-white hover:bg-white/10">♀ Weiblich</SelectItem>
-                    <SelectItem value="non-binär" className="text-white hover:bg-white/10">⚧ Non-Binär</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label className="text-gray-300">Kultureller Hintergrund</Label>
+                <Input
+                  value={formData.background_culture}
+                  onChange={(e) => setFormData(prev => ({ ...prev, background_culture: e.target.value }))}
+                  placeholder="z.B. Aufgewachsen in Tokyo, japanisch-deutsch"
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
+                />
               </div>
               
               <div className="space-y-2">
@@ -434,6 +515,14 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                 />
               </div>
               
+              {/* Personality Section */}
+              <div className="space-y-1 mt-2 mb-1">
+                <h3 className="text-sm font-semibold text-emerald-400 flex items-center gap-2">
+                  <Brain className="w-4 h-4" />
+                  Persönlichkeit & Verhalten
+                </h3>
+              </div>
+
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <Label className="text-gray-300">Persönlichkeit *</Label>
@@ -460,15 +549,76 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                   className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[100px]"
                 />
               </div>
-              
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Standardstimmung</Label>
+                  <Select 
+                    value={formData.mood_default} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, mood_default: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10">
+                      <SelectItem value="fröhlich" className="text-white hover:bg-white/10">😊 Fröhlich</SelectItem>
+                      <SelectItem value="nachdenklich" className="text-white hover:bg-white/10">🤔 Nachdenklich</SelectItem>
+                      <SelectItem value="ruhig" className="text-white hover:bg-white/10">😌 Ruhig</SelectItem>
+                      <SelectItem value="energetisch" className="text-white hover:bg-white/10">⚡ Energetisch</SelectItem>
+                      <SelectItem value="melancholisch" className="text-white hover:bg-white/10">🌧️ Melancholisch</SelectItem>
+                      <SelectItem value="neutral" className="text-white hover:bg-white/10">😐 Neutral</SelectItem>
+                      <SelectItem value="geheimnisvoll" className="text-white hover:bg-white/10">🔮 Geheimnisvoll</SelectItem>
+                      <SelectItem value="warm" className="text-white hover:bg-white/10">🤗 Warm</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Schreibstil</Label>
+                  <Select 
+                    value={formData.writing_style} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, writing_style: val }))}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-white/10">
+                      {WRITING_STYLES.map(style => (
+                        <SelectItem key={style.value} value={style.value} className="text-white hover:bg-white/10">
+                          {style.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label className="text-gray-300">Begrüßung</Label>
+                <Label className="text-gray-300">Interessen & Hobbies</Label>
                 <Input
-                  value={formData.greeting}
-                  onChange={(e) => setFormData(prev => ({ ...prev, greeting: e.target.value }))}
-                  placeholder="Erste Nachricht des Charakters..."
+                  value={formData.interests}
+                  onChange={(e) => setFormData(prev => ({ ...prev, interests: e.target.value }))}
+                  placeholder="Gaming, Lesen, Kochen, Wandern..."
                   className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
                 />
+              </div>
+              
+              {/* First Impression */}
+              <div className="space-y-1 mt-2 mb-1">
+                <h3 className="text-sm font-semibold text-emerald-400 flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4" />
+                  Erster Eindruck
+                </h3>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Begrüßung</Label>
+                <Textarea
+                  value={formData.greeting}
+                  onChange={(e) => setFormData(prev => ({ ...prev, greeting: e.target.value }))}
+                  placeholder="Die erste Nachricht die der Charakter sendet, wenn man einen neuen Chat startet..."
+                  className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]"
+                />
+                <p className="text-xs text-gray-500">Tipp: Eine gute Begrüßung spiegelt die Persönlichkeit wider und lädt zum Gespräch ein</p>
               </div>
             </TabsContent>
             
