@@ -98,7 +98,25 @@ export default function Chat() {
       setReplyToMessage(null);
       
       queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
+      
+      // Realistic reply delay based on character traits
+      const delay = calculateReplyDelay(character);
+      const reason = getDelayReason(character);
+      setDelayStatus(reason);
+      
+      // Wait before "typing" to simulate realistic behavior
+      const typingDelay = Math.min(delay, 60000); // show status for up to 1 min, then start typing
+      const preTypingWait = Math.max(0, delay - typingDelay);
+      
+      if (preTypingWait > 0) {
+        await new Promise(resolve => setTimeout(resolve, preTypingWait));
+      }
+      
+      setDelayStatus(null);
       setIsTyping(true);
+      
+      // Simulate typing time (1-4 seconds)
+      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 3000));
       
       // Build conversation history with more context (last 20 messages)
       const history = messages.slice(-20).map(m => ({
