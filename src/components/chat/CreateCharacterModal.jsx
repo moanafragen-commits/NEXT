@@ -737,24 +737,50 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                       <SelectValue placeholder="Wähle eine Beziehung..." />
                     </SelectTrigger>
                     <SelectContent className="bg-[#262626] border-white/10 max-h-80 z-[10001]">
-                      <SelectItem value="Bester Freund" className="text-white hover:bg-white/10">👫 Bester Freund</SelectItem>
-                      <SelectItem value="Guter Freund" className="text-white hover:bg-white/10">🤝 Guter Freund</SelectItem>
-                      <SelectItem value="Bekannter" className="text-white hover:bg-white/10">👋 Bekannter</SelectItem>
-                      <SelectItem value="Partner" className="text-white hover:bg-white/10">💑 Partner</SelectItem>
+                      <SelectItem value="Bester Freund/Beste Freundin" className="text-white hover:bg-white/10">👫 Beste/r Freund/in</SelectItem>
+                      <SelectItem value="Guter Freund/Gute Freundin" className="text-white hover:bg-white/10">🤝 Gute/r Freund/in</SelectItem>
+                      <SelectItem value="Bekannte/r" className="text-white hover:bg-white/10">👋 Bekannte/r</SelectItem>
+                      <SelectItem value="Partner/in" className="text-white hover:bg-white/10">💑 Partner/in</SelectItem>
                       <SelectItem value="Schwarm" className="text-white hover:bg-white/10">💘 Schwarm</SelectItem>
-                      <SelectItem value="Ex-Partner" className="text-white hover:bg-white/10">💔 Ex-Partner</SelectItem>
-                      <SelectItem value="Familienmitglied" className="text-white hover:bg-white/10">👨‍👩‍👧 Familienmitglied</SelectItem>
-                      <SelectItem value="Mentor/Lehrer" className="text-white hover:bg-white/10">🎓 Mentor/Lehrer</SelectItem>
-                      <SelectItem value="Schüler/Mentee" className="text-white hover:bg-white/10">📚 Schüler/Mentee</SelectItem>
-                      <SelectItem value="Arbeitskollege" className="text-white hover:bg-white/10">💼 Arbeitskollege</SelectItem>
-                      <SelectItem value="Chef/Vorgesetzter" className="text-white hover:bg-white/10">👔 Chef/Vorgesetzter</SelectItem>
-                      <SelectItem value="Rivale" className="text-white hover:bg-white/10">⚔️ Rivale</SelectItem>
-                      <SelectItem value="Feind" className="text-white hover:bg-white/10">😤 Feind</SelectItem>
-                      <SelectItem value="Fremder" className="text-white hover:bg-white/10">🚶 Fremder</SelectItem>
-                      <SelectItem value="Fan/Bewunderer" className="text-white hover:bg-white/10">🌟 Fan/Bewunderer</SelectItem>
-                      <SelectItem value="Seelenverwandter" className="text-white hover:bg-white/10">✨ Seelenverwandter</SelectItem>
-                      <SelectItem value="Kindheitsfreund" className="text-white hover:bg-white/10">🧒 Kindheitsfreund</SelectItem>
-                      <SelectItem value="Online-Freund" className="text-white hover:bg-white/10">💬 Online-Freund</SelectItem>
+                      <SelectItem value="Ex-Partner/in" className="text-white hover:bg-white/10">💔 Ex-Partner/in</SelectItem>
+                      <SelectItem value="Ehemann/Ehefrau" className="text-white hover:bg-white/10">💍 Ehemann/Ehefrau</SelectItem>
+                      <SelectItem value="Verlobte/r" className="text-white hover:bg-white/10">💎 Verlobte/r</SelectItem>
+                      <SelectItem value="Affäre" className="text-white hover:bg-white/10">🔥 Affäre</SelectItem>
+                      <SelectItem value="Sandkastenliebe" className="text-white hover:bg-white/10">🏖️ Sandkastenliebe</SelectItem>
+                      <SelectItem value="Mutter" className="text-white hover:bg-white/10">👩 Mutter</SelectItem>
+                      <SelectItem value="Vater" className="text-white hover:bg-white/10">👨 Vater</SelectItem>
+                      <SelectItem value="Schwester" className="text-white hover:bg-white/10">👧 Schwester</SelectItem>
+                      <SelectItem value="Bruder" className="text-white hover:bg-white/10">👦 Bruder</SelectItem>
+                      <SelectItem value="Tochter" className="text-white hover:bg-white/10">👶 Tochter</SelectItem>
+                      <SelectItem value="Sohn" className="text-white hover:bg-white/10">👶 Sohn</SelectItem>
+                      <SelectItem value="Großmutter/Großvater" className="text-white hover:bg-white/10">👴 Großmutter/Großvater</SelectItem>
+                      <SelectItem value="Cousin/Cousine" className="text-white hover:bg-white/10">🧑‍🤝‍🧑 Cousin/Cousine</SelectItem>
+                      <SelectItem value="Tante/Onkel" className="text-white hover:bg-white/10">👨‍👩‍👧 Tante/Onkel</SelectItem>
+                      <SelectItem value="Stiefmutter/Stiefvater" className="text-white hover:bg-white/10">👤 Stiefmutter/Stiefvater</SelectItem>
+                      <SelectItem value="Stiefschwester/Stiefbruder" className="text-white hover:bg-white/10">👥 Stiefschwester/Stiefbruder</SelectItem>
+                      <SelectItem value="Mentor/in" className="text-white hover:bg-white/10">🎓 Mentor/in</SelectItem>
+                      <SelectItem value="Schüler/in" className="text-white hover:bg-white/10">📚 Schüler/in</SelectItem>
+                      <SelectItem value="Lehrer/in" className="text-white hover:bg-white/10">📖 Lehrer/in</SelectItem>
+                      <SelectItem value="Arbeitskollege/Arbeitskollegin" className="text-white hover:bg-white/10">💼 Arbeitskollege/in</SelectItem>
+                      <SelectItem value="Chef/in" className="text-white hover:bg-white/10">👔 Chef/in</SelectItem>
+                      <SelectItem value="Mitarbeiter/in" className="text-white hover:bg-white/10">🏢 Mitarbeiter/in</SelectItem>
+                      <SelectItem value="Geschäftspartner/in" className="text-white hover:bg-white/10">🤝 Geschäftspartner/in</SelectItem>
+                      <SelectItem value="Rivale/Rivalin" className="text-white hover:bg-white/10">⚔️ Rivale/Rivalin</SelectItem>
+                      <SelectItem value="Feind/in" className="text-white hover:bg-white/10">😤 Feind/in</SelectItem>
+                      <SelectItem value="Fremde/r" className="text-white hover:bg-white/10">🚶 Fremde/r</SelectItem>
+                      <SelectItem value="Fan/Bewunderer/in" className="text-white hover:bg-white/10">🌟 Fan/Bewunderer/in</SelectItem>
+                      <SelectItem value="Seelenverwandte/r" className="text-white hover:bg-white/10">✨ Seelenverwandte/r</SelectItem>
+                      <SelectItem value="Kindheitsfreund/in" className="text-white hover:bg-white/10">🧒 Kindheitsfreund/in</SelectItem>
+                      <SelectItem value="Online-Freund/in" className="text-white hover:bg-white/10">💬 Online-Freund/in</SelectItem>
+                      <SelectItem value="Nachbar/in" className="text-white hover:bg-white/10">🏠 Nachbar/in</SelectItem>
+                      <SelectItem value="Mitbewohner/in" className="text-white hover:bg-white/10">🏡 Mitbewohner/in</SelectItem>
+                      <SelectItem value="Trainingspartner/in" className="text-white hover:bg-white/10">🏋️ Trainingspartner/in</SelectItem>
+                      <SelectItem value="Therapeut/in" className="text-white hover:bg-white/10">🧘 Therapeut/in</SelectItem>
+                      <SelectItem value="Vertraute/r" className="text-white hover:bg-white/10">🤫 Vertraute/r</SelectItem>
+                      <SelectItem value="Brieffreund/in" className="text-white hover:bg-white/10">✉️ Brieffreund/in</SelectItem>
+                      <SelectItem value="WG-Mitbewohner/in" className="text-white hover:bg-white/10">🛋️ WG-Mitbewohner/in</SelectItem>
+                      <SelectItem value="Bandkollege/in" className="text-white hover:bg-white/10">🎸 Bandkollege/in</SelectItem>
+                      <SelectItem value="Reisebekanntschaft" className="text-white hover:bg-white/10">✈️ Reisebekanntschaft</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
