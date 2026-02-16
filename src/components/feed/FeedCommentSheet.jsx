@@ -45,7 +45,8 @@ export default function FeedCommentSheet({ post, character, comments, user, onCl
       name: c.name,
       avatar_url: c.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.username || c.name}`,
       category: c.category === 'lifestyle' ? 'Influencer' : c.category === 'tech' ? 'Wissenschaftler' : 'Andere',
-      username: c.username
+      username: c.username,
+      is_verified: c.is_verified
     };
   }
 
@@ -93,7 +94,7 @@ export default function FeedCommentSheet({ post, character, comments, user, onCl
     const char = charMap[comment.user_email];
     if (char) {
       const verifiedCats = ['Berühmtheit', 'Nachrichtensender', 'Influencer', 'Sportler', 'Musiker', 'Politiker', 'Wissenschaftler', 'Künstler', 'Unternehmer', 'Streamer', 'Model', 'Journalist', 'Aktivist'];
-      const isVerified = verifiedCats.includes(char.category);
+            const isVerified = char.is_verified || verifiedCats.includes(char.category);
       return {
         name: char.name,
         username: '@' + (char.username || char.name || '').toLowerCase().replace(/\s+/g, '_'),
