@@ -335,7 +335,9 @@ export default function Chat() {
 
       // Mark used shared memories
       if (response.used_shared_memory_ids?.length > 0) {
-        for (const smId of response.used_shared_memory_ids) { await base44.entities.SharedMemory.update(smId, { is_used: true }); }
+        for (const smId of response.used_shared_memory_ids) {
+          try { await base44.entities.SharedMemory.update(smId, { is_used: true }); } catch (e) { /* memory may have been deleted */ }
+        }
         queryClient.invalidateQueries({ queryKey: ['shared-memories', characterId, user.email] });
       }
       
