@@ -97,7 +97,7 @@ export default function Feed() {
       {/* Header */}
       <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-gray-200 auto-theme-header">
         <div className="flex items-center justify-center px-4 py-3">
-          <h1 className="text-xl font-extrabold tracking-tight">𝕏</h1>
+          <h1 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">NEXT</h1>
         </div>
       </header>
 

@@ -50,6 +50,7 @@
 import Activity from './pages/Activity';
 import AppSettings from './pages/AppSettings';
 import CharacterDevelopment from './pages/CharacterDevelopment';
+import CharacterDiary from './pages/CharacterDiary';
 import CharacterInfo from './pages/CharacterInfo';
 import CharacterLibrary from './pages/CharacterLibrary';
 import CharacterStatus from './pages/CharacterStatus';
@@ -59,6 +60,7 @@ import ChatView from './pages/ChatView';
 import CreatePost from './pages/CreatePost';
 import CreateStatus from './pages/CreateStatus';
 import CreateUserStatus from './pages/CreateUserStatus';
+import Diaries from './pages/Diaries';
 import Feed from './pages/Feed';
 import GroupChat from './pages/GroupChat';
 import GroupChats from './pages/GroupChats';
@@ -66,13 +68,11 @@ import Home from './pages/Home';
 import Landing from './pages/Landing';
 import MemoryTraining from './pages/MemoryTraining';
 import NotificationSettings from './pages/NotificationSettings';
+import RelationshipMap from './pages/RelationshipMap';
 import UserChat from './pages/UserChat';
 import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
 import UserStatusView from './pages/UserStatusView';
-import CharacterDiary from './pages/CharacterDiary';
-import Diaries from './pages/Diaries';
-import RelationshipMap from './pages/RelationshipMap';
 import __Layout from './Layout.jsx';
 
 
@@ -80,6 +80,7 @@ export const PAGES = {
     "Activity": Activity,
     "AppSettings": AppSettings,
     "CharacterDevelopment": CharacterDevelopment,
+    "CharacterDiary": CharacterDiary,
     "CharacterInfo": CharacterInfo,
     "CharacterLibrary": CharacterLibrary,
     "CharacterStatus": CharacterStatus,
@@ -89,6 +90,7 @@ export const PAGES = {
     "CreatePost": CreatePost,
     "CreateStatus": CreateStatus,
     "CreateUserStatus": CreateUserStatus,
+    "Diaries": Diaries,
     "Feed": Feed,
     "GroupChat": GroupChat,
     "GroupChats": GroupChats,
@@ -96,13 +98,11 @@ export const PAGES = {
     "Landing": Landing,
     "MemoryTraining": MemoryTraining,
     "NotificationSettings": NotificationSettings,
+    "RelationshipMap": RelationshipMap,
     "UserChat": UserChat,
     "UserChats": UserChats,
     "UserProfile": UserProfile,
     "UserStatusView": UserStatusView,
-    "CharacterDiary": CharacterDiary,
-    "Diaries": Diaries,
-    "RelationshipMap": RelationshipMap,
 }
 
 export const pagesConfig = {

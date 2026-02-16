@@ -233,7 +233,7 @@ export default function AppSettings() {
 
         {/* Version */}
         <p className={`text-center mt-6 text-[11px] ${isDark ? 'text-gray-700' : 'text-gray-300'}`}>
-          Version 1.0 · Made with ❤️
+          NEXT · Version 1.0 · Made with ❤️
         </p>
       </div>
 
