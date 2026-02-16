@@ -49,6 +49,7 @@
  */
 import Activity from './pages/Activity';
 import AppSettings from './pages/AppSettings';
+import Calendar from './pages/Calendar';
 import CharacterChat from './pages/CharacterChat';
 import CharacterDevelopment from './pages/CharacterDevelopment';
 import CharacterDiary from './pages/CharacterDiary';
@@ -64,6 +65,7 @@ import CreatePost from './pages/CreatePost';
 import CreateStatus from './pages/CreateStatus';
 import CreateUserStatus from './pages/CreateUserStatus';
 import Diaries from './pages/Diaries';
+import DreamWorldPage from './pages/DreamWorldPage';
 import Feed from './pages/Feed';
 import GroupChat from './pages/GroupChat';
 import GroupChats from './pages/GroupChats';
@@ -72,6 +74,7 @@ import JobDetail from './pages/JobDetail';
 import Jobs from './pages/Jobs';
 import Landing from './pages/Landing';
 import MemoryTraining from './pages/MemoryTraining';
+import NewsFeed from './pages/NewsFeed';
 import NotificationSettings from './pages/NotificationSettings';
 import Notifications from './pages/Notifications';
 import RelationshipMap from './pages/RelationshipMap';
@@ -80,15 +83,13 @@ import UserChat from './pages/UserChat';
 import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
 import UserStatusView from './pages/UserStatusView';
-import NewsFeed from './pages/NewsFeed';
-import DreamWorldPage from './pages/DreamWorldPage';
-import Calendar from './pages/Calendar';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Activity": Activity,
     "AppSettings": AppSettings,
+    "Calendar": Calendar,
     "CharacterChat": CharacterChat,
     "CharacterDevelopment": CharacterDevelopment,
     "CharacterDiary": CharacterDiary,
@@ -104,6 +105,7 @@ export const PAGES = {
     "CreateStatus": CreateStatus,
     "CreateUserStatus": CreateUserStatus,
     "Diaries": Diaries,
+    "DreamWorldPage": DreamWorldPage,
     "Feed": Feed,
     "GroupChat": GroupChat,
     "GroupChats": GroupChats,
@@ -112,6 +114,7 @@ export const PAGES = {
     "Jobs": Jobs,
     "Landing": Landing,
     "MemoryTraining": MemoryTraining,
+    "NewsFeed": NewsFeed,
     "NotificationSettings": NotificationSettings,
     "Notifications": Notifications,
     "RelationshipMap": RelationshipMap,
@@ -120,9 +123,6 @@ export const PAGES = {
     "UserChats": UserChats,
     "UserProfile": UserProfile,
     "UserStatusView": UserStatusView,
-    "NewsFeed": NewsFeed,
-    "DreamWorldPage": DreamWorldPage,
-    "Calendar": Calendar,
 }
 
 export const pagesConfig = {

@@ -1,18 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Loader2, Briefcase, Coins, Star, XCircle } from 'lucide-react';
+import { ArrowLeft, Loader2, Briefcase, Coins, Star, XCircle, MessageCircle, ListTodo } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import BottomNav from '@/components/navigation/BottomNav';
 import TaskList from '@/components/jobs/TaskList';
 import GenerateTaskButton from '@/components/jobs/GenerateTaskButton';
+import JobChat from '@/components/jobs/JobChat';
 import { useUserLevel } from '@/components/gamification/useUserLevel';
 
 export default function JobDetail() {
   const urlParams = new URLSearchParams(window.location.search);
   const jobId = urlParams.get('jobId');
+  const [activeTab, setActiveTab] = useState('tasks');
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -107,13 +109,45 @@ export default function JobDetail() {
           <p className="text-sm text-gray-300 leading-relaxed">{job.description}</p>
         </div>
 
-        {/* Generate Task Button */}
-        <div className="mb-4">
-          <GenerateTaskButton job={job} userEmail={user?.email} />
+        {/* Tab Switcher */}
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={() => setActiveTab('tasks')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              activeTab === 'tasks'
+                ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                : 'bg-white/5 text-gray-400 border border-white/5 hover:bg-white/10'
+            }`}
+          >
+            <ListTodo className="w-4 h-4" />
+            Aufträge
+          </button>
+          <button
+            onClick={() => setActiveTab('chat')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              activeTab === 'chat'
+                ? 'bg-purple-500/15 text-purple-400 border border-purple-500/30'
+                : 'bg-white/5 text-gray-400 border border-white/5 hover:bg-white/10'
+            }`}
+          >
+            <MessageCircle className="w-4 h-4" />
+            Arbeitschat
+          </button>
         </div>
 
-        {/* Task List */}
-        <TaskList jobId={jobId} userEmail={user?.email} onTaskComplete={handleTaskComplete} />
+        {activeTab === 'tasks' ? (
+          <>
+            {/* Generate Task Button */}
+            <div className="mb-4">
+              <GenerateTaskButton job={job} userEmail={user?.email} />
+            </div>
+
+            {/* Task List */}
+            <TaskList jobId={jobId} userEmail={user?.email} onTaskComplete={handleTaskComplete} />
+          </>
+        ) : (
+          <JobChat job={job} userEmail={user?.email} />
+        )}
 
         {/* Quit Job */}
         <div className="mt-8 pt-4 border-t border-white/5">
