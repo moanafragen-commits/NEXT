@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare, Zap, Brain, Shield, Lock, Lightbulb, ImagePlus, Briefcase, Clock, HeartCrack, Flame, Eye, Battery, Moon, Palette, Globe, Sword } from 'lucide-react';
+import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare, Zap, Brain, Shield, Lock, Lightbulb, ImagePlus, Briefcase, Clock, HeartCrack, Flame, Eye, Battery, Moon, Palette, Globe, Sword, BadgeCheck } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
 import { base44 } from '@/api/base44Client';
 import { CHARACTER_TEMPLATES } from './CharacterTemplates';
@@ -271,7 +271,9 @@ const DEFAULT_FORM_DATA = {
     // Story
     storyline: '',
     world_setting: 'real_modern',
-    npcs_in_life: ''
+    npcs_in_life: '',
+    // Verifizierung
+    is_verified: false
 };
 
 export default function CreateCharacterModal({ open, onClose, onCreated, editCharacter }) {
@@ -281,6 +283,7 @@ export default function CreateCharacterModal({ open, onClose, onCreated, editCha
   const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isCheckingVerified, setIsCheckingVerified] = useState(false);
 
   const applyTemplate = (templateName) => {
     const template = CHARACTER_TEMPLATES[templateName];
@@ -369,6 +372,28 @@ Generiere alle folgenden Felder passend zum Charakter. Alles auf Deutsch.`,
       speech_patterns: prev.speech_patterns || result.speech_patterns || '',
     }));
     setIsGenerating(false);
+  };
+
+  const checkVerified = async () => {
+    if (!formData.name) return;
+    setIsCheckingVerified(true);
+    const result = await base44.integrations.Core.InvokeLLM({
+      prompt: `Ist "${formData.name}" eine echte, bekannte/berühmte Person, Band, Marke oder öffentliche Figur? 
+Recherchiere ob dieser Name zu einer realen berühmten Person/Gruppe gehört.
+Beispiele für "ja": Linkin Park, Elon Musk, Taylor Swift, Cristiano Ronaldo, Mercedes-Benz, Barack Obama.
+Beispiele für "nein": Max Müller (generisch), Luna Sternfeld (fiktiv), ein zufälliger Name.
+Antworte nur mit dem JSON.`,
+      add_context_from_internet: true,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          is_famous: { type: "boolean", description: "true wenn die Person/Gruppe/Marke real und berühmt ist" },
+          reason: { type: "string", description: "Kurze Begründung auf Deutsch, max 50 Zeichen" }
+        }
+      }
+    });
+    setFormData(prev => ({ ...prev, is_verified: result.is_famous || false }));
+    setIsCheckingVerified(false);
   };
 
   const generatePersonality = async () => {
@@ -717,6 +742,46 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                   maxLength={100}
                   className="bg-[#262626] border-white/10 text-white placeholder-gray-500"
                 />
+              </div>
+
+              {/* Verifizierung / Blauer Haken */}
+              <div className="p-3 bg-[#262626] rounded-xl border border-white/5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <BadgeCheck className="w-5 h-5 text-blue-500" />
+                    <div>
+                      <Label className="text-gray-300">Verifiziert (Blauer Haken)</Label>
+                      <p className="text-[11px] text-gray-500 mt-0.5">Für berühmte Personen, Bands, Marken etc.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={checkVerified}
+                      disabled={!formData.name || isCheckingVerified}
+                      className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 text-xs"
+                    >
+                      {isCheckingVerified ? (
+                        <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
+                      ) : (
+                        <Sparkles className="w-3.5 h-3.5 mr-1" />
+                      )}
+                      KI prüfen
+                    </Button>
+                    <Switch
+                      checked={formData.is_verified}
+                      onCheckedChange={(val) => setFormData(prev => ({ ...prev, is_verified: val }))}
+                    />
+                  </div>
+                </div>
+                {formData.is_verified && (
+                  <div className="mt-2 flex items-center gap-1.5 text-xs text-blue-400">
+                    <BadgeCheck className="w-3.5 h-3.5 fill-blue-500" />
+                    Dieser Charakter erhält den blauen Haken im Feed
+                  </div>
+                )}
               </div>
               
               {/* Personality Section */}
