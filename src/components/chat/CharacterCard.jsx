@@ -76,7 +76,14 @@ export default function CharacterCard({ character, lastMessage, unreadCount = 0,
         className="flex-1 min-w-0"
       >
         <div className="flex justify-between items-baseline">
-          <h3 className={`font-semibold truncate ${unreadCount > 0 ? 'text-white' : 'text-white'}`}>{character.name}</h3>
+          <h3 className={`font-semibold truncate ${unreadCount > 0 ? 'text-white' : 'text-white'}`}>
+            {character.name}
+            {character.illness && (
+              <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30 font-normal">
+                {getIllnessDisplay(character)?.emoji} krank
+              </span>
+            )}
+          </h3>
           <div className="flex items-center gap-2 ml-2 flex-shrink-0">
             {lastMessage && (
               <span className={`text-xs ${unreadCount > 0 ? 'text-emerald-400 font-semibold' : 'text-gray-500'}`}>
