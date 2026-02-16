@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Loader2 } from 'lucide-react';
@@ -6,9 +6,12 @@ import { AnimatePresence } from 'framer-motion';
 import FeedPostCard from '@/components/feed/FeedPostCard';
 import FeedCommentSheet from '@/components/feed/FeedCommentSheet';
 import BottomNav from '@/components/navigation/BottomNav';
+import { seedFeedIfEmpty } from '@/components/feed/SeedFeedData';
 
 export default function Feed() {
   const [openCommentsPostId, setOpenCommentsPostId] = useState(null);
+  const [isSeeding, setIsSeeding] = useState(false);
+  const seedTriedRef = useRef(false);
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -20,6 +23,22 @@ export default function Feed() {
     queryKey: ['posts'],
     queryFn: () => base44.entities.Post.list('-created_date', 50)
   });
+
+  // Seed feed on first load if empty
+  useEffect(() => {
+    if (isLoading || seedTriedRef.current) return;
+    if (posts.length === 0) {
+      seedTriedRef.current = true;
+      setIsSeeding(true);
+      seedFeedIfEmpty().then((seeded) => {
+        if (seeded) {
+          queryClient.invalidateQueries({ queryKey: ['posts'] });
+          queryClient.invalidateQueries({ queryKey: ['characters'] });
+        }
+        setIsSeeding(false);
+      });
+    }
+  }, [isLoading, posts.length]);
 
   const { data: characters = [] } = useQuery({
     queryKey: ['characters'],
@@ -83,9 +102,10 @@ export default function Feed() {
       </header>
 
       <div className="max-w-lg mx-auto pb-16">
-        {isLoading ? (
-          <div className="flex justify-center py-20">
+        {isLoading || isSeeding ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
             <Loader2 className="w-8 h-8 text-gray-400 animate-spin" />
+            {isSeeding && <p className="text-gray-400 text-sm">Feed wird erstellt...</p>}
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-20 px-6">
