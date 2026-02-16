@@ -77,16 +77,53 @@ export function getAllShopItems() {
   const items = [];
 
   // Chat Themes
+  const themeRarityPrice = {
+    sunset: { rarity: 'rare', price: 150 },
+    ocean: { rarity: 'common', price: 100 },
+    forest: { rarity: 'common', price: 100 },
+    galaxy: { rarity: 'epic', price: 300 },
+    cherry: { rarity: 'rare', price: 150 },
+    neon: { rarity: 'epic', price: 300 },
+    fire: { rarity: 'rare', price: 150 },
+    arctic: { rarity: 'common', price: 100 },
+    midnight: { rarity: 'rare', price: 150 },
+    gold: { rarity: 'legendary', price: 500 },
+    pastel_pink: { rarity: 'common', price: 100 },
+    pastel_blue: { rarity: 'common', price: 100 },
+    pastel_green: { rarity: 'common', price: 100 },
+    pastel_lilac: { rarity: 'common', price: 120 },
+    pastel_peach: { rarity: 'common', price: 100 },
+    pastel_rainbow: { rarity: 'rare', price: 200 },
+    cyberpunk: { rarity: 'epic', price: 350 },
+    blood_moon: { rarity: 'epic', price: 300 },
+    lavender_dream: { rarity: 'rare', price: 180 },
+    tropical: { rarity: 'rare', price: 200 },
+    cotton_candy: { rarity: 'rare', price: 180 },
+    dark_emerald: { rarity: 'rare', price: 180 },
+    rose_gold: { rarity: 'epic', price: 300 },
+    storm: { rarity: 'rare', price: 150 },
+    aurora: { rarity: 'legendary', price: 500 },
+    vintage: { rarity: 'rare', price: 200 },
+    monochrome: { rarity: 'common', price: 120 },
+    sakura: { rarity: 'epic', price: 300 },
+    deep_space: { rarity: 'epic', price: 350 },
+    candy_pop: { rarity: 'rare', price: 200 },
+    matrix: { rarity: 'epic', price: 300 },
+    ocean_breeze: { rarity: 'rare', price: 180 },
+    dark_rose: { rarity: 'epic', price: 280 },
+  };
+
   Object.entries(CHAT_THEMES)
     .filter(([key]) => key !== 'default')
     .forEach(([key, theme]) => {
+      const tp = themeRarityPrice[key] || { rarity: 'common', price: 100 };
       items.push({
         item_key: `theme_${key}`,
         name: theme.name,
         description: `Chat-Hintergrund: ${theme.name}`,
         category: 'chat_theme',
-        price: key === 'gold' ? 500 : key === 'galaxy' || key === 'neon' ? 300 : 150,
-        rarity: key === 'gold' ? 'legendary' : key === 'galaxy' || key === 'neon' ? 'epic' : key === 'sunset' || key === 'cherry' ? 'rare' : 'common',
+        price: tp.price,
+        rarity: tp.rarity,
         is_active: true,
         meta: JSON.stringify({ bg: theme.bg, messageBg: theme.messageBg, userBg: theme.userBg, themeKey: key })
       });
