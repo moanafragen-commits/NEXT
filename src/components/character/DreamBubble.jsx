@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { Moon, Cloud, Sparkles, Skull, Heart, Eye, Clock, Zap, Brain } from 'lucide-react';
 
 const DREAM_TYPE_CONFIG = {
@@ -13,7 +15,7 @@ const DREAM_TYPE_CONFIG = {
   angst: { icon: Zap, color: 'from-orange-500/20 to-red-500/20', border: 'border-orange-500/30', label: 'Angsttraum', emoji: '😰' },
 };
 
-export default function DreamBubble({ dream, characterName }) {
+export default function DreamBubble({ dream, characterName, characterId, dreamId }) {
   if (!dream) return null;
 
   const config = DREAM_TYPE_CONFIG[dream.dream_type] || DREAM_TYPE_CONFIG.normal;
@@ -48,6 +50,14 @@ export default function DreamBubble({ dream, characterName }) {
             </span>
           ))}
         </div>
+      )}
+      {characterId && dreamId && (
+        <Link to={createPageUrl(`DreamWorldPage?characterId=${characterId}&dreamId=${dreamId}`)}>
+          <button className="mt-3 text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1 transition-colors">
+            <Moon className="w-3 h-3" />
+            In den Traum eintreten →
+          </button>
+        </Link>
       )}
     </div>
   );
