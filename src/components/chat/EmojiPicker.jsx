@@ -55,7 +55,7 @@ export default function EmojiPicker({ onSelect, isReaction = false }) {
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="absolute bottom-full mb-2 right-0 bg-[#262626] rounded-xl shadow-xl border border-white/10 p-3 z-50 w-80"
+              className="fixed bottom-20 left-1/2 -translate-x-1/2 bg-[#262626] rounded-xl shadow-xl border border-white/10 p-3 z-50 w-[min(90vw,320px)]"
             >
               {/* Category Tabs */}
               <div className="flex gap-1 mb-3 overflow-x-auto pb-2 border-b border-white/10">
