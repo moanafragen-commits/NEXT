@@ -1,7 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { Trash2, Star, Archive, MessageSquareX, Music } from 'lucide-react';
+import { Trash2, Star, Archive, MessageSquareX, Music, Ban } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -36,6 +36,17 @@ export default function CharacterCard({ character, lastMessage, unreadCount = 0,
     mutationFn: async () => {
       await base44.entities.Character.update(character.id, {
         is_archived: !character.is_archived
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['characters'] });
+    }
+  });
+
+  const toggleBlockMutation = useMutation({
+    mutationFn: async () => {
+      await base44.entities.Character.update(character.id, {
+        is_blocked: !character.is_blocked
       });
     },
     onSuccess: () => {
@@ -127,6 +138,19 @@ export default function CharacterCard({ character, lastMessage, unreadCount = 0,
           className="text-gray-400 hover:text-gray-300"
         >
           <Archive className="w-4 h-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!character.is_blocked && !confirm(`"${character.name}" blockieren?`)) return;
+            toggleBlockMutation.mutate();
+          }}
+          className={character.is_blocked ? 'text-red-500' : 'text-gray-400 hover:text-red-400 hover:bg-red-500/10'}
+          title={character.is_blocked ? 'Entblocken' : 'Blockieren'}
+        >
+          <Ban className="w-4 h-4" />
         </Button>
         {onDeleteChat && (
           <Button
