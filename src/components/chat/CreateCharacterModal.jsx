@@ -7,12 +7,21 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare, Zap, Brain, Shield, Lock, Lightbulb, ImagePlus, Briefcase, Clock, HeartCrack, Flame, Eye, Battery, Moon, Palette, Globe, Sword, BadgeCheck, Music, Coffee } from 'lucide-react';
+import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare, Zap, Brain, Shield, Lock, Lightbulb, ImagePlus, Briefcase, Clock, HeartCrack, Flame, Eye, Battery, Moon, Palette, Globe, Sword, BadgeCheck, Music, Coffee, Languages, Users, Home, Wallet, Theater } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
 import { base44 } from '@/api/base44Client';
 import { CHARACTER_TEMPLATES } from './CharacterTemplates';
 import MusicMediaTab from './tabs/MusicMediaTab';
 import DailyLifeTab from './tabs/DailyLifeTab';
+import PsycheTab from './tabs/PsycheTab';
+import SpracheTab from './tabs/SpracheTab';
+import SozialesTab from './tabs/SozialesTab';
+import MaskenTab from './tabs/MaskenTab';
+import GeschichteTab from './tabs/GeschichteTab';
+import WohnenTab from './tabs/WohnenTab';
+import FinanzenTab from './tabs/FinanzenTab';
+import KulturTab from './tabs/KulturTab';
+import AesthetikTab from './tabs/AesthetikTab';
 
 const CATEGORIES = [
   "Freund", "Mentor", "Familie", "Partner", "Kollege",
@@ -541,15 +550,51 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                 <Flame className="w-3 h-3 mr-1" />
                 Intimität
               </TabsTrigger>
-              <TabsTrigger value="music" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs">
+              <TabsTrigger value="music" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs text-white">
                 <Music className="w-3 h-3 mr-1" />
                 Musik & Medien
               </TabsTrigger>
-              <TabsTrigger value="dailylife" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs">
+              <TabsTrigger value="dailylife" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs text-white">
                 <Coffee className="w-3 h-3 mr-1" />
                 Alltag
               </TabsTrigger>
-              <TabsTrigger value="world" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs">
+              <TabsTrigger value="psyche" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs text-white">
+                <Brain className="w-3 h-3 mr-1" />
+                Psyche
+              </TabsTrigger>
+              <TabsTrigger value="sprache" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs text-white">
+                <Languages className="w-3 h-3 mr-1" />
+                Sprache
+              </TabsTrigger>
+              <TabsTrigger value="soziales" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs text-white">
+                <Users className="w-3 h-3 mr-1" />
+                Soziales
+              </TabsTrigger>
+              <TabsTrigger value="masken" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs text-white">
+                <Eye className="w-3 h-3 mr-1" />
+                Masken
+              </TabsTrigger>
+              <TabsTrigger value="geschichte" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs text-white">
+                <HeartCrack className="w-3 h-3 mr-1" />
+                Geschichte
+              </TabsTrigger>
+              <TabsTrigger value="wohnen" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs text-white">
+                <Home className="w-3 h-3 mr-1" />
+                Wohnen
+              </TabsTrigger>
+              <TabsTrigger value="finanzen" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs text-white">
+                <Wallet className="w-3 h-3 mr-1" />
+                Finanzen
+              </TabsTrigger>
+              <TabsTrigger value="kultur" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs text-white">
+                <Globe className="w-3 h-3 mr-1" />
+                Kultur
+              </TabsTrigger>
+              <TabsTrigger value="aesthetik" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs text-white">
+                <Palette className="w-3 h-3 mr-1" />
+                Ästhetik
+              </TabsTrigger>
+              <TabsTrigger value="world" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs text-white">
                 <Globe className="w-3 h-3 mr-1" />
                 Welt
               </TabsTrigger>
@@ -2345,6 +2390,35 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
             {/* Daily Life Tab */}
             <TabsContent value="dailylife">
               <DailyLifeTab formData={formData} setFormData={setFormData} />
+            </TabsContent>
+
+            {/* New Tabs */}
+            <TabsContent value="psyche">
+              <PsycheTab formData={formData} setFormData={setFormData} />
+            </TabsContent>
+            <TabsContent value="sprache">
+              <SpracheTab formData={formData} setFormData={setFormData} />
+            </TabsContent>
+            <TabsContent value="soziales">
+              <SozialesTab formData={formData} setFormData={setFormData} />
+            </TabsContent>
+            <TabsContent value="masken">
+              <MaskenTab formData={formData} setFormData={setFormData} />
+            </TabsContent>
+            <TabsContent value="geschichte">
+              <GeschichteTab formData={formData} setFormData={setFormData} />
+            </TabsContent>
+            <TabsContent value="wohnen">
+              <WohnenTab formData={formData} setFormData={setFormData} />
+            </TabsContent>
+            <TabsContent value="finanzen">
+              <FinanzenTab formData={formData} setFormData={setFormData} />
+            </TabsContent>
+            <TabsContent value="kultur">
+              <KulturTab formData={formData} setFormData={setFormData} />
+            </TabsContent>
+            <TabsContent value="aesthetik">
+              <AesthetikTab formData={formData} setFormData={setFormData} />
             </TabsContent>
 
             {/* World Tab */}
