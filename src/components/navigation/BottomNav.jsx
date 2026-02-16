@@ -26,11 +26,9 @@ export default function BottomNav({ user }) {
 
   const navItems = [
     { icon: Home, page: 'Feed', label: 'Home' },
-    { icon: Search, page: 'Characters', label: 'Suche' },
     { icon: MessageCircle, page: 'Home', label: 'Chats' },
-    { icon: Bell, page: 'Notifications', label: 'Aktivität', isBell: true },
     { icon: Plus, page: null, label: 'Erstellen', isCreate: true },
-    { icon: CalendarDays, page: 'Calendar', label: 'Kalender' },
+    { icon: Store, page: 'Shop', label: 'Shop' },
     { icon: null, page: 'UserProfile', label: 'Profil', isProfile: true },
   ];
 
