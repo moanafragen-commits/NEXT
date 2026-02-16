@@ -25,6 +25,7 @@ import { useUserLevel } from '@/components/gamification/useUserLevel';
 import { XP_REWARDS } from '@/components/gamification/LevelUtils';
 import { useEquippedTheme } from '@/components/shop/useEquippedTheme';
 import { SongBadge, LocationBadge, RelationshipBadge, EnergyBadge, MotivationBadge, ActivityBadge } from '@/components/chat/HeaderBadges';
+import { checkAndGenerateEvent } from '@/components/character/CharacterEventSystem';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -102,6 +103,7 @@ export default function Chat() {
   });
 
   const [weatherState, setWeatherState] = useState(null);
+  const [activeEvent, setActiveEvent] = useState(null);
 
   // Generate daily activity, check illness, update weather, location, spontaneous messages on chat open
   useEffect(() => {
@@ -121,6 +123,7 @@ export default function Chat() {
       await new Promise(r => setTimeout(r, 1500));
 
       try { await generateDailyActivity(character); } catch(e) {}
+      try { const evt = await checkAndGenerateEvent(character, user.email); if (evt) setActiveEvent(evt); } catch(e) {}
 
       // Location sharing (random chance)
       if (Math.random() > 0.6) {
@@ -275,7 +278,8 @@ export default function Chat() {
         allCharacters,
         recentActivities,
         importantDates,
-        weatherState
+        weatherState,
+        activeEvent
       });
 
       const response = await base44.integrations.Core.InvokeLLM({
