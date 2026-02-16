@@ -250,12 +250,20 @@ export default function Home() {
   };
   
   return (
-    <div className="min-h-screen bg-[#111] text-white">
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
+      {/* Ambient background glow */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-teal-500/3 rounded-full blur-[120px]" />
+      </div>
+
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-[#1a1a1a] border-b border-white/5">
+      <header className="sticky top-0 z-10 glass border-b border-white/5">
         <div className="flex items-center justify-between p-4">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent flex items-center gap-2">
-            <Star className="w-6 h-6 text-white fill-white" />
+          <h1 className="text-2xl font-extrabold bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent flex items-center gap-2 text-glow tracking-tight">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center glow-emerald">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
             NEXT
           </h1>
           <div className="flex items-center gap-1">
@@ -313,13 +321,13 @@ export default function Home() {
         
         {/* Search */}
         <div className="px-4 pb-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+          <div className="relative group">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-gray-500 group-focus-within:text-emerald-400 transition-colors" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Suchen..."
-              className="w-full bg-[#262626] border-0 text-white pl-11 rounded-xl placeholder-gray-500 focus-visible:ring-emerald-500/50"
+              className="w-full bg-white/5 border border-white/5 text-white pl-11 rounded-2xl placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-emerald-500/30 focus-visible:border-emerald-500/20 focus-visible:bg-white/[0.07] transition-all duration-300 h-11"
             />
           </div>
         </div>
@@ -327,46 +335,29 @@ export default function Home() {
         {/* Filter Tabs */}
         <div className="px-4 pb-3 flex gap-2 overflow-x-auto scrollbar-hide">
           <Link to={createPageUrl('Characters')}>
-            <button
-              className="px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors bg-[#262626] text-gray-400 hover:text-white"
-            >
-              <Contact className="w-4 h-4 inline mr-2" />
+            <button className="px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all duration-200 bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5 press-effect">
+              <Contact className="w-4 h-4 inline mr-1.5" />
               Charaktere
             </button>
           </Link>
-          <button
-            onClick={() => setViewFilter('all')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-              viewFilter === 'all' 
-                ? 'bg-emerald-600 text-white' 
-                : 'bg-[#262626] text-gray-400 hover:text-white'
-            }`}
-          >
-            <Inbox className="w-4 h-4 inline mr-2" />
-            Alle
-          </button>
-          <button
-            onClick={() => setViewFilter('favorites')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-              viewFilter === 'favorites' 
-                ? 'bg-emerald-600 text-white' 
-                : 'bg-[#262626] text-gray-400 hover:text-white'
-            }`}
-          >
-            <Star className="w-4 h-4 inline mr-2" />
-            Favoriten
-          </button>
-          <button
-            onClick={() => setViewFilter('archived')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-              viewFilter === 'archived' 
-                ? 'bg-emerald-600 text-white' 
-                : 'bg-[#262626] text-gray-400 hover:text-white'
-            }`}
-          >
-            <Archive className="w-4 h-4 inline mr-2" />
-            Archiviert
+          {[
+            { key: 'all', icon: Inbox, label: 'Alle' },
+            { key: 'favorites', icon: Star, label: 'Favoriten' },
+            { key: 'archived', icon: Archive, label: 'Archiviert' }
+          ].map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setViewFilter(tab.key)}
+              className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all duration-200 border press-effect ${
+                viewFilter === tab.key
+                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-500/30 glow-emerald shadow-lg'
+                  : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border-white/5'
+              }`}
+            >
+              <tab.icon className="w-4 h-4 inline mr-1.5" />
+              {tab.label}
             </button>
+          ))}
             </div>
 
             {/* Tag Filter */}
@@ -390,7 +381,7 @@ export default function Home() {
             </header>
 
         {/* Status Bar */}
-        <div className="px-4 py-3 overflow-x-auto border-b border-white/5 scrollbar-hide">
+        <div className="px-4 py-3 overflow-x-auto border-b border-white/[0.03] scrollbar-hide bg-gradient-to-b from-transparent to-black/20">
           <div className="flex gap-3">
             {/* Own Status */}
             {user && (
@@ -432,26 +423,31 @@ export default function Home() {
         </div>
 
         {/* Character List */}
-        <main className="pb-20">
+        <main className="pb-20 relative z-[1]">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-10 h-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-12 h-12 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin" />
           </div>
         ) : filteredCharacters.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-            <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center mb-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-center justify-center py-20 px-6 text-center"
+          >
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 flex items-center justify-center mb-5 glow-emerald">
               <MessageCircle className="w-10 h-10 text-emerald-400" />
             </div>
-            <h2 className="text-xl font-semibold mb-2">Keine Charaktere</h2>
-            <p className="text-gray-400 mb-6">Erstelle deinen ersten KI-Charakter und beginne zu chatten!</p>
+            <h2 className="text-xl font-bold mb-2 text-white">Keine Chats</h2>
+            <p className="text-gray-500 mb-6 max-w-xs">Erstelle deinen ersten KI-Charakter und beginne zu chatten!</p>
             <Button 
               onClick={() => setShowCreateModal(true)}
-              className="bg-emerald-600 hover:bg-emerald-500"
+              className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 glow-emerald press-effect rounded-xl px-6 h-11"
             >
               <Plus className="w-5 h-5 mr-2" />
               Charakter erstellen
             </Button>
-          </div>
+          </motion.div>
         ) : (
           <AnimatePresence>
             {filteredCharacters.map((character, index) => (
