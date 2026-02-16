@@ -82,7 +82,7 @@ export default function EmojiPicker({ onSelect, isReaction = false }) {
                     {customEmojis.filter(ce => !ce.original_emoji).map(ce => (
                       <button
                         key={ce.id}
-                        onClick={() => handleSelect(ce.label || '⭐')}
+                        onClick={() => handleSelect(`[custom-emoji:${ce.id}]`)}
                         className="hover:bg-white/10 rounded p-1 transition-colors flex items-center justify-center"
                       >
                         <img src={ce.image_url} alt={ce.label || 'emoji'} className="w-7 h-7 object-contain" />

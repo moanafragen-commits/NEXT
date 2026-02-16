@@ -123,9 +123,7 @@ export default function MessageBubble({ message, characterAvatar, characterName,
               onClick={() => window.open(message.image_url, '_blank')}
             />
           )}
-          <ReactMarkdown className="text-sm leading-relaxed prose prose-invert prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
-            {message.content}
-          </ReactMarkdown>
+          {renderMessageContent(message.content, customEmojis)}
         </div>
         <div className={`flex items-center gap-1.5 mt-1 ${isUser ? 'justify-end' : 'justify-start'}`}>
           <span className="text-[10px] text-gray-500">
