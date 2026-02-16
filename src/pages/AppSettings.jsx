@@ -23,7 +23,8 @@ export default function AppSettings() {
     dark_mode: false,
     nsfw_mode: false,
     notifications_enabled: true,
-    language: 'Deutsch'
+    language: 'Deutsch',
+    display_name: ''
   });
 
   useEffect(() => {
@@ -32,7 +33,8 @@ export default function AppSettings() {
         dark_mode: user.dark_mode || false,
         nsfw_mode: user.nsfw_mode || false,
         notifications_enabled: user.notifications_enabled !== false,
-        language: user.language || 'Deutsch'
+        language: user.language || 'Deutsch',
+        display_name: user.display_name || ''
       });
     }
   }, [user]);
