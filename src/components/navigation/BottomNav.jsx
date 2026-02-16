@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Home, Search, Plus, Heart, User, Image, UserPlus, X, MessageCircle, Users, BookOpen } from 'lucide-react';
+import { Home, Search, Plus, Heart, User, Image, UserPlus, X, MessageCircle, Users, BookOpen, Share2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export default function BottomNav({ user }) {
@@ -20,6 +20,7 @@ export default function BottomNav({ user }) {
     { icon: Users, page: 'GroupChats', label: 'Gruppen' },
     { icon: Plus, page: null, label: 'Erstellen', isCreate: true },
     { icon: BookOpen, page: 'Diaries', label: 'Tagebuch' },
+    { icon: Share2, page: 'RelationshipMap', label: 'Karte' },
     { icon: null, page: 'UserProfile', label: 'Profil', isProfile: true },
   ];
 
