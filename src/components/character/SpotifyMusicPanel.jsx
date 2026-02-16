@@ -179,7 +179,7 @@ Erstelle eine realistische Musiksammlung für diesen Charakter. Verwende ECHTE K
       </div>
 
       {/* Now Playing */}
-      <NowPlaying song={data.current_song} characterName={character.name} />
+      <NowPlaying song={generatedMusic?.current_song || currentSong || data.current_song} characterName={character.name} />
 
       {/* Genres */}
       {genres.length > 0 && (
