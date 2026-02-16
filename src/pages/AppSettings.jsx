@@ -204,6 +204,24 @@ export default function AppSettings() {
               <p className={`text-[12px] mt-0.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{user?.email}</p>
             </div>
           </div>
+          <Divider isDark={isDark} />
+          <div className={`px-4 py-3.5 ${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-50'} transition-colors`}>
+            <div className="flex items-center gap-3">
+              <Pencil className={`w-5 h-5 ${isDark ? 'text-emerald-400' : 'text-emerald-500'}`} />
+              <div className="flex-1 min-w-0">
+                <p className="text-[14px] font-medium">Anzeigename</p>
+                <p className={`text-[12px] mt-0.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>So wirst du von Charakteren genannt</p>
+              </div>
+            </div>
+            <div className="mt-2 ml-8">
+              <Input
+                value={settings.display_name}
+                onChange={(e) => toggleSetting('display_name', e.target.value)}
+                placeholder={user?.full_name || 'Dein Name...'}
+                className={`h-9 text-sm ${isDark ? 'bg-[#262626] border-white/10 text-white placeholder-gray-500' : 'bg-gray-50 border-gray-200'}`}
+              />
+            </div>
+          </div>
         </SettingsCard>
 
         {/* Save Button */}
