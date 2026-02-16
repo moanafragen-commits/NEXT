@@ -283,6 +283,12 @@ export default function Home() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-[#262626] border-white/10">
                 <DropdownMenuItem asChild className="text-gray-200 hover:bg-white/5 cursor-pointer">
+                  <Link to={createPageUrl('RelationshipMap')} className="flex items-center">
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Beziehungskarte
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="text-gray-200 hover:bg-white/5 cursor-pointer">
                   <Link to={createPageUrl('CharacterLibrary')} className="flex items-center">
                     <Grid className="w-4 h-4 mr-2" />
                     Bibliothek
