@@ -24,6 +24,7 @@ import { checkAndAwardAchievements } from '@/components/character/AchievementSys
 import { useUserLevel } from '@/components/gamification/useUserLevel';
 import { XP_REWARDS } from '@/components/gamification/LevelUtils';
 import { useEquippedTheme } from '@/components/shop/useEquippedTheme';
+import { SongBadge, LocationBadge, RelationshipBadge, EnergyBadge, MotivationBadge, ActivityBadge } from '@/components/chat/HeaderBadges';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
