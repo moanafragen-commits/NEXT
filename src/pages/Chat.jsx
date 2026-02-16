@@ -17,6 +17,10 @@ import { calculateReplyDelay, getDelayReason, getCharacterAvailability, isRepeat
 import { buildFullPrompt, RESPONSE_SCHEMA } from '@/components/chat/PromptBuilder';
 import { generateDiaryEntry, generateDailyActivity } from '@/components/character/DiaryGenerator';
 import { checkAndUpdateIllness, getIllnessDisplay } from '@/components/character/IllnessSystem';
+import { updateWeatherState, WeatherBadge, buildWeatherContext } from '@/components/character/WeatherSystem';
+import { shouldSendSpontaneous, generateSpontaneousMessage } from '@/components/character/SpontaneousMessages';
+import { generateRandomLocation } from '@/components/character/LocationSharing';
+import { checkAndAwardAchievements } from '@/components/character/AchievementSystem';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
