@@ -16,6 +16,7 @@ import ShareChatButton from '@/components/chat/ShareChatButton';
 import { calculateReplyDelay, getDelayReason, getCharacterAvailability, isRepeatNag } from '@/components/chat/ReplyDelayCalculator';
 import { buildFullPrompt, RESPONSE_SCHEMA } from '@/components/chat/PromptBuilder';
 import { generateDiaryEntry, generateDailyActivity } from '@/components/character/DiaryGenerator';
+import { checkAndUpdateIllness, getIllnessDisplay } from '@/components/character/IllnessSystem';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
