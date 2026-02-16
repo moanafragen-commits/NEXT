@@ -160,11 +160,11 @@ Generiere realistische Reaktionen passend zur Persönlichkeit.`,
   const isGenerating = generateMutation.isPending;
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className="min-h-screen bg-[#0a0a0a] text-white auto-theme">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white border-b border-gray-200">
+      <header className="sticky top-0 z-10 bg-[#1a1a1a] border-b border-white/[0.06] auto-theme-header">
         <div className="flex items-center justify-between px-4 py-3">
-          <button onClick={() => window.history.back()} className="text-black">
+          <button onClick={() => window.history.back()} className="text-white">
             <ArrowLeft className="w-6 h-6" />
           </button>
           <h1 className="text-base font-semibold">Neuer Tweet</h1>
@@ -175,11 +175,11 @@ Generiere realistische Reaktionen passend zur Persönlichkeit.`,
       <main className="max-w-lg mx-auto p-5 space-y-5">
         {/* Character selector */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Charakter</label>
+          <label className="text-sm font-medium text-gray-300">Charakter</label>
           <select
             value={selectedCharId}
             onChange={(e) => setSelectedCharId(e.target.value)}
-            className="w-full bg-gray-50 text-black text-sm rounded-xl px-4 py-3 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/10"
+            className="w-full bg-[#262626] text-white text-sm rounded-xl px-4 py-3 border border-white/10 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
           >
             <option value="random">🎲 Zufälliger Charakter</option>
             {activeChars.map(c => (
@@ -190,24 +190,24 @@ Generiere realistische Reaktionen passend zur Persönlichkeit.`,
 
         {/* Topic */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Thema / Stichpunkte</label>
+          <label className="text-sm font-medium text-gray-300">Thema / Stichpunkte</label>
           <Input
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
             placeholder="z.B. Sonnenuntergang, neues Rezept, Gym..."
-            className="bg-gray-50 border-gray-200 text-black placeholder-gray-400 rounded-xl h-12"
+            className="bg-[#262626] border-white/10 text-white placeholder-gray-500 rounded-xl h-12"
           />
         </div>
 
         {/* Caption */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Caption (optional)</label>
+          <label className="text-sm font-medium text-gray-300">Caption (optional)</label>
           <Textarea
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
             placeholder="Eigene Caption eingeben oder KI generieren lassen..."
             rows={3}
-            className="bg-gray-50 border-gray-200 text-black placeholder-gray-400 rounded-xl resize-none"
+            className="bg-[#262626] border-white/10 text-white placeholder-gray-500 rounded-xl resize-none"
           />
         </div>
 
@@ -215,7 +215,7 @@ Generiere realistische Reaktionen passend zur Persönlichkeit.`,
         <Button
           onClick={() => generateMutation.mutate()}
           disabled={isGenerating || activeChars.length === 0}
-          className="w-full h-12 rounded-xl bg-black hover:bg-black/90 text-white text-base font-medium gap-2"
+          className="w-full h-12 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-base font-medium gap-2"
         >
           {isGenerating ? (
             <>
@@ -231,7 +231,7 @@ Generiere realistische Reaktionen passend zur Persönlichkeit.`,
         </Button>
 
         {activeChars.length === 0 && (
-          <p className="text-center text-sm text-gray-400">Erstelle zuerst einen Charakter</p>
+          <p className="text-center text-sm text-gray-500">Erstelle zuerst einen Charakter</p>
         )}
       </main>
     </div>

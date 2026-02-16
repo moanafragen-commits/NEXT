@@ -69,12 +69,12 @@ import Home from './pages/Home';
 import Landing from './pages/Landing';
 import MemoryTraining from './pages/MemoryTraining';
 import NotificationSettings from './pages/NotificationSettings';
+import Notifications from './pages/Notifications';
 import RelationshipMap from './pages/RelationshipMap';
 import UserChat from './pages/UserChat';
 import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
 import UserStatusView from './pages/UserStatusView';
-import Notifications from './pages/Notifications';
 import __Layout from './Layout.jsx';
 
 
@@ -101,12 +101,12 @@ export const PAGES = {
     "Landing": Landing,
     "MemoryTraining": MemoryTraining,
     "NotificationSettings": NotificationSettings,
+    "Notifications": Notifications,
     "RelationshipMap": RelationshipMap,
     "UserChat": UserChat,
     "UserChats": UserChats,
     "UserProfile": UserProfile,
     "UserStatusView": UserStatusView,
-    "Notifications": Notifications,
 }
 
 export const pagesConfig = {
