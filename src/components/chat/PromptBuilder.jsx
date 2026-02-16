@@ -705,8 +705,25 @@ export function buildFullPrompt({ character, user, messages, memories, content, 
   const sharedMemoryContext = buildSharedMemoryContext(sharedMemories, character, allCharacters);
   const imageContext = imageUrl ? `\n\nDer Nutzer hat ein Bild gesendet. Reagiere darauf natürlich.` : '';
 
+  // Absence reaction
+  const absenceContext = getAbsenceContext(messages, character);
+  
+  // Milestones
+  const milestoneContext = checkMilestones(messages, memories, character);
+  
+  // Time-of-day personality modifiers
+  const hour = now.getHours();
+  let timeModifier = '';
+  if (character.sleeping_pattern === 'nachtmensch' && hour >= 6 && hour <= 10) {
+    timeModifier = '\n\nTAGESZEIT-EFFEKT: Du bist gerade aufgewacht und noch müde/mürrisch. Zeige das in deiner Kommunikation.';
+  } else if (character.sleeping_pattern === 'frühaufsteher' && hour >= 22) {
+    timeModifier = '\n\nTAGESZEIT-EFFEKT: Du bist schon sehr müde, gähnst, und willst eigentlich schlafen.';
+  } else if (character.sleeping_pattern === 'schlaflos' && hour >= 1 && hour <= 5) {
+    timeModifier = '\n\nTAGESZEIT-EFFEKT: Du bist noch wach obwohl es mitten in der Nacht ist. Erwähne ggf. dass du nicht schlafen kannst.';
+  }
+
   // Assemble full prompt
-  const prompt = `${personalityContext}${relationshipContext}${moodContext}${strongContext}${sharedMemoryContext}${dateTimeContext}${communicationRules}${dynamicStyleDirective}${conversationSummary}${proactivityDirective}
+  const prompt = `${personalityContext}${relationshipContext}${moodContext}${strongContext}${sharedMemoryContext}${dateTimeContext}${absenceContext}${milestoneContext}${timeModifier}${communicationRules}${dynamicStyleDirective}${conversationSummary}${proactivityDirective}
 
 KERNREGELN – MENSCHLICHES VERHALTEN:
 - Bleibe IMMER in deiner Rolle als ${character.name}
