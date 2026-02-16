@@ -1,16 +1,14 @@
 import React, { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Trash2, Upload, Loader2, Plus } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-
-const POPULAR_EMOJIS = ['😀', '😂', '😍', '🥰', '😘', '😎', '🤔', '😢', '😡', '🥺', '😏', '🙄', '👍', '👎', '❤️', '🔥', '✨', '💯', '🎉', '😈', '💀', '🤡', '👻', '🥳'];
+import { Trash2, Loader2, Plus, ImagePlus } from 'lucide-react';
+import { Input } from "@/components/ui/input";
 
 export default function CustomEmojiSettings({ isDark }) {
   const queryClient = useQueryClient();
   const fileInputRef = useRef(null);
-  const [selectedEmoji, setSelectedEmoji] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [newLabel, setNewLabel] = useState('');
 
   const { data: customEmojis = [] } = useQuery({
     queryKey: ['custom-emojis'],
@@ -22,111 +20,106 @@ export default function CustomEmojiSettings({ isDark }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['custom-emojis'] })
   });
 
-  const handleEmojiClick = (emoji) => {
-    setSelectedEmoji(emoji);
+  const handleAddClick = () => {
     fileInputRef.current?.click();
   };
 
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
-    if (!file || !selectedEmoji) return;
-    
+    if (!file) return;
+
     setUploading(true);
     const { file_url } = await base44.integrations.Core.UploadFile({ file });
 
-    // Check if already exists → update
-    const existing = customEmojis.find(ce => ce.original_emoji === selectedEmoji);
-    if (existing) {
-      await base44.entities.CustomEmoji.update(existing.id, { image_url: file_url });
-    } else {
-      await base44.entities.CustomEmoji.create({ original_emoji: selectedEmoji, image_url: file_url });
-    }
+    const label = newLabel.trim() || file.name.replace(/\.[^/.]+$/, '');
+    await base44.entities.CustomEmoji.create({
+      original_emoji: '',
+      image_url: file_url,
+      label: label
+    });
 
     queryClient.invalidateQueries({ queryKey: ['custom-emojis'] });
     setUploading(false);
-    setSelectedEmoji(null);
+    setNewLabel('');
     e.target.value = '';
   };
-
-  const customMap = {};
-  customEmojis.forEach(ce => { customMap[ce.original_emoji] = ce; });
 
   return (
     <div>
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/png,image/gif,image/webp"
+        accept="image/png,image/gif,image/webp,image/jpeg"
         className="hidden"
         onChange={handleFileUpload}
       />
 
       {uploading && (
-        <div className={`flex items-center gap-2 px-4 py-3 mb-3 rounded-lg ${isDark ? 'bg-emerald-500/10 text-emerald-400' : 'bg-emerald-50 text-emerald-600'}`}>
+        <div className={`flex items-center gap-2 px-3 py-2.5 mb-3 rounded-xl text-sm ${isDark ? 'bg-emerald-500/10 text-emerald-400' : 'bg-emerald-50 text-emerald-600'}`}>
           <Loader2 className="w-4 h-4 animate-spin" />
-          <span className="text-sm">Emoji wird hochgeladen...</span>
+          Emoji wird hochgeladen...
         </div>
       )}
 
-      <p className={`text-xs mb-3 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-        Tippe auf ein Emoji um es mit einem eigenen PNG-Bild zu ersetzen.
+      <p className={`text-xs mb-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+        Lade eigene Bilder als Emojis hoch (PNG, GIF, WebP).
       </p>
 
-      {/* Existing custom emojis */}
-      {customEmojis.length > 0 && (
-        <div className="mb-4">
-          <p className={`text-xs font-medium mb-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Deine Custom Emojis</p>
-          <div className="flex flex-wrap gap-2">
-            {customEmojis.map(ce => (
-              <div
-                key={ce.id}
-                className={`relative group flex items-center gap-1.5 px-2 py-1.5 rounded-lg border ${isDark ? 'bg-[#262626] border-white/10' : 'bg-gray-50 border-gray-200'}`}
-              >
-                <span className="text-lg opacity-40 line-through">{ce.original_emoji}</span>
-                <span className="text-gray-500">→</span>
-                <img src={ce.image_url} alt="custom" className="w-7 h-7 object-contain" />
-                <button
-                  onClick={() => deleteMutation.mutate(ce.id)}
-                  className={`ml-1 opacity-0 group-hover:opacity-100 transition-opacity ${isDark ? 'text-red-400 hover:text-red-300' : 'text-red-500 hover:text-red-400'}`}
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Emoji grid to pick from */}
-      <div className="grid grid-cols-8 gap-1">
-        {POPULAR_EMOJIS.map(emoji => {
-          const isCustom = !!customMap[emoji];
-          return (
-            <button
-              key={emoji}
-              onClick={() => handleEmojiClick(emoji)}
-              className={`relative text-2xl p-1.5 rounded-lg transition-colors ${
-                isDark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
-              } ${isCustom ? (isDark ? 'bg-emerald-500/10 ring-1 ring-emerald-500/30' : 'bg-emerald-50 ring-1 ring-emerald-200') : ''}`}
-            >
-              {isCustom ? (
-                <img src={customMap[emoji].image_url} alt={emoji} className="w-7 h-7 object-contain mx-auto" />
-              ) : (
-                emoji
-              )}
-            </button>
-          );
-        })}
+      {/* Add new emoji */}
+      <div className="flex items-center gap-2 mb-4">
+        <Input
+          placeholder="Name (optional)"
+          value={newLabel}
+          onChange={(e) => setNewLabel(e.target.value)}
+          className={`flex-1 h-9 text-sm ${isDark ? 'bg-[#262626] border-white/10 text-white placeholder:text-gray-600' : 'bg-white border-gray-200'}`}
+        />
         <button
-          onClick={() => {
-            const input = prompt('Emoji eingeben, das du ersetzen möchtest:');
-            if (input?.trim()) handleEmojiClick(input.trim());
-          }}
-          className={`flex items-center justify-center p-1.5 rounded-lg border-2 border-dashed ${isDark ? 'border-white/10 text-gray-500 hover:border-white/20 hover:text-gray-400' : 'border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-500'} transition-colors`}
+          onClick={handleAddClick}
+          disabled={uploading}
+          className={`flex items-center gap-1.5 px-4 h-9 rounded-lg text-sm font-medium transition-colors ${
+            isDark 
+              ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30' 
+              : 'bg-emerald-500 text-white hover:bg-emerald-600'
+          }`}
         >
-          <Plus className="w-5 h-5" />
+          <ImagePlus className="w-4 h-4" />
+          Hochladen
         </button>
       </div>
+
+      {/* Existing custom emojis */}
+      {customEmojis.length > 0 ? (
+        <div className="grid grid-cols-4 gap-2">
+          {customEmojis.map(ce => (
+            <div
+              key={ce.id}
+              className={`relative group flex flex-col items-center gap-1 p-2.5 rounded-xl border transition-colors ${
+                isDark ? 'bg-[#262626] border-white/10 hover:border-white/20' : 'bg-gray-50 border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <img src={ce.image_url} alt={ce.label || 'emoji'} className="w-10 h-10 object-contain" />
+              {ce.label && (
+                <span className={`text-[10px] text-center truncate w-full ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                  {ce.label}
+                </span>
+              )}
+              <button
+                onClick={() => deleteMutation.mutate(ce.id)}
+                className={`absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity ${
+                  isDark ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30' : 'bg-red-100 text-red-500 hover:bg-red-200'
+                }`}
+              >
+                <Trash2 className="w-3 h-3" />
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className={`text-center py-6 rounded-xl border-2 border-dashed ${isDark ? 'border-white/10 text-gray-600' : 'border-gray-200 text-gray-300'}`}>
+          <ImagePlus className="w-8 h-8 mx-auto mb-2" />
+          <p className="text-sm">Noch keine eigenen Emojis</p>
+        </div>
+      )}
     </div>
   );
 }
