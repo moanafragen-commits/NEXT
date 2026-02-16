@@ -764,17 +764,6 @@ Du kannst von diesen Erlebnissen berichten, als wären sie gerade passiert. Das 
     }
   }
 
-  // Time-of-day personality modifiers
-  const hour = now.getHours();
-  let timeModifier = '';
-  if (character.sleeping_pattern === 'nachtmensch' && hour >= 6 && hour <= 10) {
-    timeModifier = '\n\nTAGESZEIT-EFFEKT: Du bist gerade aufgewacht und noch müde/mürrisch. Zeige das in deiner Kommunikation.';
-  } else if (character.sleeping_pattern === 'frühaufsteher' && hour >= 22) {
-    timeModifier = '\n\nTAGESZEIT-EFFEKT: Du bist schon sehr müde, gähnst, und willst eigentlich schlafen.';
-  } else if (character.sleeping_pattern === 'schlaflos' && hour >= 1 && hour <= 5) {
-    timeModifier = '\n\nTAGESZEIT-EFFEKT: Du bist noch wach obwohl es mitten in der Nacht ist. Erwähne ggf. dass du nicht schlafen kannst.';
-  }
-
   // Assemble full prompt
   const prompt = `${personalityContext}${relationshipContext}${moodContext}${strongContext}${sharedMemoryContext}${importantDatesContext}${illnessContext}${weatherContext}${nightModeContext}${eventContext}${dateTimeContext}${absenceContext}${milestoneContext}${activityContext}${communicationRules}${dynamicStyleDirective}${conversationSummary}${proactivityDirective}
 

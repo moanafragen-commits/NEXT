@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Home, Search, Plus, Heart, User, Image, UserPlus, X, MessageCircle, Users, BookOpen, Share2, Trophy, Bell, Store } from 'lucide-react';
+import { Home, Search, Plus, Heart, User, Image, UserPlus, X, MessageCircle, Users, BookOpen, Share2, Trophy, Bell, Store, Map } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -53,23 +53,32 @@ export default function BottomNav({ user }) {
                 exit={{ opacity: 0, y: 20 }}
                 className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden w-56 auto-theme-card"
               >
-              <Link
-                to={createPageUrl('CreatePost')}
-                onClick={() => setShowCreateMenu(false)}
-                className="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors"
-              >
-                <Image className="w-5 h-5 text-black" />
-                <span className="text-sm font-medium">Neuer Beitrag</span>
-              </Link>
-              <div className="h-px bg-gray-100" />
-              <Link
-                to={createPageUrl('Characters') + '?create=true'}
-                onClick={() => setShowCreateMenu(false)}
-                className="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors"
-              >
-                <UserPlus className="w-5 h-5 text-black" />
-                <span className="text-sm font-medium">Neuer Charakter</span>
-              </Link>
+            <Link
+              to={createPageUrl('CreatePost')}
+              onClick={() => setShowCreateMenu(false)}
+              className="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors"
+            >
+              <Image className="w-5 h-5 text-black" />
+              <span className="text-sm font-medium">Neuer Beitrag</span>
+            </Link>
+            <div className="h-px bg-gray-100" />
+            <Link
+              to={createPageUrl('Characters') + '?create=true'}
+              onClick={() => setShowCreateMenu(false)}
+              className="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors"
+            >
+              <UserPlus className="w-5 h-5 text-black" />
+              <span className="text-sm font-medium">Neuer Charakter</span>
+            </Link>
+            <div className="h-px bg-gray-100" />
+            <Link
+              to={createPageUrl('CharacterChat')}
+              onClick={() => setShowCreateMenu(false)}
+              className="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors"
+            >
+              <Users className="w-5 h-5 text-black" />
+              <span className="text-sm font-medium">C2C Chat</span>
+            </Link>
             </motion.div>
           </>
         )}
