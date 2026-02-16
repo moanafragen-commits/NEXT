@@ -87,7 +87,7 @@ export default function CharacterCard({ character, lastMessage, unreadCount = 0,
           <div className="flex items-center gap-2 ml-2 flex-shrink-0">
             {lastMessage && (
               <span className={`text-xs ${unreadCount > 0 ? 'text-emerald-400 font-semibold' : 'text-gray-500'}`}>
-                {format(new Date(lastMessage.created_date), 'HH:mm', { locale: de })}
+                {new Date(lastMessage.created_date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' })}
               </span>
             )}
             {unreadCount > 0 && (
