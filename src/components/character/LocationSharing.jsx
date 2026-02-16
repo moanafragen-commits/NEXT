@@ -23,37 +23,151 @@ const LOCATION_TEMPLATES = {
   andere: { emoji: '📍', activities: ['ist beschäftigt'] }
 };
 
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function getCharacterLocations(character) {
+  const city = character.living_situation || '';
+  const job = character.occupation || '';
+  const interests = (character.interests || '').toLowerCase();
+  const fitness = character.physical_fitness || 'durchschnittlich';
+  const age = character.age || '';
+  const isStudent = job.toLowerCase().includes('student') || job.toLowerCase().includes('schüler') || 
+                    city.toLowerCase().includes('uni') || city.toLowerCase().includes('wg');
+  const isWorkingOut = ['sportlich', 'sehr_sportlich', 'athletisch'].includes(fitness) || 
+                       interests.includes('sport') || interests.includes('fitness') || interests.includes('gym');
+
+  // Build personalized location names
+  const cityName = city.match(/(?:in\s+)?([A-ZÄÖÜ][a-zäöüß]+(?:\s[A-ZÄÖÜ][a-zäöüß]+)*)/)?.[1] || '';
+  
+  const homeLabel = city || 'Zuhause';
+  const workLabel = job || 'Büro';
+
+  const cafés = cityName 
+    ? [`Café in ${cityName}`, `Starbucks ${cityName}`, `Kleines Eck-Café`]
+    : ['Starbucks', 'Café Luna', 'Coffee House', 'Kleines Eck-Café'];
+
+  const restaurants = cityName
+    ? [`Restaurant in ${cityName}`, `Lieblingsrestaurant`, `Imbiss um die Ecke`]
+    : ['Pizzeria Bella', 'Sushi Bar', 'Burger Laden', 'Asia Imbiss'];
+
+  const parks = cityName
+    ? [`Stadtpark ${cityName}`, `Park in ${cityName}`, `Am Fluss`]
+    : ['Stadtpark', 'Am See', 'Botanischer Garten'];
+
+  const bars = cityName
+    ? [`Bar in ${cityName}`, `Club in ${cityName}`, `Lieblingsbar`]
+    : ['Cocktailbar', 'Kneipe', 'Skybar'];
+
+  const shops = cityName
+    ? [`Einkaufszentrum ${cityName}`, `Innenstadt ${cityName}`, `Supermarkt`]
+    : ['Einkaufszentrum', 'Innenstadt', 'Supermarkt'];
+
+  return { homeLabel, workLabel, cafés, restaurants, parks, bars, shops, isStudent, isWorkingOut, cityName };
+}
+
 export function generateRandomLocation(character) {
   const hour = new Date().getHours();
-  let possibleTypes = [];
+  const loc = getCharacterLocations(character);
+  const interests = (character.interests || '').toLowerCase();
+  const sleeping = character.sleeping_pattern || 'normal';
+  const isNightOwl = sleeping === 'nachtmensch' || sleeping === 'chaotisch';
   
-  if (hour >= 0 && hour < 7) possibleTypes = ['zuhause'];
-  else if (hour >= 7 && hour < 9) possibleTypes = ['zuhause', 'unterwegs', 'café'];
-  else if (hour >= 9 && hour < 12) possibleTypes = ['arbeit', 'uni', 'schule', 'café', 'bibliothek'];
-  else if (hour >= 12 && hour < 14) possibleTypes = ['restaurant', 'café', 'arbeit', 'park'];
-  else if (hour >= 14 && hour < 17) possibleTypes = ['arbeit', 'uni', 'einkaufen', 'café', 'fitnessstudio'];
-  else if (hour >= 17 && hour < 20) possibleTypes = ['zuhause', 'fitnessstudio', 'park', 'einkaufen', 'freunde', 'restaurant'];
-  else possibleTypes = ['zuhause', 'bar', 'kino', 'freunde', 'restaurant'];
+  // Build weighted location pools based on time + character traits
+  let pool = []; // { type, weight }
+  
+  if (hour >= 0 && hour < 7) {
+    pool = [{ type: 'zuhause', weight: isNightOwl ? 6 : 10 }];
+    if (isNightOwl) pool.push({ type: 'bar', weight: 2 }, { type: 'freunde', weight: 2 });
+  } else if (hour >= 7 && hour < 9) {
+    pool = [
+      { type: 'zuhause', weight: 4 },
+      { type: 'unterwegs', weight: 3 },
+      { type: 'café', weight: 3 },
+    ];
+    if (loc.isWorkingOut) pool.push({ type: 'fitnessstudio', weight: 3 });
+  } else if (hour >= 9 && hour < 12) {
+    pool = [
+      { type: 'arbeit', weight: character.occupation ? 6 : 2 },
+      { type: 'café', weight: 2 },
+    ];
+    if (loc.isStudent) pool.push({ type: 'uni', weight: 5 });
+    if (interests.includes('lesen') || interests.includes('buch')) pool.push({ type: 'bibliothek', weight: 2 });
+  } else if (hour >= 12 && hour < 14) {
+    pool = [
+      { type: 'restaurant', weight: 4 },
+      { type: 'café', weight: 3 },
+      { type: 'arbeit', weight: character.occupation ? 3 : 1 },
+      { type: 'park', weight: 2 },
+    ];
+  } else if (hour >= 14 && hour < 17) {
+    pool = [
+      { type: 'arbeit', weight: character.occupation ? 5 : 2 },
+      { type: 'café', weight: 2 },
+      { type: 'einkaufen', weight: 2 },
+    ];
+    if (loc.isStudent) pool.push({ type: 'uni', weight: 4 }, { type: 'bibliothek', weight: 2 });
+    if (loc.isWorkingOut) pool.push({ type: 'fitnessstudio', weight: 3 });
+  } else if (hour >= 17 && hour < 20) {
+    pool = [
+      { type: 'zuhause', weight: 3 },
+      { type: 'park', weight: 2 },
+      { type: 'einkaufen', weight: 2 },
+      { type: 'freunde', weight: 2 },
+      { type: 'restaurant', weight: 2 },
+    ];
+    if (loc.isWorkingOut) pool.push({ type: 'fitnessstudio', weight: 3 });
+  } else {
+    pool = [
+      { type: 'zuhause', weight: 4 },
+      { type: 'bar', weight: 2 },
+      { type: 'kino', weight: 2 },
+      { type: 'freunde', weight: 2 },
+      { type: 'restaurant', weight: 2 },
+    ];
+  }
 
-  const type = possibleTypes[Math.floor(Math.random() * possibleTypes.length)];
-  const template = LOCATION_TEMPLATES[type];
-  const activity = template.activities[Math.floor(Math.random() * template.activities.length)];
+  // Hobby-based bonus locations
+  if (interests.includes('kunst') || interests.includes('museum')) pool.push({ type: 'andere', weight: 1 });
   
+  // Weighted random pick
+  const totalWeight = pool.reduce((s, p) => s + p.weight, 0);
+  let rand = Math.random() * totalWeight;
+  let type = pool[0].type;
+  for (const p of pool) {
+    rand -= p.weight;
+    if (rand <= 0) { type = p.type; break; }
+  }
+
+  const template = LOCATION_TEMPLATES[type];
+  
+  // Personalized activity based on character
+  let activities = [...template.activities];
+  if (type === 'zuhause' && interests) {
+    const hobbies = interests.split(',').map(h => h.trim()).filter(Boolean);
+    if (hobbies.length > 0) activities.push(`beschäftigt sich mit ${pick(hobbies)}`);
+    if (character.pets) activities.push(`kuschelt mit ${character.pets}`);
+  }
+  if (type === 'arbeit' && character.occupation) {
+    activities = [`arbeitet als ${character.occupation}`, 'ist in einem Meeting', 'hat Mittagspause', 'arbeitet konzentriert'];
+  }
+  
+  const activity = pick(activities);
+
   const locationNames = {
-    zuhause: 'Zuhause',
-    arbeit: character.occupation || 'Büro',
-    café: ['Starbucks', 'Café Luna', 'Coffee House', 'Kleines Eck-Café'][Math.floor(Math.random() * 4)],
-    restaurant: ['Pizzeria Bella', 'Sushi Bar', 'Burger Laden', 'Asia Imbiss'][Math.floor(Math.random() * 4)],
-    park: ['Stadtpark', 'Am See', 'Botanischer Garten'][Math.floor(Math.random() * 3)],
-    fitnessstudio: 'Fitnessstudio',
+    zuhause: loc.homeLabel,
+    arbeit: loc.workLabel,
+    café: pick(loc.cafés),
+    restaurant: pick(loc.restaurants),
+    park: pick(loc.parks),
+    fitnessstudio: loc.cityName ? `Fitnessstudio in ${loc.cityName}` : 'Fitnessstudio',
     schule: 'Schule',
-    uni: 'Universität',
-    einkaufen: ['Einkaufszentrum', 'Innenstadt', 'Supermarkt'][Math.floor(Math.random() * 3)],
-    bar: ['Cocktailbar', 'Kneipe', 'Skybar'][Math.floor(Math.random() * 3)],
-    kino: 'Kino',
-    bibliothek: 'Stadtbibliothek',
+    uni: loc.cityName ? `Uni ${loc.cityName}` : 'Universität',
+    einkaufen: pick(loc.shops),
+    bar: pick(loc.bars),
+    kino: loc.cityName ? `Kino in ${loc.cityName}` : 'Kino',
+    bibliothek: loc.cityName ? `Bibliothek ${loc.cityName}` : 'Stadtbibliothek',
     freunde: 'Bei Freunden',
-    unterwegs: 'Unterwegs',
+    unterwegs: loc.cityName ? `Unterwegs in ${loc.cityName}` : 'Unterwegs',
     andere: 'Unterwegs'
   };
 
