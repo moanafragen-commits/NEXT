@@ -247,13 +247,12 @@ export default function Chat() {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
 
-      // Mark all unread user messages as "read" (blue checkmarks)
+      // Mark all unread user messages as "read" (blue checkmarks) - non-blocking
       const unreadUserMsgs = latestMessages.filter(m => m.role === 'user' && m.status !== 'read');
-      for (const msg of unreadUserMsgs) {
-        await base44.entities.ChatMessage.update(msg.id, { status: 'read', read_at: new Date().toISOString() });
-      }
       if (unreadUserMsgs.length > 0) {
-        queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
+        Promise.all(unreadUserMsgs.map(msg => 
+          base44.entities.ChatMessage.update(msg.id, { status: 'read', read_at: new Date().toISOString() })
+        )).then(() => queryClient.invalidateQueries({ queryKey: ['messages', characterId] })).catch(() => {});
       }
 
       setIsTyping(true);
