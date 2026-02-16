@@ -91,11 +91,11 @@ export async function checkAndAwardAchievements(user, characters, messages, memo
   if (maxTrust >= 7 && !existingKeys.has('trust_7')) toAward.push('trust_7');
   if (maxTrust >= 10 && !existingKeys.has('trust_max')) toAward.push('trust_max');
 
-  // Award new achievements
-  for (const key of toAward) {
-    const def = ACHIEVEMENT_DEFINITIONS.find(d => d.key === key);
-    if (def) {
-      await base44.entities.Achievement.create({
+  // Award new achievements in bulk
+  if (toAward.length > 0) {
+    const records = toAward.map(key => {
+      const def = ACHIEVEMENT_DEFINITIONS.find(d => d.key === key);
+      return {
         user_email: user.email,
         achievement_key: key,
         title: def.title,
@@ -103,7 +103,10 @@ export async function checkAndAwardAchievements(user, characters, messages, memo
         emoji: def.emoji,
         category: def.category,
         rarity: def.rarity
-      });
+      };
+    }).filter(Boolean);
+    if (records.length > 0) {
+      await base44.entities.Achievement.bulkCreate(records);
     }
   }
 
