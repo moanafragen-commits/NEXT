@@ -52,13 +52,16 @@ export default function CreatePost() {
       setStep('Tweet wird erstellt...');
       const isCelebrity = character.category === 'Berühmtheit';
       const isNews = character.category === 'Nachrichtensender';
-      const isVerified = isCelebrity || isNews;
+      const isPublicFigure = ['Influencer', 'Sportler', 'Musiker', 'Politiker', 'Wissenschaftler', 'Künstler', 'Unternehmer', 'Streamer', 'Model', 'Journalist', 'Aktivist'].includes(character.category);
+      const isVerified = isCelebrity || isNews || isPublicFigure;
 
       let roleHint = '';
       if (isCelebrity) {
-        roleHint = ' Dieser Charakter ist eine BERÜHMTHEIT mit einem verifizierten Account (blauer Haken). Der Post sollte authentisch für eine öffentliche Person klingen – Statements, Meinungen, Ankündigungen, Humor oder Einblicke ins Leben.';
+        roleHint = ' Dieser Charakter ist eine BERÜHMTHEIT mit einem verifizierten Account. Der Post sollte authentisch für eine öffentliche Person klingen.';
       } else if (isNews) {
-        roleHint = ' Dieser Charakter ist ein NACHRICHTENSENDER/PRESSEMEDIUM (z.B. wie CNN, BBC, Tagesschau, BILD etc.). Posts sollten wie echte Nachrichten-Tweets klingen: Breaking News, aktuelle Meldungen, Politik, Wirtschaft, Sport, Wissenschaft, Kultur, Wetter – NICHT nur über Berühmtheiten! Variiere zwischen verschiedenen Themengebieten. Kurz, sachlich, aber je nach Medium auch mit eigenem Ton (seriös vs. Boulevard). Nutze ggf. 🔴 BREAKING oder ähnliche Formate.';
+        roleHint = ' Dieser Charakter ist ein NACHRICHTENSENDER. Posts sollten wie echte Nachrichten-Tweets klingen: Breaking News, aktuelle Meldungen. Nutze ggf. 🔴 BREAKING.';
+      } else if (isPublicFigure) {
+        roleHint = ` Dieser Charakter ist ein/e ${character.category} mit einem verifizierten Account. Der Post sollte authentisch für diese Rolle klingen – passend zur Persönlichkeit und zum Berufsfeld.`;
       }
 
       const result = await base44.integrations.Core.InvokeLLM({
