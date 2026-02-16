@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Loader2, RefreshCw, TrendingUp } from 'lucide-react';
+import { toast } from 'sonner';
 import { AnimatePresence } from 'framer-motion';
 import FeedPostCard from '@/components/feed/FeedPostCard';
 import FeedCommentSheet from '@/components/feed/FeedCommentSheet';
@@ -33,6 +34,11 @@ export default function Feed() {
     queryFn: () => base44.entities.Character.list()
   });
 
+  const { data: aiCharacters = [] } = useQuery({
+    queryKey: ['ai-characters'],
+    queryFn: () => base44.entities.AICharacter.list()
+  });
+
   const { data: allMessages = [] } = useQuery({
     queryKey: ['all-messages-feed'],
     queryFn: () => base44.entities.ChatMessage.list('-created_date', 100)
@@ -56,7 +62,19 @@ export default function Feed() {
 
   const weatherState = weatherStates[0] || null;
 
-  const getCharacter = (id) => characters.find(c => c.id === id);
+  const getCharacter = (id) => {
+    const char = characters.find(c => c.id === id);
+    if (char) return char;
+    const aiChar = aiCharacters.find(c => c.id === id);
+    if (aiChar) return {
+      id: aiChar.id,
+      name: aiChar.name,
+      avatar_url: aiChar.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${aiChar.username}`,
+      category: aiChar.category === 'lifestyle' ? 'Influencer' : aiChar.category === 'tech' ? 'Wissenschaftler' : aiChar.category === 'inspiration' ? 'Musiker' : 'Andere',
+      is_verified: aiChar.is_verified
+    };
+    return null;
+  };
   const hasLiked = (postId) => likes.some(l => l.post_id === postId && l.user_email === user?.email);
   const getPostComments = (postId) => comments.filter(c => c.post_id === postId);
 
@@ -118,6 +136,33 @@ export default function Feed() {
 
   const openPost = openCommentsPostId ? posts.find(p => p.id === openCommentsPostId) : null;
   const activeChars = characters.filter(c => !c.is_archived && !c.is_blocked);
+
+  const deleteMutation = useMutation({
+    mutationFn: async (postId) => {
+      // Delete related comments and likes
+      const postComments = comments.filter(c => c.post_id === postId);
+      const postLikes = likes.filter(l => l.post_id === postId);
+      for (const c of postComments) await base44.entities.Comment.delete(c.id);
+      for (const l of postLikes) await base44.entities.PostLike.delete(l.id);
+      await base44.entities.Post.delete(postId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      queryClient.invalidateQueries({ queryKey: ['comments'] });
+      queryClient.invalidateQueries({ queryKey: ['likes'] });
+      toast.success('Post gelöscht');
+    }
+  });
+
+  const editMutation = useMutation({
+    mutationFn: async ({ postId, content }) => {
+      await base44.entities.Post.update(postId, { content });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      toast.success('Post bearbeitet');
+    }
+  });
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white auto-theme">
@@ -211,6 +256,8 @@ export default function Feed() {
                   commentsCount={post.comments_count || 0}
                   allCharacters={characters}
                   currentUser={user}
+                  onDelete={(id) => deleteMutation.mutate(id)}
+                  onEdit={(id, content) => editMutation.mutate({ postId: id, content })}
                 />
               );
             })}
