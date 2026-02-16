@@ -156,9 +156,9 @@ export default function Home() {
   const filteredCharacters = characters.filter(c => {
     const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTag = !activeTag || (c.tags || []).includes(activeTag);
-    if (viewFilter === 'favorites') return matchesSearch && matchesTag && c.is_favorite;
-    if (viewFilter === 'archived') return matchesSearch && matchesTag && c.is_archived;
-    return matchesSearch && matchesTag && !c.is_archived && charactersWithMessages.has(c.id);
+    if (viewFilter === 'favorites') return matchesSearch && matchesTag && c.is_favorite && !c.is_blocked;
+    if (viewFilter === 'archived') return matchesSearch && matchesTag && c.is_archived && !c.is_blocked;
+    return matchesSearch && matchesTag && !c.is_archived && !c.is_blocked && charactersWithMessages.has(c.id);
   });
 
   const { data: chatMessages = [] } = useQuery({
