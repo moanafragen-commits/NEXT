@@ -23,6 +23,7 @@ import { generateRandomLocation } from '@/components/character/LocationSharing';
 import { checkAndAwardAchievements } from '@/components/character/AchievementSystem';
 import { useUserLevel } from '@/components/gamification/useUserLevel';
 import { XP_REWARDS } from '@/components/gamification/LevelUtils';
+import { useEquippedTheme } from '@/components/shop/useEquippedTheme';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -46,6 +47,7 @@ export default function Chat() {
 
   useNotifications(user);
   const { addXP } = useUserLevel(user?.email);
+  const equippedTheme = useEquippedTheme(user?.email);
   
   const { data: character } = useQuery({
     queryKey: ['character', characterId],
@@ -397,7 +399,7 @@ export default function Chat() {
   }
   
   return (
-    <div className="h-screen bg-[#111] flex flex-col overflow-hidden">
+    <div className={`h-screen ${equippedTheme.bg || 'bg-[#111]'} flex flex-col overflow-hidden`}>
       {/* Header */}
       <header className="sticky top-0 z-10 bg-[#1a1a1a] border-b border-white/5">
         <div className="flex items-center gap-3 p-3">
@@ -589,7 +591,7 @@ export default function Chat() {
               alt={character.name}
               className="w-8 h-8 rounded-full object-cover"
             />
-            <div className="bg-[#262626] rounded-2xl px-4 py-3 rounded-bl-md">
+            <div className={`${equippedTheme.messageBg || 'bg-[#262626]'} rounded-2xl px-4 py-3 rounded-bl-md`}>
               <div className="flex gap-1">
                 <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                 <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
