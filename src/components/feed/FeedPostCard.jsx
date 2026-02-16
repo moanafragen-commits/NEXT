@@ -89,7 +89,7 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
   const isCelebrity = character?.category === 'Berühmtheit';
   const isNews = character?.category === 'Nachrichtensender';
   const isPublicFigure = ['Influencer', 'Sportler', 'Musiker', 'Politiker', 'Wissenschaftler', 'Künstler', 'Unternehmer', 'Streamer', 'Model', 'Journalist', 'Aktivist'].includes(character?.category);
-  const isVerified = isCelebrity || isNews || isPublicFigure;
+  const isVerified = character?.is_verified || isCelebrity || isNews || isPublicFigure;
 
   // Celebrities & news get higher engagement numbers
   const displayLikes = isVerified 
