@@ -252,7 +252,8 @@ export default function Chat() {
         sharedMemories,
         allCharacters,
         recentActivities,
-        importantDates
+        importantDates,
+        weatherState
       });
 
       const response = await base44.integrations.Core.InvokeLLM({
