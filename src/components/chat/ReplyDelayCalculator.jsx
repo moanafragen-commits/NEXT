@@ -162,6 +162,17 @@ export function calculateReplyDelay(character, isRepeatMessage = false) {
     else if (age < 20) baseDelay = Math.max(1500, baseDelay * 0.6);
   }
 
+  // Illness modifier
+  if (character.illness) {
+    if (character.illness_severity === 'schwer') {
+      baseDelay += randomBetween(30000, 120000); // 30s-2min extra
+    } else if (character.illness_severity === 'mittel') {
+      baseDelay += randomBetween(10000, 45000); // 10-45s extra
+    } else {
+      baseDelay += randomBetween(3000, 15000); // 3-15s extra
+    }
+  }
+
   return Math.min(baseDelay, 300000); // cap 5 min
 }
 
