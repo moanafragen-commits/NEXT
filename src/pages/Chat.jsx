@@ -614,9 +614,12 @@ export default function Chat() {
       
       {/* Messages */}
       <main className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+        {/* Conflict Banner */}
+        {user && <ConflictBanner characterId={characterId} userEmail={user.email} />}
+
         {/* Dream Bubble */}
         {!showPinned && !searchQuery && currentDream && !currentDream.shared_with_user && (
-          <DreamBubble dream={currentDream} characterName={character.name} />
+          <DreamBubble dream={currentDream} characterName={character.name} characterId={characterId} dreamId={currentDream.id} />
         )}
 
         {/* Greeting */}
