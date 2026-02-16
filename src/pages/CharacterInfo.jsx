@@ -14,6 +14,7 @@ import MoodBadge from '@/components/character/MoodBadge';
 import RelationshipPanel from '@/components/character/RelationshipPanel';
 import MoodMotivationPanel from '@/components/character/MoodMotivationPanel';
 import SpotifyMusicPanel from '@/components/character/SpotifyMusicPanel';
+import ActivityFeed from '@/components/character/ActivityFeed';
 
 export default function CharacterInfo() {
   const urlParams = new URLSearchParams(window.location.search);
