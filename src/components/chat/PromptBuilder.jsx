@@ -716,10 +716,10 @@ function buildImportantDatesContext(importantDates) {
 }
 
 export function buildFullPrompt({ character, user, messages, memories, content, imageUrl, sharedMemories, allCharacters, recentActivities, recentDiary, importantDates, weatherState }) {
-  // Build conversation history (last 30 messages for more context)
-  const history = messages.slice(-30).map(m => ({
+  // Build conversation history (last 20 messages - balanced context vs speed)
+  const history = messages.slice(-20).map(m => ({
     role: m.role,
-    content: m.content,
+    content: m.content.length > 500 ? m.content.slice(0, 500) + '...' : m.content,
     has_image: !!m.image_url,
     created_date: m.created_date
   }));
