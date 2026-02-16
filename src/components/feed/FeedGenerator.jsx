@@ -29,8 +29,12 @@ function getAllTrendKeywords() {
   return TREND_POOLS.flat();
 }
 
+function getGermanHour() {
+  return parseInt(new Date().toLocaleString('de-DE', { hour: '2-digit', hour12: false, timeZone: 'Europe/Berlin' }));
+}
+
 function getTimeContext() {
-  const hour = new Date().getHours();
+  const hour = getGermanHour();
   if (hour >= 5 && hour < 9) return "früher Morgen";
   if (hour >= 9 && hour < 12) return "Vormittag";
   if (hour >= 12 && hour < 14) return "Mittagszeit";

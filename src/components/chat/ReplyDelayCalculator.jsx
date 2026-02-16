@@ -14,10 +14,19 @@ function seededRandom(seed) {
   return Math.abs((Math.sin(hash) * 10000) % 1);
 }
 
+function getGermanHour() {
+  return parseInt(new Date().toLocaleString('de-DE', { hour: '2-digit', hour12: false, timeZone: 'Europe/Berlin' }));
+}
+
+function getGermanDay() {
+  return new Date().toLocaleDateString('de-DE', { weekday: 'short', timeZone: 'Europe/Berlin' });
+}
+
 export function getCharacterAvailability(character) {
   const now = new Date();
-  const hour = now.getHours();
-  const dayOfWeek = now.getDay();
+  const hour = getGermanHour();
+  const dayShort = getGermanDay();
+  const dayOfWeek = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'].indexOf(dayShort.replace('.', ''));
   
   // Create a seed that changes every ~30 minutes for variety
   const timeBlock = Math.floor(now.getTime() / (30 * 60 * 1000));
