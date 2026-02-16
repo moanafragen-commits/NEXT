@@ -83,8 +83,41 @@ function ArtistChip({ artist }) {
 export default function SpotifyMusicPanel({ character }) {
   const [generatedMusic, setGeneratedMusic] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [currentSong, setCurrentSong] = useState(character.current_song);
+  const [isChangingSong, setIsChangingSong] = useState(false);
 
   const hasMusic = character.favorite_artists || character.favorite_songs || character.current_song || character.music_genres;
+
+  // Auto-rotate current song on mount
+  useEffect(() => {
+    if (!hasMusic || !character.id) return;
+    const shouldRotate = Math.random() < 0.6; // 60% chance to change song
+    if (!shouldRotate) return;
+    
+    let cancelled = false;
+    const rotateSong = async () => {
+      setIsChangingSong(true);
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `Du bist "${character.name}". Stimmung: ${character.current_mood || character.mood_default || 'neutral'}. Persönlichkeit: ${(character.personality || '').slice(0, 150)}. Lieblingskünstler: ${character.favorite_artists || 'verschiedene'}. Lieblingsgenres: ${character.music_genres || 'verschiedene'}. Lieblingssongs: ${character.favorite_songs || 'verschiedene'}.
+
+Welchen ECHTEN Song hörst du gerade? Wähle einen passenden Song basierend auf deiner aktuellen Stimmung. Es kann ein Song von deinen Lieblingskünstlern sein, oder auch mal etwas anderes das zur Stimmung passt. Gib NUR einen Song zurück.`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            song: { type: "string", description: "Format: Songname - Künstler" }
+          }
+        }
+      });
+      if (cancelled) return;
+      if (result?.song) {
+        setCurrentSong(result.song);
+        await base44.entities.Character.update(character.id, { current_song: result.song });
+      }
+      setIsChangingSong(false);
+    };
+    rotateSong();
+    return () => { cancelled = true; };
+  }, [character.id]);
 
   const handleGenerateMusic = async () => {
     setIsGenerating(true);
