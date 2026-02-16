@@ -3,13 +3,15 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, MapPin, List, Layers, X, MessageCircle, Navigation2, Clock } from 'lucide-react';
+import { ArrowLeft, MapPin, List, Layers, X, MessageCircle, Route } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
 import BottomNav from '@/components/navigation/BottomNav';
 import MapMarkerLayer from '@/components/map/MapMarkerLayer';
 import MapCharacterList from '@/components/map/MapCharacterList';
+import MapClickHandler from '@/components/map/MapClickHandler';
+import MeetupInvite from '@/components/map/MeetupInvite';
 
 const TILE_URLS = {
   dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
@@ -30,7 +32,6 @@ function FlyTo({ center, zoom }) {
 function MapReady() {
   const map = useMap();
   useEffect(() => {
-    // Force resize after mount so tiles fill the container
     setTimeout(() => map.invalidateSize(), 100);
     setTimeout(() => map.invalidateSize(), 500);
   }, [map]);
@@ -42,6 +43,8 @@ export default function CharacterMap() {
   const [flyTarget, setFlyTarget] = useState(null);
   const [mapStyle, setMapStyle] = useState('dark');
   const [selectedChar, setSelectedChar] = useState(null);
+  const [showRoutes, setShowRoutes] = useState(true);
+  const [meetupLatLng, setMeetupLatLng] = useState(null);
 
   const { data: user } = useQuery({
     queryKey: ['user'],
@@ -53,24 +56,29 @@ export default function CharacterMap() {
     queryFn: () => base44.entities.Character.list()
   });
 
-  const { data: locations = [], isLoading } = useQuery({
-    queryKey: ['all-character-locations'],
-    queryFn: async () => {
-      const allLocs = await base44.entities.CharacterLocation.list('-created_date', 200);
-      const latest = {};
-      for (const loc of allLocs) {
-        if (!latest[loc.character_id] && loc.latitude && loc.longitude) {
-          latest[loc.character_id] = loc;
-        }
-      }
-      return Object.values(latest);
-    }
+  // Fetch ALL locations (not just latest) for route history
+  const { data: allLocations = [], isLoading } = useQuery({
+    queryKey: ['all-character-locations-full'],
+    queryFn: () => base44.entities.CharacterLocation.list('-created_date', 500)
   });
+
+  // Derive latest per character + history map
+  const { locations, locationHistory } = useMemo(() => {
+    const latest = {};
+    const history = {};
+    for (const loc of allLocations) {
+      if (!loc.latitude || !loc.longitude) continue;
+      if (!history[loc.character_id]) history[loc.character_id] = [];
+      if (history[loc.character_id].length < 5) history[loc.character_id].push(loc);
+      if (!latest[loc.character_id]) latest[loc.character_id] = loc;
+    }
+    return { locations: Object.values(latest), locationHistory: history };
+  }, [allLocations]);
 
   const activeChars = useMemo(() => characters.filter(c => !c.is_archived && !c.is_blocked), [characters]);
 
   const center = useMemo(() => {
-    if (locations.length === 0) return [51.1657, 10.4515]; // Center of Germany
+    if (locations.length === 0) return [51.1657, 10.4515];
     return [
       locations.reduce((s, l) => s + l.latitude, 0) / locations.length,
       locations.reduce((s, l) => s + l.longitude, 0) / locations.length
@@ -82,8 +90,15 @@ export default function CharacterMap() {
   const handleFocus = (loc) => {
     setFlyTarget({ center: [loc.latitude, loc.longitude], zoom: 16 });
     setShowList(false);
+    setMeetupLatLng(null);
     const char = activeChars.find(c => c.id === loc.character_id);
     if (char) setSelectedChar({ char, loc });
+  };
+
+  const handleMapClick = (latlng) => {
+    if (showList) return;
+    setMeetupLatLng(latlng);
+    setSelectedChar(null);
   };
 
   const cycleStyle = () => {
@@ -93,7 +108,6 @@ export default function CharacterMap() {
 
   return (
     <div className="h-screen bg-[#0a0a0a] text-white flex flex-col overflow-hidden">
-      {/* Leaflet CSS */}
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
       
       <style>{`
@@ -102,7 +116,6 @@ export default function CharacterMap() {
           width: 100% !important;
           height: 100% !important;
         }
-        .leaflet-tile-pane { opacity: 1; }
         .leaflet-control-zoom {
           border: none !important;
           box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
@@ -123,9 +136,7 @@ export default function CharacterMap() {
           background: rgba(40,40,40,0.95) !important;
           color: #10b981 !important;
         }
-        .leaflet-control-zoom a:last-child {
-          border-bottom: none !important;
-        }
+        .leaflet-control-zoom a:last-child { border-bottom: none !important; }
         .leaflet-control-attribution { display: none !important; }
         .leaflet-popup-content-wrapper {
           background: #1a1a1a !important;
@@ -137,12 +148,7 @@ export default function CharacterMap() {
         }
         .leaflet-popup-content { margin: 0 !important; }
         .leaflet-popup-tip { background: #1a1a1a !important; }
-        .leaflet-popup-close-button {
-          color: #666 !important;
-          font-size: 20px !important;
-          top: 8px !important;
-          right: 10px !important;
-        }
+        .leaflet-popup-close-button { color: #666 !important; font-size: 20px !important; top: 8px !important; right: 10px !important; }
         .leaflet-popup-close-button:hover { color: #fff !important; }
         .custom-marker-wrapper {
           filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
@@ -151,7 +157,7 @@ export default function CharacterMap() {
         .custom-marker-wrapper:hover { transform: scale(1.15); }
       `}</style>
 
-      {/* Header - floating overlay */}
+      {/* Floating Header */}
       <div className="absolute top-0 left-0 right-0 z-[1000] pointer-events-none">
         <div className="flex items-center justify-between p-3 pointer-events-auto">
           <div className="flex items-center gap-2">
@@ -170,6 +176,15 @@ export default function CharacterMap() {
             <Button
               variant="ghost"
               size="icon"
+              onClick={() => setShowRoutes(!showRoutes)}
+              className={`bg-black/60 backdrop-blur-xl hover:bg-black/80 rounded-xl h-10 w-10 border border-white/5 ${showRoutes ? 'text-emerald-400' : 'text-gray-300 hover:text-white'}`}
+              title="Routen anzeigen"
+            >
+              <Route className="w-5 h-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={cycleStyle}
               className="bg-black/60 backdrop-blur-xl text-gray-300 hover:text-white hover:bg-black/80 rounded-xl h-10 w-10 border border-white/5"
             >
@@ -178,7 +193,7 @@ export default function CharacterMap() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => { setShowList(!showList); setSelectedChar(null); }}
+              onClick={() => { setShowList(!showList); setSelectedChar(null); setMeetupLatLng(null); }}
               className={`bg-black/60 backdrop-blur-xl hover:bg-black/80 rounded-xl h-10 w-10 border border-white/5 ${showList ? 'text-emerald-400' : 'text-gray-300 hover:text-white'}`}
             >
               <List className="w-5 h-5" />
@@ -186,8 +201,11 @@ export default function CharacterMap() {
           </div>
         </div>
 
-        {/* Map Style Pill */}
-        <div className="flex justify-end px-3 pointer-events-auto">
+        {/* Tips */}
+        <div className="flex justify-between items-center px-3 pointer-events-auto">
+          <div className="bg-black/40 backdrop-blur-sm text-[10px] text-gray-500 px-2.5 py-1 rounded-full border border-white/5">
+            💡 Tippe auf die Karte → Treffpunkt einladen
+          </div>
           <button onClick={cycleStyle} className="bg-black/50 backdrop-blur-sm text-[10px] text-gray-400 px-2.5 py-1 rounded-full border border-white/5 hover:text-white transition-colors">
             {STYLE_LABELS[mapStyle]}
           </button>
@@ -213,11 +231,16 @@ export default function CharacterMap() {
             <MapReady />
             <TileLayer url={TILE_URLS[mapStyle]} attribution="" />
             {flyTarget && <FlyTo center={flyTarget.center} zoom={flyTarget.zoom} />}
-            <MapMarkerLayer locations={locations} characters={activeChars} />
+            <MapClickHandler onMapClick={handleMapClick} />
+            <MapMarkerLayer
+              locations={locations}
+              characters={activeChars}
+              locationHistory={showRoutes ? locationHistory : undefined}
+            />
           </MapContainer>
         )}
 
-        {/* Empty State Overlay */}
+        {/* Empty State */}
         {!isLoading && locations.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center z-[500] pointer-events-none">
             <div className="bg-black/70 backdrop-blur-xl rounded-2xl p-8 border border-white/10 text-center max-w-xs pointer-events-auto">
@@ -226,7 +249,7 @@ export default function CharacterMap() {
               </div>
               <h3 className="text-base font-bold mb-2">Keine Standorte</h3>
               <p className="text-xs text-gray-400 mb-4 leading-relaxed">
-                Chatte mit deinen Charakteren – sie teilen automatisch ihren Standort mit dir!
+                Chatte mit deinen Charakteren – sie teilen automatisch ihren Standort!
               </p>
               <Link to={createPageUrl('Home')}>
                 <Button size="sm" className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs h-9 px-4">
@@ -238,8 +261,8 @@ export default function CharacterMap() {
           </div>
         )}
 
-        {/* Character chips - scrollable at bottom */}
-        {!showList && locations.length > 0 && (
+        {/* Character Chips */}
+        {!showList && !meetupLatLng && locations.length > 0 && (
           <div className="absolute bottom-20 left-0 right-0 z-[500] px-3">
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
               {locations.map(loc => {
@@ -247,6 +270,7 @@ export default function CharacterMap() {
                 if (!char) return null;
                 const avatar = char.avatar_url || `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${char.name}`;
                 const isActive = selectedChar?.char?.id === char.id;
+                const histCount = locationHistory[loc.character_id]?.length || 0;
                 return (
                   <button
                     key={loc.id}
@@ -260,7 +284,10 @@ export default function CharacterMap() {
                     <img src={avatar} className="w-7 h-7 rounded-full object-cover ring-2 ring-emerald-500/40" />
                     <div className="text-left">
                       <span className="text-xs font-semibold text-white block leading-tight">{char.name}</span>
-                      <span className="text-[10px] text-gray-400 block leading-tight">{loc.emoji} {loc.location_name?.slice(0, 18)}</span>
+                      <span className="text-[10px] text-gray-400 block leading-tight">
+                        {loc.emoji} {loc.location_name?.slice(0, 16)}
+                        {histCount > 1 && <span className="ml-1 text-emerald-400/60">• {histCount} Orte</span>}
+                      </span>
                     </div>
                   </button>
                 );
@@ -269,7 +296,18 @@ export default function CharacterMap() {
           </div>
         )}
 
-        {/* Bottom List Panel */}
+        {/* Meetup Invite Panel */}
+        <AnimatePresence>
+          {meetupLatLng && (
+            <MeetupInvite
+              latLng={meetupLatLng}
+              characters={activeChars}
+              onClose={() => setMeetupLatLng(null)}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* List Panel */}
         <AnimatePresence>
           {showList && (
             <motion.div
@@ -289,11 +327,7 @@ export default function CharacterMap() {
                 </Button>
               </div>
               <div className="flex-1 overflow-y-auto px-4 pb-4">
-                <MapCharacterList
-                  characters={activeChars}
-                  locations={locations}
-                  onFocus={handleFocus}
-                />
+                <MapCharacterList characters={activeChars} locations={locations} onFocus={handleFocus} />
               </div>
             </motion.div>
           )}
