@@ -103,6 +103,14 @@ export default function AppSettings() {
           />
         </div>
 
+        {/* Emojis */}
+        <div className="px-4 pt-6 pb-2">
+          <p className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Emojis</p>
+        </div>
+        <div className={`mx-4 rounded-xl overflow-hidden border p-4 ${isDark ? 'border-white/10 bg-[#1a1a1a]' : 'border-gray-200 bg-white'}`}>
+          <CustomEmojiSettings isDark={isDark} />
+        </div>
+
         {/* Content */}
         <div className="px-4 pt-6 pb-2">
           <p className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Inhalte</p>
