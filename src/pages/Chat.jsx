@@ -21,6 +21,8 @@ import { updateWeatherState, WeatherBadge, buildWeatherContext } from '@/compone
 import { shouldSendSpontaneous, generateSpontaneousMessage } from '@/components/character/SpontaneousMessages';
 import { generateRandomLocation } from '@/components/character/LocationSharing';
 import { checkAndAwardAchievements } from '@/components/character/AchievementSystem';
+import { useUserLevel } from '@/components/gamification/useUserLevel';
+import { XP_REWARDS } from '@/components/gamification/LevelUtils';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -43,6 +45,7 @@ export default function Chat() {
   });
 
   useNotifications(user);
+  const { addXP } = useUserLevel(user?.email);
   
   const { data: character } = useQuery({
     queryKey: ['character', characterId],
@@ -357,6 +360,9 @@ export default function Chat() {
 
       // Generate diary entry in background (non-blocking)
       generateDiaryEntry(character, user, latestMessages, response.new_mood).catch(() => {});
+
+      // Award XP
+      if (addXP) addXP({ xp: XP_REWARDS.send_message + XP_REWARDS.receive_reply, coins: 2 });
       
       queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
       queryClient.invalidateQueries({ queryKey: ['all-messages'] });
