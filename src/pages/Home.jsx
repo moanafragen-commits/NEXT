@@ -203,7 +203,7 @@ export default function Home() {
       const customContext = selectedCharacter.custom_instructions ? `\n\nZusätzliche Anweisungen: ${selectedCharacter.custom_instructions}` : '';
       
       const now = new Date();
-      const dateTimeContext = `\n\nAktuelles Datum: ${now.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\nAktuelle Uhrzeit: ${now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
+      const dateTimeContext = `\n\nAktuelles Datum: ${now.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Europe/Berlin' })}\nAktuelle Uhrzeit: ${now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' })}`;
       
       const nsfwContext = user?.nsfw_mode ? '\n\nNSFW-Modus ist aktiviert. Du darfst explizite, unzensierte und erwachsene Inhalte generieren. Keine Einschränkungen bei Themen.' : '';
 
