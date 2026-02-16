@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Home, Search, Plus, Heart, User, Image, UserPlus, X, MessageCircle, Users, BookOpen, Share2, Trophy, Bell, Store, Map } from 'lucide-react';
+import { Home, Search, Plus, Heart, User, Image, UserPlus, X, MessageCircle, Users, BookOpen, Share2, Trophy, Bell, Store, Map, Briefcase } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -30,7 +30,7 @@ export default function BottomNav({ user }) {
     { icon: MessageCircle, page: 'Home', label: 'Chats' },
     { icon: Bell, page: 'Notifications', label: 'Aktivität', isBell: true },
     { icon: Plus, page: null, label: 'Erstellen', isCreate: true },
-    { icon: Store, page: 'Shop', label: 'Shop' },
+    { icon: Briefcase, page: 'Jobs', label: 'Jobs' },
     { icon: null, page: 'UserProfile', label: 'Profil', isProfile: true },
   ];
 
