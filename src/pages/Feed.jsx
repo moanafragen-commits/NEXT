@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Loader2 } from 'lucide-react';
+import { Loader2, RefreshCw } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import FeedPostCard from '@/components/feed/FeedPostCard';
 import FeedCommentSheet from '@/components/feed/FeedCommentSheet';
 import BottomNav from '@/components/navigation/BottomNav';
 import NextHeader from '@/components/navigation/NextHeader';
-import { seedFeedIfEmpty } from '@/components/feed/SeedFeedData';
+import TrendingSidebar from '@/components/feed/TrendingSidebar';
+import GenerateFeedButton from '@/components/feed/GenerateFeedButton';
+import { Button } from '@/components/ui/button';
 
 export default function Feed() {
   const [openCommentsPostId, setOpenCommentsPostId] = useState(null);
-  const [isSeeding, setIsSeeding] = useState(false);
-  const seedTriedRef = useRef(false);
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -25,25 +25,14 @@ export default function Feed() {
     queryFn: () => base44.entities.Post.list('-created_date', 50)
   });
 
-  // Seed feed on first load if empty
-  useEffect(() => {
-    if (isLoading || seedTriedRef.current) return;
-    if (posts.length === 0) {
-      seedTriedRef.current = true;
-      setIsSeeding(true);
-      seedFeedIfEmpty().then((seeded) => {
-        if (seeded) {
-          queryClient.invalidateQueries({ queryKey: ['posts'] });
-          queryClient.invalidateQueries({ queryKey: ['characters'] });
-        }
-        setIsSeeding(false);
-      });
-    }
-  }, [isLoading, posts.length]);
-
   const { data: characters = [] } = useQuery({
     queryKey: ['characters'],
     queryFn: () => base44.entities.Character.list()
+  });
+
+  const { data: allMessages = [] } = useQuery({
+    queryKey: ['all-messages-feed'],
+    queryFn: () => base44.entities.ChatMessage.list('-created_date', 100)
   });
 
   const { data: comments = [] } = useQuery({
@@ -55,6 +44,14 @@ export default function Feed() {
     queryKey: ['likes'],
     queryFn: () => base44.entities.PostLike.list()
   });
+
+  const { data: weatherStates = [] } = useQuery({
+    queryKey: ['weather-feed'],
+    queryFn: () => base44.entities.WeatherState.filter({ user_email: user?.email }),
+    enabled: !!user
+  });
+
+  const weatherState = weatherStates[0] || null;
 
   const getCharacter = (id) => characters.find(c => c.id === id);
   const hasLiked = (postId) => likes.some(l => l.post_id === postId && l.user_email === user?.email);
@@ -92,32 +89,57 @@ export default function Feed() {
   });
 
   const openPost = openCommentsPostId ? posts.find(p => p.id === openCommentsPostId) : null;
+  const activeChars = characters.filter(c => !c.is_archived && !c.is_blocked);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white auto-theme">
       {/* Header */}
       <header className="sticky top-0 z-10 glass border-b border-white/[0.06] auto-theme-header">
-        <div className="flex items-center justify-center px-4 py-3">
+        <div className="flex items-center justify-between px-4 py-3">
           <NextHeader />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => queryClient.invalidateQueries({ queryKey: ['posts'] })}
+            className="text-gray-400 hover:text-white hover:bg-white/10 rounded-xl"
+          >
+            <RefreshCw className="w-5 h-5" />
+          </Button>
         </div>
       </header>
 
-      <div className="max-w-lg mx-auto pb-16 relative z-[1]">
-        {isLoading || isSeeding ? (
+      <div className="max-w-2xl mx-auto pb-20 relative z-[1]">
+        {/* Generate Feed Button */}
+        <GenerateFeedButton
+          characters={activeChars}
+          messages={allMessages}
+          weatherState={weatherState}
+          onGenerated={() => {
+            queryClient.invalidateQueries({ queryKey: ['posts'] });
+            queryClient.invalidateQueries({ queryKey: ['likes'] });
+            queryClient.invalidateQueries({ queryKey: ['comments'] });
+          }}
+        />
+
+        {/* Trending Topics */}
+        <div className="px-4 py-3">
+          <TrendingSidebar />
+        </div>
+
+        {/* Posts */}
+        {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <div className="w-12 h-12 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin" />
-            {isSeeding && <p className="text-gray-500 text-sm mt-3">Feed wird erstellt...</p>}
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-20 px-6">
             <p className="text-gray-400 text-lg mb-2">Noch keine Posts</p>
-            <p className="text-gray-600 text-sm">Tippe auf + um deinen ersten Post zu erstellen</p>
+            <p className="text-gray-600 text-sm">Tippe auf "Feed generieren" um KI-Posts zu erstellen</p>
           </div>
         ) : (
           <div>
             {posts.map((post) => {
               const character = getCharacter(post.character_id);
-              // Create a fallback character for posts with missing/invalid character_id
               const displayChar = character || {
                 id: post.character_id,
                 name: 'Unbekannt',

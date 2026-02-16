@@ -53,6 +53,7 @@ import CharacterDevelopment from './pages/CharacterDevelopment';
 import CharacterDiary from './pages/CharacterDiary';
 import CharacterInfo from './pages/CharacterInfo';
 import CharacterLibrary from './pages/CharacterLibrary';
+import CharacterSocial from './pages/CharacterSocial';
 import CharacterStatus from './pages/CharacterStatus';
 import Characters from './pages/Characters';
 import Chat from './pages/Chat';
@@ -73,7 +74,6 @@ import UserChat from './pages/UserChat';
 import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
 import UserStatusView from './pages/UserStatusView';
-import CharacterSocial from './pages/CharacterSocial';
 import __Layout from './Layout.jsx';
 
 
@@ -84,6 +84,7 @@ export const PAGES = {
     "CharacterDiary": CharacterDiary,
     "CharacterInfo": CharacterInfo,
     "CharacterLibrary": CharacterLibrary,
+    "CharacterSocial": CharacterSocial,
     "CharacterStatus": CharacterStatus,
     "Characters": Characters,
     "Chat": Chat,
@@ -104,7 +105,6 @@ export const PAGES = {
     "UserChats": UserChats,
     "UserProfile": UserProfile,
     "UserStatusView": UserStatusView,
-    "CharacterSocial": CharacterSocial,
 }
 
 export const pagesConfig = {

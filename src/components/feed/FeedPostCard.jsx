@@ -1,12 +1,29 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Repeat2, Share, MoreHorizontal, BadgeCheck } from 'lucide-react';
+import { Heart, MessageCircle, Repeat2, Share, MoreHorizontal, BadgeCheck, Bot, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
+import { generatePostReactions } from './FeedGenerator';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 export default function FeedPostCard({ post, character, isLiked, onLike, onOpenComments, commentsCount, allCharacters }) {
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character?.name}`;
   const timeAgo = getTimeAgo(post.created_date);
+  const [reactLoading, setReactLoading] = useState(false);
+  const queryClient = useQueryClient();
+
+  const handleAIReact = async (e) => {
+    e.stopPropagation();
+    if (reactLoading || !allCharacters?.length) return;
+    setReactLoading(true);
+    const count = await generatePostReactions(post, character, allCharacters);
+    queryClient.invalidateQueries({ queryKey: ['posts'] });
+    queryClient.invalidateQueries({ queryKey: ['likes'] });
+    queryClient.invalidateQueries({ queryKey: ['comments'] });
+    if (count > 0) toast.success(`${count} Reaktion${count > 1 ? 'en' : ''}!`);
+    setReactLoading(false);
+  };
   const isCelebrity = character?.category === 'Berühmtheit';
   const isNews = character?.category === 'Nachrichtensender';
   const isPublicFigure = ['Influencer', 'Sportler', 'Musiker', 'Politiker', 'Wissenschaftler', 'Künstler', 'Unternehmer', 'Streamer', 'Model', 'Journalist', 'Aktivist'].includes(character?.category);
@@ -55,7 +72,16 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
               )}
             </Link>
             <span className="text-gray-600 text-[13px] flex-shrink-0">· {timeAgo}</span>
-            <div className="ml-auto flex-shrink-0">
+            <div className="ml-auto flex-shrink-0 flex items-center gap-1">
+              {/* AI React Button */}
+              <button
+                onClick={handleAIReact}
+                disabled={reactLoading}
+                className="text-gray-600 hover:text-emerald-400 p-1 rounded-full hover:bg-emerald-500/10 transition-colors"
+                title="KI-Charaktere reagieren lassen"
+              >
+                {reactLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Bot className="w-3.5 h-3.5" />}
+              </button>
               <button className="text-gray-600 hover:text-gray-400 p-1 -mr-1 rounded-full hover:bg-white/5 transition-colors">
                 <MoreHorizontal className="w-4 h-4" />
               </button>
