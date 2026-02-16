@@ -45,7 +45,7 @@ export default function CharacterCard({ character, lastMessage, unreadCount = 0,
   
   return (
     <div 
-      className="flex items-center gap-4 p-4 hover:bg-white/5 transition-all duration-200 border-b border-white/5 group"
+      className="flex items-center gap-4 p-4 hover:bg-white/[0.04] transition-all duration-300 border-b border-white/[0.04] group"
     >
       <Link 
         to={createPageUrl(`Chat?characterId=${character.id}`)}
@@ -54,7 +54,7 @@ export default function CharacterCard({ character, lastMessage, unreadCount = 0,
         <img 
           src={character.avatar_url || defaultAvatar}
           alt={character.name}
-          className="w-14 h-14 rounded-full object-cover ring-2 ring-emerald-500/20"
+          className="w-14 h-14 rounded-full object-cover ring-2 ring-white/10 group-hover:ring-emerald-500/30 transition-all duration-300"
         />
         <div className={`absolute bottom-0 right-0 w-3.5 h-3.5 ${statusColor} rounded-full border-2 border-[#111]`} />
       </Link>

@@ -93,24 +93,24 @@ export default function Feed() {
   const openPost = openCommentsPostId ? posts.find(p => p.id === openCommentsPostId) : null;
 
   return (
-    <div className="min-h-screen bg-white text-black auto-theme">
+    <div className="min-h-screen bg-[#0a0a0a] text-white auto-theme">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-gray-200 auto-theme-header">
+      <header className="sticky top-0 z-10 glass border-b border-white/[0.06] auto-theme-header">
         <div className="flex items-center justify-center px-4 py-3">
-          <h1 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">NEXT</h1>
+          <h1 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent text-glow">NEXT</h1>
         </div>
       </header>
 
-      <div className="max-w-lg mx-auto pb-16">
+      <div className="max-w-lg mx-auto pb-16 relative z-[1]">
         {isLoading || isSeeding ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <Loader2 className="w-8 h-8 text-gray-400 animate-spin" />
-            {isSeeding && <p className="text-gray-400 text-sm">Feed wird erstellt...</p>}
+            <div className="w-12 h-12 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin" />
+            {isSeeding && <p className="text-gray-500 text-sm mt-3">Feed wird erstellt...</p>}
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-20 px-6">
-            <p className="text-gray-500 text-lg mb-2">Noch keine Posts</p>
-            <p className="text-gray-400 text-sm">Tippe auf + um deinen ersten Post zu erstellen</p>
+            <p className="text-gray-400 text-lg mb-2">Noch keine Posts</p>
+            <p className="text-gray-600 text-sm">Tippe auf + um deinen ersten Post zu erstellen</p>
           </div>
         ) : (
           <div>

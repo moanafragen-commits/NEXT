@@ -64,7 +64,7 @@ export default function BottomNav({ user }) {
         )}
       </AnimatePresence>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-[9999] bg-white border-t border-gray-200 auto-theme-nav">
+      <nav className="fixed bottom-0 left-0 right-0 z-[9999] bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-white/[0.06] auto-theme-nav">
         <div className="flex items-center justify-around h-14 max-w-lg mx-auto px-1">
           {navItems.map((item, i) => {
             if (item.isProfile) {
