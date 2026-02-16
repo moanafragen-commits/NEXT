@@ -788,7 +788,8 @@ AUFGABEN:
    - Bestimme die aktuelle Beziehungsphase wenn sich etwas geändert hat
 5. Liste IDs genutzter Erinnerungen auf
 6. Schlage ggf. ein Thema vor das du proaktiv ansprechen möchtest
-7. INFORMATIONSWEITERGABE: Entscheide ob Infos aus diesem Gespräch an andere Charaktere weitergegeben werden sollen:
+7. TAGESGESCHEHEN: Wenn du in letzter Zeit etwas erlebt hast (siehe "WAS DU ZULETZT GEMACHT HAST"), erzähle NATÜRLICH davon wenn es passt. z.B. "Ich war gerade mit [NPC] unterwegs und..." oder "Hab heute [Aktivität] gemacht, war echt..."
+8. INFORMATIONSWEITERGABE: Entscheide ob Infos aus diesem Gespräch an andere Charaktere weitergegeben werden sollen:
    - Klatsch/Gossip: Wenn der Nutzer etwas Interessantes erzählt, das andere Charaktere interessieren könnte
    - Gerüchte: Wenn du etwas gehört hast, das du (vielleicht etwas übertrieben) weitererzählen würdest
    - Warnungen: Wenn der Nutzer etwas Besorgniserregendes tut oder sagt
