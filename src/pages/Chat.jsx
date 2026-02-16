@@ -408,14 +408,15 @@ export default function Chat() {
           
           <Link to={createPageUrl(`CharacterInfo?characterId=${characterId}`)} className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-                  <h2 className="font-semibold text-white hover:text-emerald-400 transition-colors">{character.name}</h2>
-                  {character.illness && (
-                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
-                      {getIllnessDisplay(character)?.emoji} {character.illness}
-                    </span>
-                  )}
-                  {character.current_mood && <MoodBadge mood={character.current_mood} size="sm" />}
-                </div>
+              <h2 className="font-semibold text-white hover:text-emerald-400 transition-colors">{character.name}</h2>
+              {character.illness && (
+                <span className="text-xs px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
+                  {getIllnessDisplay(character)?.emoji} {character.illness}
+                </span>
+              )}
+              {character.current_mood && <MoodBadge mood={character.current_mood} size="sm" />}
+              {weatherState && <WeatherBadge weather={weatherState.weather} temperature={weatherState.temperature} />}
+            </div>
             <p className="text-xs text-gray-400 truncate">
               {isTyping ? (
                 <span className="text-emerald-400">schreibt...</span>
