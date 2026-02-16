@@ -95,17 +95,41 @@ export default function Chat() {
     enabled: !!characterId && !!user
   });
 
-  // Generate daily activity and check illness on chat open
+  const [weatherState, setWeatherState] = useState(null);
+
+  // Generate daily activity, check illness, update weather, location, spontaneous messages on chat open
   useEffect(() => {
-    if (character && !character.is_archived) {
+    if (character && !character.is_archived && user) {
       generateDailyActivity(character);
       checkAndUpdateIllness(character).then(updated => {
         if (updated.illness !== character.illness || updated.just_recovered) {
           queryClient.invalidateQueries({ queryKey: ['character', characterId] });
         }
       });
+      // Weather
+      updateWeatherState(user.email).then(w => setWeatherState(w));
+      // Location sharing (random chance)
+      if (Math.random() > 0.6) {
+        const loc = generateRandomLocation(character);
+        base44.entities.CharacterLocation.create({ character_id: characterId, ...loc });
+      }
+      // Spontaneous messages
+      const lastMsg = messages[messages.length - 1];
+      if (shouldSendSpontaneous(character, lastMsg?.created_date)) {
+        generateSpontaneousMessage(character, user).then(() => {
+          queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
+        });
+      }
+      // Check achievements
+      base44.entities.Character.list().then(chars => {
+        base44.entities.CharacterMemory.filter({ user_email: user.email }).then(mems => {
+          base44.entities.Gift.filter({ user_email: user.email }).then(gifts => {
+            checkAndAwardAchievements(user, chars, messages, mems, gifts);
+          });
+        });
+      });
     }
-  }, [character?.id]);
+  }, [character?.id, user?.email]);
   
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
