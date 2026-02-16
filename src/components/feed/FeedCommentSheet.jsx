@@ -59,6 +59,7 @@ export default function FeedCommentSheet({ post, character, comments, user, onCl
   };
 
   const getCommenter = (comment) => {
+    // Check if this comment was written by an AI character (user_email = character_id)
     const char = charMap[comment.user_email];
     if (char) {
       const isVerified = ['Berühmtheit', 'Nachrichtensender', 'Influencer', 'Sportler', 'Musiker', 'Politiker', 'Wissenschaftler', 'Künstler', 'Unternehmer', 'Streamer', 'Model', 'Journalist', 'Aktivist'].includes(char.category);
@@ -71,11 +72,26 @@ export default function FeedCommentSheet({ post, character, comments, user, onCl
         category: char.category
       };
     }
-    const name = user?.full_name || comment.user_email?.split('@')[0] || 'Du';
+    // Check if the comment was written by the current logged-in user
+    const isCurrentUser = comment.user_email === user?.email;
+    if (isCurrentUser) {
+      const name = user?.display_name || user?.full_name || 'Du';
+      return {
+        name,
+        username: '@' + name.toLowerCase().replace(/\s+/g, '_'),
+        avatar: user?.avatar_url || null,
+        isAI: false,
+        isVerified: false
+      };
+    }
+    // Fallback: unknown commenter (another user or orphaned character ID)
+    // Try to match as character ID in case charMap missed it
+    const email = comment.user_email || '';
+    const fallbackName = email.includes('@') ? email.split('@')[0] : 'Unbekannt';
     return {
-      name,
-      username: '@' + name.toLowerCase().replace(/\s+/g, '_'),
-      avatar: user?.avatar_url || null,
+      name: fallbackName,
+      username: '@' + fallbackName.toLowerCase().replace(/\s+/g, '_'),
+      avatar: `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${email}`,
       isAI: false,
       isVerified: false
     };

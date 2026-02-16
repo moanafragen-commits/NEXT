@@ -216,10 +216,11 @@ ${others.map(c => `- ${c.name} (ID: ${c.id}): ${(c.personality || '').slice(0, 6
 
 Regeln:
 - Nicht jeder muss reagieren (ca. 50-70% sollten liken, 20-40% kommentieren)
+- JEDER Charakter darf MAXIMAL 1 Kommentar schreiben
 - Kommentare sind kurz (1 Satz), natürlich, manchmal witzig, manchmal ernst
+- JEDER Charakter hat einen EIGENEN Stil – keine doppelten oder ähnlichen Kommentare
 - Charaktere mit ähnlichen Interessen reagieren eher
-- Schüchterne/introvertierte Charaktere reagieren seltener
-- Kommentare können auch Antworten aufeinander sein (z.B. "@name genau!")`,
+- Schüchterne/introvertierte Charaktere reagieren seltener`,
       response_json_schema: {
         type: "object",
         properties: {
