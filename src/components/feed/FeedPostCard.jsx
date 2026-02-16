@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Heart, MessageCircle, Repeat2, Share, MoreHorizontal, BadgeCheck, Bot, Loader2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Heart, MessageCircle, Repeat2, Share, MoreHorizontal, BadgeCheck, Bot, Loader2, Trash2, Pencil, X, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
@@ -37,7 +37,7 @@ function getFallbackProfile(postId) {
   };
 }
 
-export default function FeedPostCard({ post, character, isLiked, onLike, onOpenComments, commentsCount, allCharacters, onRepost, currentUser }) {
+export default function FeedPostCard({ post, character, isLiked, onLike, onOpenComments, commentsCount, allCharacters, onRepost, currentUser, onDelete, onEdit }) {
   const isUserPost = post.is_user_post;
   const isRealChar = !isUserPost && character && character.name && character.name !== 'Unbekannt';
   const fallback = (!isRealChar && !isUserPost) ? getFallbackProfile(post.id) : null;
@@ -52,7 +52,21 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
   const timeAgo = getTimeAgo(post.created_date);
   const [reactLoading, setReactLoading] = useState(false);
   const [reposted, setReposted] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(post.content);
+  const menuRef = useRef(null);
   const queryClient = useQueryClient();
+  
+  const isOwnPost = post.is_user_post && post.created_by === currentUser?.email;
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setShowMenu(false);
+    };
+    if (showMenu) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showMenu]);
 
   const handleAIReact = async (e) => {
     e.stopPropagation();
@@ -158,16 +172,67 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
               >
                 {reactLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Bot className="w-3.5 h-3.5" />}
               </button>
-              <button className="text-gray-600 hover:text-gray-400 p-1 -mr-1 rounded-full hover:bg-white/5 transition-colors">
-                <MoreHorizontal className="w-4 h-4" />
-              </button>
+              <div className="relative" ref={menuRef}>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}
+                  className="text-gray-600 hover:text-gray-400 p-1 -mr-1 rounded-full hover:bg-white/5 transition-colors"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+                {showMenu && isOwnPost && (
+                  <div className="absolute right-0 top-8 bg-[#262626] border border-white/10 rounded-xl shadow-xl z-20 min-w-[160px] py-1 overflow-hidden">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setIsEditing(true); setEditText(post.content); setShowMenu(false); }}
+                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 transition-colors"
+                    >
+                      <Pencil className="w-4 h-4" />
+                      Bearbeiten
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); if (confirm('Post wirklich löschen?')) { onDelete?.(post.id); } setShowMenu(false); }}
+                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Löschen
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Text content */}
-          <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words mb-2 text-gray-100">
-            {post.content}
-          </p>
+          {isEditing ? (
+            <div className="mb-2">
+              <textarea
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                maxLength={280}
+                rows={3}
+                className="w-full bg-[#262626] text-white text-[15px] rounded-lg p-3 border border-white/10 focus:border-emerald-500/50 outline-none resize-none leading-relaxed"
+                autoFocus
+              />
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-xs text-gray-500">{editText.length}/280</span>
+                <div className="flex gap-2">
+                  <button onClick={() => setIsEditing(false)} className="p-1.5 rounded-full hover:bg-white/10 text-gray-400 transition-colors">
+                    <X className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => { onEdit?.(post.id, editText.trim()); setIsEditing(false); }}
+                    disabled={!editText.trim()}
+                    className="p-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-40 transition-colors"
+                  >
+                    <Check className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words mb-2 text-gray-100">
+              {post.content}
+            </p>
+          )}
 
           {/* Images disabled */}
 
