@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
+
+function formatGermanTime(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  return d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' });
+}
 import { Check, CheckCheck, Pin, Reply, MoreVertical, Bookmark, Copy } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Button } from '@/components/ui/button';
@@ -170,7 +176,7 @@ export default function MessageBubble({ message, characterAvatar, characterName,
         </div>
         <div className={`flex items-center gap-1.5 mt-1 ${isUser ? 'justify-end' : 'justify-start'}`}>
           <span className="text-[10px] text-gray-500">
-            {new Date(message.created_date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' })}
+            {formatGermanTime(message.created_date)}
           </span>
           {isUser && message.status && (
             <div className="flex items-center gap-0.5">
