@@ -23,6 +23,9 @@ import AchievementDisplay from '@/components/character/AchievementSystem';
 import RelationshipStats from '@/components/character/RelationshipStats';
 import MiniGames from '@/components/character/MiniGames';
 import LocationSharing from '@/components/character/LocationSharing';
+import GesturePanel from '@/components/gestures/GesturePanel';
+import CharacterQuestionCard from '@/components/questions/CharacterQuestionCard';
+import RelationshipItemPanel from '@/components/relationship/RelationshipItemPanel';
 
 export default function CharacterInfo() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -292,6 +295,53 @@ export default function CharacterInfo() {
         </div>
 
         <Separator className="bg-white/5" />
+
+        {/* Gestures */}
+        {user && (
+          <>
+            <div className="p-6 space-y-4">
+              <div className="flex items-center gap-2 text-pink-400">
+                <Heart className="w-5 h-5" />
+                <h3 className="font-semibold">Gesten & Berührungen</h3>
+              </div>
+              <GesturePanel character={character} userEmail={user.email} />
+            </div>
+            <Separator className="bg-white/5" />
+          </>
+        )}
+
+        {/* Character Questions */}
+        {user && (
+          <>
+            <div className="p-6 space-y-4">
+              <div className="flex items-center gap-2 text-purple-400">
+                <Sparkles className="w-5 h-5" />
+                <h3 className="font-semibold">{character.name} fragt dich</h3>
+              </div>
+              <CharacterQuestionCard
+                characterId={characterId}
+                userEmail={user.email}
+                characterName={character.name}
+                personality={character.personality}
+              />
+            </div>
+            <Separator className="bg-white/5" />
+          </>
+        )}
+
+        {/* Relationship Items */}
+        {user && (
+          <>
+            <div className="p-6 space-y-4">
+              <div className="flex items-center gap-2 text-pink-400">
+                <Heart className="w-5 h-5" />
+                <h3 className="font-semibold">Beziehungs-Items</h3>
+              </div>
+              <RelationshipItemPanel characterId={characterId} userEmail={user.email} characterName={character.name} />
+            </div>
+            <Separator className="bg-white/5" />
+          </>
+        )}
 
         {/* Gifts */}
         {user && (

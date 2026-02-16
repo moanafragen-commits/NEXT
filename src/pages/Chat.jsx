@@ -28,6 +28,10 @@ import { SongBadge, LocationBadge, RelationshipBadge, EnergyBadge, MotivationBad
 import { checkAndGenerateEvent } from '@/components/character/CharacterEventSystem';
 import { generateDream, getUnsharedDream, markDreamShared } from '@/components/character/DreamSystem';
 import DreamBubble from '@/components/character/DreamBubble';
+import ConflictBanner from '@/components/conflict/ConflictBanner';
+import { getConflictContext, checkForConflict } from '@/components/conflict/ConflictSystem';
+import { getSeasonalContext } from '@/components/seasonal/SeasonalBanner';
+import { getNewsContext } from '@/components/news/NewsGenerator';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -107,6 +111,8 @@ export default function Chat() {
   const [weatherState, setWeatherState] = useState(null);
   const [activeEvent, setActiveEvent] = useState(null);
   const [currentDream, setCurrentDream] = useState(null);
+  const [activeConflict, setActiveConflict] = useState(null);
+  const [newsArticles, setNewsArticles] = useState([]);
 
   // Generate daily activity, check illness, update weather, location, spontaneous messages on chat open
   const bgTasksRanRef = useRef(false);
@@ -293,8 +299,21 @@ export default function Chat() {
       const combinedContent = allPending.map(m => m.content).join('\n');
       const lastImage = allPending.reverse().find(m => m.imageUrl)?.imageUrl || null;
 
+      // Check for conflicts (rare, 8% chance)
+      let conflictCtx = '';
+      if (activeConflict) {
+        conflictCtx = getConflictContext(activeConflict);
+      } else if (Math.random() < 0.08) {
+        const conflict = await checkForConflict(character, latestMessages, user.email).catch(() => null);
+        if (conflict) {
+          setActiveConflict(conflict);
+          conflictCtx = getConflictContext(conflict);
+          queryClient.invalidateQueries({ queryKey: ['active-conflict', characterId] });
+        }
+      }
+
       // Build prompt
-      const { prompt, allMemories } = buildFullPrompt({
+      const { prompt: basePrompt, allMemories } = buildFullPrompt({
         character,
         user,
         messages: latestMessages,
@@ -309,6 +328,11 @@ export default function Chat() {
         activeEvent,
         currentDream
       });
+
+      // Add conflict, seasonal, and news context
+      const seasonalCtx = getSeasonalContext();
+      const newsCtx = getNewsContext(newsArticles);
+      const prompt = basePrompt + conflictCtx + seasonalCtx + newsCtx;
 
       const response = await base44.integrations.Core.InvokeLLM({
         prompt,
