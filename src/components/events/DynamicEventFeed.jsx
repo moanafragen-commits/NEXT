@@ -37,21 +37,23 @@ export default function DynamicEventFeed({ userEmail }) {
     queryFn: () => base44.entities.ChatMessage.list('-created_date', 100)
   });
 
-  // Try generating events on mount (once)
+  // Try generating events on mount (once, with long delay to avoid rate limits)
   useEffect(() => {
     if (!userEmail || initialized || characters.length === 0) return;
     setInitialized(true);
 
     const timer = setTimeout(async () => {
-      await checkAndGenerateDynamicEvent({
-        userEmail,
-        characters,
-        jobs,
-        messages,
-        userLevel: userLevelData
-      });
-      queryClient.invalidateQueries({ queryKey: ['dynamic-events', userEmail] });
-    }, 3000);
+      try {
+        await checkAndGenerateDynamicEvent({
+          userEmail,
+          characters,
+          jobs,
+          messages,
+          userLevel: userLevelData
+        });
+        queryClient.invalidateQueries({ queryKey: ['dynamic-events', userEmail] });
+      } catch(e) {}
+    }, 8000);
 
     return () => clearTimeout(timer);
   }, [userEmail, characters.length, initialized]);
