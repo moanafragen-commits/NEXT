@@ -58,7 +58,7 @@ function renderMessageContent(content, customEmojis) {
   );
 }
 
-export default function MessageBubble({ message, characterAvatar, characterName, onPin, onReply, onBookmark, replyToMessage }) {
+export default function MessageBubble({ message, characterAvatar, characterName, onPin, onReply, onBookmark, replyToMessage, theme }) {
   const isUser = message.role === 'user';
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${characterName}`;
   const [showActions, setShowActions] = useState(false);
@@ -140,8 +140,8 @@ export default function MessageBubble({ message, characterAvatar, characterName,
         <div 
           className={`rounded-2xl px-4 py-2.5 relative ${
             isUser 
-              ? 'bg-emerald-600 text-white rounded-br-md' 
-              : 'bg-[#262626] text-gray-100 rounded-bl-md'
+              ? `${theme?.userBg || 'bg-emerald-600'} text-white rounded-br-md` 
+              : `${theme?.messageBg || 'bg-[#262626]'} text-gray-100 rounded-bl-md`
           }`}
         >
           {replyToMessage && (

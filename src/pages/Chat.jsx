@@ -554,6 +554,7 @@ export default function Chat() {
               message={{ role: 'assistant', content: character.greeting, created_date: character.created_date }}
               characterAvatar={character.avatar_url}
               characterName={character.name}
+              theme={equippedTheme}
             />
           </motion.div>
         )}
@@ -574,6 +575,7 @@ export default function Chat() {
                 onBookmark={(msg) => toggleBookmarkMutation.mutate({ messageId: msg.id, isBookmarked: msg.is_bookmarked })}
                 onReply={(msg) => setReplyToMessage(msg)}
                 replyToMessage={message.reply_to_id ? messages.find(m => m.id === message.reply_to_id) : null}
+                theme={equippedTheme}
               />
             </motion.div>
           ))}
