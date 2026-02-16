@@ -295,7 +295,7 @@ export async function generatePostReactions(post, postCharacter, allCharacters) 
 Charaktere die diesen Tweet sehen:
 ${otherChars.map(c => `- ${c.name} (ID: ${c.id}): ${(c.personality || '').slice(0, 80)}, Stimmung: ${c.current_mood || c.mood_default || 'neutral'}`).join('\n')}
 
-Entscheide für jeden ob und wie sie reagieren. Kommentare kurz & natürlich (1 Satz).`,
+Entscheide für jeden ob und wie sie reagieren. JEDER Charakter darf MAXIMAL 1 Kommentar. Kommentare kurz & natürlich (1 Satz), jeder mit eigenem Stil.`,
     response_json_schema: {
       type: "object",
       properties: {

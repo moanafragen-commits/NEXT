@@ -41,7 +41,9 @@ ${reactors.map(c => `- ${c.name} (ID: ${c.id}): ${(c.personality || '').slice(0,
 
 Regeln:
 - Ca. 50-80% sollten liken, 30-50% kommentieren
+- JEDER Charakter darf MAXIMAL 1 Kommentar schreiben
 - Kommentare sind kurz (1 Satz), natürlich, persönlich
+- JEDER Charakter hat einen EIGENEN Stil – keine doppelten oder ähnlichen Kommentare
 - Die Reaktion muss zur Persönlichkeit und Stimmung des Charakters passen`,
           response_json_schema: {
             type: "object",
