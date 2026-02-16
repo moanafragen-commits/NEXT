@@ -271,6 +271,99 @@ export default function CharacterInfo() {
 
         <Separator className="bg-white/5" />
 
+        {/* Location */}
+        <div className="p-6 space-y-4">
+          <div className="flex items-center gap-2 text-blue-400">
+            <MapPin className="w-5 h-5" />
+            <h3 className="font-semibold">Standort</h3>
+          </div>
+          <LocationSharing characterId={characterId} />
+        </div>
+
+        <Separator className="bg-white/5" />
+
+        {/* Daily Schedule */}
+        <div className="p-6 space-y-4">
+          <div className="flex items-center gap-2 text-amber-400">
+            <Clock className="w-5 h-5" />
+            <h3 className="font-semibold">Tagesablauf</h3>
+          </div>
+          <DailySchedulePanel character={character} />
+        </div>
+
+        <Separator className="bg-white/5" />
+
+        {/* Gifts */}
+        {user && (
+          <>
+            <div className="p-6 space-y-4">
+              <div className="flex items-center gap-2 text-pink-400">
+                <Gift className="w-5 h-5" />
+                <h3 className="font-semibold">Geschenke</h3>
+              </div>
+              <GiftSystem character={character} user={user} />
+            </div>
+            <Separator className="bg-white/5" />
+          </>
+        )}
+
+        {/* Room */}
+        <div className="p-6 space-y-4">
+          <div className="flex items-center gap-2 text-orange-400">
+            <Home className="w-5 h-5" />
+            <h3 className="font-semibold">{character.name}s Zimmer</h3>
+          </div>
+          <CharacterRoomView character={character} />
+        </div>
+
+        <Separator className="bg-white/5" />
+
+        {/* Mini Games */}
+        <div className="p-6 space-y-4">
+          <div className="flex items-center gap-2 text-cyan-400">
+            <Gamepad2 className="w-5 h-5" />
+            <h3 className="font-semibold">Mini-Spiele</h3>
+          </div>
+          <MiniGames character={character} onSendToChat={(msg) => {
+            base44.entities.ChatMessage.create({
+              character_id: characterId,
+              role: 'assistant',
+              content: msg,
+              status: 'delivered'
+            });
+          }} />
+        </div>
+
+        <Separator className="bg-white/5" />
+
+        {/* Relationship Stats */}
+        {user && (
+          <>
+            <div className="p-6 space-y-4">
+              <div className="flex items-center gap-2 text-indigo-400">
+                <BarChart3 className="w-5 h-5" />
+                <h3 className="font-semibold">Beziehungs-Statistiken</h3>
+              </div>
+              <RelationshipStats characterId={characterId} userEmail={user.email} />
+            </div>
+            <Separator className="bg-white/5" />
+          </>
+        )}
+
+        {/* Achievements */}
+        {user && (
+          <>
+            <div className="p-6 space-y-4">
+              <div className="flex items-center gap-2 text-amber-400">
+                <Trophy className="w-5 h-5" />
+                <h3 className="font-semibold">Achievements</h3>
+              </div>
+              <AchievementDisplay userEmail={user.email} />
+            </div>
+            <Separator className="bg-white/5" />
+          </>
+        )}
+
         {/* Development & Diary Links */}
         <div className="px-6 py-4 space-y-3">
           <Link to={createPageUrl(`CharacterDiary?characterId=${characterId}`)}>
