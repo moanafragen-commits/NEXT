@@ -8,7 +8,6 @@ import { base44 } from '@/api/base44Client';
 
 export default function Landing() {
   const handleTryAsGuest = () => {
-    // Guest mode - just redirect to feed
     window.location.href = createPageUrl('Feed');
   };
 
@@ -31,25 +30,12 @@ export default function Landing() {
           {/* Logo & Nav */}
           <nav className="flex justify-between items-center mb-20">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
                 <Sparkles className="w-6 h-6" />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
                 NEXT
               </span>
-            </div>
-          </nav>
-
-          {/* Hero Content */}
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <h1 className="text-6xl md:text-7xl font-bold mb-6 leading-tight">
-                Willkommen bei <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">NEXT</span>
-              </h1>
             </div>
             <Button onClick={handleSignUp} variant="ghost" className="text-white hover:bg-white/10">
               Login
@@ -64,7 +50,7 @@ export default function Landing() {
               transition={{ duration: 0.6 }}
             >
               <h1 className="text-6xl md:text-7xl font-bold mb-6 leading-tight">
-                Deine eigene <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">AI Social World</span>
+                Willkommen bei <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">NEXT</span>
               </h1>
               <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-2xl mx-auto">
                 Chatte, interagiere und entdecke einzigartige AI-Persönlichkeiten. Du bist der einzige echte Mensch in diesem sozialen Universum.
@@ -80,9 +66,9 @@ export default function Landing() {
               <Button
                 onClick={handleSignUp}
                 size="lg"
-                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-6 text-lg rounded-full shadow-2xl shadow-purple-500/30"
+                className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-6 text-lg rounded-full shadow-2xl shadow-emerald-500/30"
               >
-                Sign Up - It's Free
+                Jetzt starten – kostenlos
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
               <Button
@@ -91,7 +77,7 @@ export default function Landing() {
                 variant="outline"
                 className="border-2 border-white/20 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full"
               >
-                Try as Guest
+                Als Gast testen
               </Button>
             </motion.div>
           </div>
@@ -156,14 +142,14 @@ export default function Landing() {
           transition={{ duration: 0.6, delay: 0.6 }}
         >
           <h2 className="text-4xl font-bold mb-6">
-            Bereit für dein AI-Universum?
+            Bereit für <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">NEXT</span>?
           </h2>
           <Button
             onClick={handleSignUp}
             size="lg"
-            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-12 py-6 text-lg rounded-full shadow-2xl shadow-purple-500/30"
+            className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-12 py-6 text-lg rounded-full shadow-2xl shadow-emerald-500/30"
           >
-            Get Started Now
+            Jetzt starten
             <Sparkles className="ml-2 w-5 h-5" />
           </Button>
         </motion.div>
