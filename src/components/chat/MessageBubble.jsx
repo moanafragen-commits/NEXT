@@ -230,12 +230,19 @@ export default function MessageBubble({ message, characterAvatar, characterName,
         )}
       </div>
 
-      {/* Add Reaction Button */}
-      <div className={`opacity-0 group-hover:opacity-100 transition-opacity ${isUser ? 'order-0' : 'order-2'}`}>
-        <EmojiPicker 
-          onSelect={(emoji) => addReactionMutation.mutate(emoji)} 
-          isReaction={true}
+      {/* Quick Reactions (WhatsApp-style) */}
+      <div className={`flex items-center gap-0.5 ${isUser ? 'order-0' : 'order-2'}`}>
+        <QuickReactions
+          messageId={message.id}
+          userEmail={user?.email}
+          existingReactions={reactions}
         />
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+          <EmojiPicker 
+            onSelect={(emoji) => addReactionMutation.mutate(emoji)} 
+            isReaction={true}
+          />
+        </div>
       </div>
       
       {/* Actions Menu */}
