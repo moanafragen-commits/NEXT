@@ -680,7 +680,7 @@ function buildSharedMemoryContext(sharedMemories, character, allCharacters) {
   return parts.join('\n');
 }
 
-export function buildFullPrompt({ character, user, messages, memories, content, imageUrl, sharedMemories, allCharacters }) {
+export function buildFullPrompt({ character, user, messages, memories, content, imageUrl, sharedMemories, allCharacters, recentActivities, recentDiary }) {
   // Build conversation history (last 30 messages for more context)
   const history = messages.slice(-30).map(m => ({
     role: m.role,
