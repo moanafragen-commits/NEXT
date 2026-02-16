@@ -19,7 +19,6 @@ export default function BottomNav({ user }) {
     { icon: MessageCircle, page: 'Home', label: 'Chats' },
     { icon: Users, page: 'GroupChats', label: 'Gruppen' },
     { icon: Plus, page: null, label: 'Erstellen', isCreate: true },
-    { icon: BookOpen, page: 'Diaries', label: 'Tagebuch' },
     { icon: Share2, page: 'RelationshipMap', label: 'Karte' },
     { icon: null, page: 'UserProfile', label: 'Profil', isProfile: true },
   ];
