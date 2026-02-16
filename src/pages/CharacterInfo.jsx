@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, BookOpen, MessageCircle, Settings, Sparkles, Plus, Brain, Heart, Target, TrendingUp, Dumbbell, Camera, Upload, Loader2, Music, CalendarHeart } from 'lucide-react';
+import { ArrowLeft, BookOpen, MessageCircle, Settings, Sparkles, Plus, Brain, Heart, Target, TrendingUp, Dumbbell, Camera, Upload, Loader2, Music, CalendarHeart, Gift, Home, Trophy, BarChart3, Gamepad2, MapPin, Clock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
