@@ -1,4 +1,5 @@
 import { calculateDecayedStrength } from '@/components/memory/MemoryStrengthBar';
+import { getAbsenceContext, checkMilestones } from '@/components/character/DiaryGenerator';
 
 /**
  * Builds the full system prompt and context for the AI character response.
