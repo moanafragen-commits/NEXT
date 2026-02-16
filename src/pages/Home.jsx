@@ -27,6 +27,8 @@ import NextHeader from '@/components/navigation/NextHeader';
 import TopBar from '@/components/gamification/TopBar';
 import { useUserLevel } from '@/components/gamification/useUserLevel';
 import { XP_REWARDS } from '@/components/gamification/LevelUtils';
+import EventBanner from '@/components/events/EventBanner';
+import CharacterWidget from '@/components/widgets/CharacterWidget';
 
 export default function Home() {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -293,11 +295,23 @@ export default function Home() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-[#262626] border-white/10">
                 <DropdownMenuItem asChild className="text-gray-200 hover:bg-white/5 cursor-pointer">
-                  <Link to={createPageUrl('RelationshipMap')} className="flex items-center">
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Beziehungskarte
-                  </Link>
-                </DropdownMenuItem>
+                    <Link to={createPageUrl('CharacterChat')} className="flex items-center">
+                      <Users className="w-4 h-4 mr-2" />
+                      C2C Chat
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="text-gray-200 hover:bg-white/5 cursor-pointer">
+                    <Link to={createPageUrl('CharacterMap')} className="flex items-center">
+                      <HomeIcon className="w-4 h-4 mr-2" />
+                      Karte
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="text-gray-200 hover:bg-white/5 cursor-pointer">
+                    <Link to={createPageUrl('RelationshipMap')} className="flex items-center">
+                      <Share2 className="w-4 h-4 mr-2" />
+                      Beziehungskarte
+                    </Link>
+                  </DropdownMenuItem>
                 <DropdownMenuItem asChild className="text-gray-200 hover:bg-white/5 cursor-pointer">
                   <Link to={createPageUrl('CharacterLibrary')} className="flex items-center">
                     <Grid className="w-4 h-4 mr-2" />
@@ -384,6 +398,20 @@ export default function Home() {
 
         {/* Gamification TopBar */}
         {user && <TopBar userEmail={user.email} />}
+
+        {/* Event Banner */}
+        {user && <EventBanner userEmail={user.email} />}
+
+        {/* Character Widgets */}
+        {user && characters.filter(c => c.is_favorite && !c.is_archived).length > 0 && (
+          <div className="px-4 py-2">
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
+              {characters.filter(c => c.is_favorite && !c.is_archived).map(c => (
+                <CharacterWidget key={c.id} characterId={c.id} />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Status Bar */}
         <div className="px-4 py-3 overflow-x-auto border-b border-white/[0.03] scrollbar-hide bg-gradient-to-b from-transparent to-black/20">
