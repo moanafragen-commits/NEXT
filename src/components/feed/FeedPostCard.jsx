@@ -98,16 +98,7 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
             {post.content}
           </p>
 
-          {/* Optional image */}
-          {post.image_url && (
-            <div className="rounded-2xl overflow-hidden border border-white/10 mb-2">
-              <img
-                src={post.image_url}
-                alt=""
-                className="w-full max-h-80 object-cover"
-              />
-            </div>
-          )}
+          {/* Images disabled */}
 
           {/* Actions */}
           <div className="flex items-center justify-between max-w-[400px] -ml-2 mt-1">

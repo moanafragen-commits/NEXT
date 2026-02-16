@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Loader2, Wand2, ImageOff, Image } from 'lucide-react';
+import { Loader2, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateFeedPosts, generatePostReactions } from './FeedGenerator';
@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 export default function GenerateFeedButton({ characters, messages, weatherState, onGenerated }) {
   const [generating, setGenerating] = useState(false);
   const [step, setStep] = useState('');
-  const [withImages, setWithImages] = useState(true);
 
   const handleGenerate = async () => {
     if (!characters || characters.length === 0) {
@@ -24,7 +23,7 @@ export default function GenerateFeedButton({ characters, messages, weatherState,
       messages,
       weatherState,
       count: 3,
-      withImages
+      withImages: false
     });
 
     if (posts.length > 0) {
@@ -72,15 +71,6 @@ export default function GenerateFeedButton({ characters, messages, weatherState,
             >
               <Wand2 className="w-4 h-4" />
               Feed generieren
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setWithImages(!withImages)}
-              className={`h-10 w-10 rounded-xl ${withImages ? 'text-emerald-400 bg-emerald-500/10' : 'text-gray-500 bg-white/5'}`}
-              title={withImages ? 'Mit Bildern' : 'Ohne Bilder (schneller)'}
-            >
-              {withImages ? <Image className="w-4 h-4" /> : <ImageOff className="w-4 h-4" />}
             </Button>
           </motion.div>
         )}

@@ -160,9 +160,7 @@ export async function generateFeedPosts({ characters, messages = [], weatherStat
   const posts = [];
   
   for (const char of selected) {
-    // 40% chance for image post
-    const shouldHaveImage = withImages && Math.random() < 0.4;
-    const postData = await generateSinglePost(char, weatherState, trends, shouldHaveImage);
+    const postData = await generateSinglePost(char, weatherState, trends, false);
     const created = await base44.entities.Post.create(postData);
     posts.push({ ...created, ...postData });
   }
