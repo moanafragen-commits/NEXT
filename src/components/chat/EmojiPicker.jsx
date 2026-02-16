@@ -74,6 +74,24 @@ export default function EmojiPicker({ onSelect, isReaction = false }) {
                 ))}
               </div>
 
+              {/* Custom Emojis */}
+              {customEmojis.filter(ce => !ce.original_emoji).length > 0 && activeCategory === 'Smileys' && (
+                <div className="mb-2 pb-2 border-b border-white/10">
+                  <p className="text-[10px] text-gray-500 uppercase mb-1">Custom</p>
+                  <div className="grid grid-cols-8 gap-1">
+                    {customEmojis.filter(ce => !ce.original_emoji).map(ce => (
+                      <button
+                        key={ce.id}
+                        onClick={() => handleSelect(ce.label || '⭐')}
+                        className="hover:bg-white/10 rounded p-1 transition-colors flex items-center justify-center"
+                      >
+                        <img src={ce.image_url} alt={ce.label || 'emoji'} className="w-7 h-7 object-contain" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Emoji Grid */}
               <div className="grid grid-cols-8 gap-1 max-h-48 overflow-y-auto">
                 {EMOJI_CATEGORIES[activeCategory].map(emoji => (
