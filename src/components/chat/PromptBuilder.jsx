@@ -741,6 +741,13 @@ export function buildFullPrompt({ character, user, messages, memories, content, 
   const imageContext = imageUrl ? `\n\nDer Nutzer hat ein Bild gesendet. Reagiere darauf natürlich.` : '';
   const illnessContext = buildIllnessContext(character);
 
+  // Weather context
+  let weatherContext = '';
+  if (weatherState) {
+    const { buildWeatherContext: bwc } = require('@/components/character/WeatherSystem');
+    weatherContext = bwc(weatherState);
+  }
+
   // Absence reaction
   const absenceContext = getAbsenceContext(messages, character);
   
