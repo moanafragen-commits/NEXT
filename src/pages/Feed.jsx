@@ -183,6 +183,7 @@ export default function Feed() {
                   onOpenComments={() => setOpenCommentsPostId(post.id)}
                   commentsCount={post.comments_count || 0}
                   allCharacters={characters}
+                  currentUser={user}
                 />
               );
             })}

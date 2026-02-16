@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { generatePostReactions } from './FeedGenerator';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { createNotification } from '@/components/notifications/NotificationHelper';
 
 // Stable fallback names/avatars for posts without a real character
 const FALLBACK_PROFILES = [
@@ -36,7 +37,7 @@ function getFallbackProfile(postId) {
   };
 }
 
-export default function FeedPostCard({ post, character, isLiked, onLike, onOpenComments, commentsCount, allCharacters, onRepost }) {
+export default function FeedPostCard({ post, character, isLiked, onLike, onOpenComments, commentsCount, allCharacters, onRepost, currentUser }) {
   const isRealChar = character && character.name && character.name !== 'Unbekannt';
   const fallback = !isRealChar ? getFallbackProfile(post.id) : null;
   const charName = isRealChar ? character.name : fallback.name;
@@ -64,6 +65,18 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
     if (!reposted) {
       toast.success('Repostet!');
       if (onRepost) onRepost(post);
+      // Notify post owner
+      if (post.created_by && currentUser && post.created_by !== currentUser.email) {
+        createNotification({
+          recipientEmail: post.created_by,
+          type: 'repost',
+          actorName: currentUser.display_name || currentUser.full_name || 'Jemand',
+          actorAvatar: currentUser.avatar_url || '',
+          actorUsername: '@' + (currentUser.display_name || currentUser.full_name || 'user').toLowerCase().replace(/\s+/g, '_'),
+          postId: post.id,
+          postPreview: post.content
+        });
+      }
     }
   };
 
