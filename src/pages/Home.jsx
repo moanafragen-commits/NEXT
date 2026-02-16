@@ -3,7 +3,7 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Plus, Search, MessageCircle, Settings, MoreVertical, Send, X, Loader2, Users, User, Bell, BellOff, Star, Archive, Inbox, Grid, Sparkles, Contact, Heart, Home as HomeIcon, PlusSquare } from 'lucide-react';
+import { Plus, Search, MessageCircle, Settings, MoreVertical, Send, X, Loader2, Users, User, Bell, BellOff, Star, Archive, Inbox, Grid, Sparkles, Contact, Heart, Home as HomeIcon, PlusSquare, Share2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
