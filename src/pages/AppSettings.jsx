@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Moon, Sun, Bell, BellOff, Shield, LogOut, Loader2, ChevronRight, Languages, Smile, Palette, User, Info, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft, Moon, Sun, Bell, BellOff, Shield, LogOut, Loader2, ChevronRight, Languages, Smile, Palette, User, Info, Volume2, VolumeX, Pencil } from 'lucide-react';
+import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from 'react-router-dom';
