@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Smile } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 
 const EMOJI_CATEGORIES = {
   'Smileys': ['😀', '😃', '😄', '😁', '😅', '😂', '🤣', '😊', '😇', '🙂', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓'],
@@ -13,6 +15,14 @@ const EMOJI_CATEGORIES = {
 export default function EmojiPicker({ onSelect, isReaction = false }) {
   const [showPicker, setShowPicker] = useState(false);
   const [activeCategory, setActiveCategory] = useState('Smileys');
+
+  const { data: customEmojis = [] } = useQuery({
+    queryKey: ['custom-emojis'],
+    queryFn: () => base44.entities.CustomEmoji.list('-created_date', 100)
+  });
+
+  const customMap = {};
+  customEmojis.forEach(ce => { customMap[ce.original_emoji] = ce.image_url; });
 
   const handleSelect = (emoji) => {
     onSelect(emoji);
@@ -70,9 +80,13 @@ export default function EmojiPicker({ onSelect, isReaction = false }) {
                   <button
                     key={emoji}
                     onClick={() => handleSelect(emoji)}
-                    className="text-2xl hover:bg-white/10 rounded p-1 transition-colors"
+                    className="text-2xl hover:bg-white/10 rounded p-1 transition-colors flex items-center justify-center"
                   >
-                    {emoji}
+                    {customMap[emoji] ? (
+                      <img src={customMap[emoji]} alt={emoji} className="w-7 h-7 object-contain" />
+                    ) : (
+                      emoji
+                    )}
                   </button>
                 ))}
               </div>
