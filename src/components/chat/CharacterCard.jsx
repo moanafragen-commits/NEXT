@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import TagManager from './TagManager';
 import { getCharacterAvailability } from './ReplyDelayCalculator';
+import { getIllnessDisplay } from '@/components/character/IllnessSystem';
 
 export default function CharacterCard({ character, lastMessage, unreadCount = 0, onClick, onDelete, onDeleteChat, onToggleFavorite, onToggleArchive }) {
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character.name}`;
