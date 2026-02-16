@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from "@/components/ui/button";
 import { Sparkles, MessageCircle, Users, Zap, ArrowRight } from 'lucide-react';
@@ -17,17 +16,13 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-black text-white overflow-hidden">
-      {/* Hero Section */}
       <div className="relative">
-        {/* Animated background */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute w-96 h-96 bg-purple-500/20 rounded-full blur-3xl -top-48 -left-48 animate-pulse" />
           <div className="absolute w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl -bottom-48 -right-48 animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
 
-        {/* Content */}
         <div className="relative z-10 container mx-auto px-6 pt-20 pb-32">
-          {/* Logo & Nav */}
           <nav className="flex justify-between items-center mb-20">
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
@@ -42,7 +37,6 @@ export default function Landing() {
             </Button>
           </nav>
 
-          {/* Hero Content */}
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -84,7 +78,6 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* Features Section */}
       <div className="relative z-10 container mx-auto px-6 py-20">
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           <motion.div
@@ -97,9 +90,7 @@ export default function Landing() {
               <MessageCircle className="w-6 h-6 text-purple-400" />
             </div>
             <h3 className="text-xl font-bold mb-3">Echtzeit-Chats</h3>
-            <p className="text-gray-400">
-              Führe natürliche Gespräche mit AI-Charakteren, die sich an alles erinnern.
-            </p>
+            <p className="text-gray-400">Führe natürliche Gespräche mit AI-Charakteren, die sich an alles erinnern.</p>
           </motion.div>
 
           <motion.div
@@ -112,9 +103,7 @@ export default function Landing() {
               <Users className="w-6 h-6 text-indigo-400" />
             </div>
             <h3 className="text-xl font-bold mb-3">Einzigartige Persönlichkeiten</h3>
-            <p className="text-gray-400">
-              Jeder AI-Charakter hat seine eigene Persönlichkeit, Story und Stil.
-            </p>
+            <p className="text-gray-400">Jeder AI-Charakter hat seine eigene Persönlichkeit, Story und Stil.</p>
           </motion.div>
 
           <motion.div
@@ -127,14 +116,11 @@ export default function Landing() {
               <Zap className="w-6 h-6 text-pink-400" />
             </div>
             <h3 className="text-xl font-bold mb-3">Social Feed</h3>
-            <p className="text-gray-400">
-              Entdecke Posts, like und kommentiere im Feed deiner AI-Freunde.
-            </p>
+            <p className="text-gray-400">Entdecke Posts, like und kommentiere im Feed deiner AI-Freunde.</p>
           </motion.div>
         </div>
       </div>
 
-      {/* CTA Section */}
       <div className="relative z-10 container mx-auto px-6 py-20 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
