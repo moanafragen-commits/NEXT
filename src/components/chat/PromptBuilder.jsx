@@ -680,7 +680,40 @@ function buildSharedMemoryContext(sharedMemories, character, allCharacters) {
   return parts.join('\n');
 }
 
-export function buildFullPrompt({ character, user, messages, memories, content, imageUrl, sharedMemories, allCharacters, recentActivities, recentDiary }) {
+function buildImportantDatesContext(importantDates) {
+  if (!importantDates || importantDates.length === 0) return '';
+  
+  const now = new Date();
+  const parts = [];
+  parts.push('\n\nWICHTIGE DATEN & EREIGNISSE (reagiere darauf wenn sie bevorstehen oder heute sind!):');
+  
+  for (const d of importantDates) {
+    const eventDate = new Date(d.date);
+    let nextOccurrence = new Date(eventDate);
+    nextOccurrence.setFullYear(now.getFullYear());
+    if (nextOccurrence < now) {
+      nextOccurrence.setFullYear(now.getFullYear() + 1);
+    }
+    const diffDays = Math.round((nextOccurrence - now) / (1000 * 60 * 60 * 24));
+    const years = now.getFullYear() - eventDate.getFullYear();
+    
+    if (diffDays === 0) {
+      parts.push(`🎉 HEUTE ist "${d.title}"! (${d.event_type})${years > 0 ? ` – zum ${years}. Mal!` : ''} ${d.description || ''}`);
+      parts.push(`→ Erwähne das UNBEDINGT! Gratuliere, feiere, erinnere dich daran – je nach Beziehung.`);
+    } else if (diffDays <= 3) {
+      parts.push(`⏰ In ${diffDays} Tag(en): "${d.title}" (${d.event_type})${years > 0 ? ` – wird das ${years + 1}. Mal` : ''} ${d.description || ''}`);
+      parts.push(`→ Erwähne es beiläufig, z.B. "Hey, übermorgen ist doch..." oder frage nach Plänen.`);
+    } else if (diffDays <= 7) {
+      parts.push(`📅 In ${diffDays} Tagen: "${d.title}" – Du kannst es dezent ansprechen wenn es passt.`);
+    } else if (diffDays <= 30) {
+      parts.push(`📆 In ${diffDays} Tagen: "${d.title}" – Du weißt davon, erwähne es nur wenn es thematisch passt.`);
+    }
+  }
+  
+  return parts.length > 1 ? parts.join('\n') : '';
+}
+
+export function buildFullPrompt({ character, user, messages, memories, content, imageUrl, sharedMemories, allCharacters, recentActivities, recentDiary, importantDates }) {
   // Build conversation history (last 30 messages for more context)
   const history = messages.slice(-30).map(m => ({
     role: m.role,
@@ -703,6 +736,7 @@ export function buildFullPrompt({ character, user, messages, memories, content, 
   const proactivityDirective = buildProactivityDirective(character, memories, history);
   const dynamicStyleDirective = buildDynamicStyleDirective(character, history);
   const sharedMemoryContext = buildSharedMemoryContext(sharedMemories, character, allCharacters);
+  const importantDatesContext = buildImportantDatesContext(importantDates);
   const imageContext = imageUrl ? `\n\nDer Nutzer hat ein Bild gesendet. Reagiere darauf natürlich.` : '';
 
   // Absence reaction
@@ -734,7 +768,7 @@ Du kannst von diesen Erlebnissen berichten, als wären sie gerade passiert. Das 
   }
 
   // Assemble full prompt
-  const prompt = `${personalityContext}${relationshipContext}${moodContext}${strongContext}${sharedMemoryContext}${dateTimeContext}${absenceContext}${milestoneContext}${activityContext}${timeModifier}${communicationRules}${dynamicStyleDirective}${conversationSummary}${proactivityDirective}
+  const prompt = `${personalityContext}${relationshipContext}${moodContext}${strongContext}${sharedMemoryContext}${importantDatesContext}${dateTimeContext}${absenceContext}${milestoneContext}${activityContext}${timeModifier}${communicationRules}${dynamicStyleDirective}${conversationSummary}${proactivityDirective}
 
 KERNREGELN – MENSCHLICHES VERHALTEN:
 - Bleibe IMMER in deiner Rolle als ${character.name}
