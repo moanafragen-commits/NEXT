@@ -28,6 +28,8 @@ export default function BottomNav({ user }) {
     { icon: Home, page: 'Feed', label: 'Home' },
     { icon: MessageCircle, page: 'Home', label: 'Chats' },
     { icon: Plus, page: null, label: 'Erstellen', isCreate: true },
+    { icon: Briefcase, page: 'Jobs', label: 'Jobs' },
+    { icon: CalendarDays, page: 'Calendar', label: 'Kalender' },
     { icon: Store, page: 'Shop', label: 'Shop' },
     { icon: null, page: 'UserProfile', label: 'Profil', isProfile: true },
   ];
