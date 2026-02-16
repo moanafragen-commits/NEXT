@@ -15,6 +15,7 @@ import ExportChatButton from '@/components/chat/ExportChatButton';
 import ShareChatButton from '@/components/chat/ShareChatButton';
 import { calculateReplyDelay, getDelayReason, getCharacterAvailability, isRepeatNag } from '@/components/chat/ReplyDelayCalculator';
 import { buildFullPrompt, RESPONSE_SCHEMA } from '@/components/chat/PromptBuilder';
+import { generateDiaryEntry, generateDailyActivity } from '@/components/character/DiaryGenerator';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
