@@ -772,7 +772,7 @@ Du kannst von diesen Erlebnissen berichten, als wären sie gerade passiert. Das 
   }
 
   // Assemble full prompt
-  const prompt = `${personalityContext}${relationshipContext}${moodContext}${strongContext}${sharedMemoryContext}${importantDatesContext}${illnessContext}${dateTimeContext}${absenceContext}${milestoneContext}${activityContext}${timeModifier}${communicationRules}${dynamicStyleDirective}${conversationSummary}${proactivityDirective}
+  const prompt = `${personalityContext}${relationshipContext}${moodContext}${strongContext}${sharedMemoryContext}${importantDatesContext}${illnessContext}${weatherContext}${dateTimeContext}${absenceContext}${milestoneContext}${activityContext}${timeModifier}${communicationRules}${dynamicStyleDirective}${conversationSummary}${proactivityDirective}
 
 KERNREGELN – MENSCHLICHES VERHALTEN:
 - Bleibe IMMER in deiner Rolle als ${character.name}
