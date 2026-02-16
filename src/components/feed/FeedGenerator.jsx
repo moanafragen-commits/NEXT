@@ -210,11 +210,14 @@ async function generateCrossReactions(newPosts, allCharacters) {
     const postChar = allCharacters.find(c => c.id === post.character_id);
     if (!postChar) continue;
 
-    // Pick 2-5 random other characters to potentially react
+    // Verified characters get more reactions (5-8 commenters vs 2-5)
+    const isVerified = postChar.is_verified;
+    const reactorCount = isVerified ? Math.min(8, allCharacters.length - 1) : Math.min(5, allCharacters.length - 1);
+
     const others = allCharacters
       .filter(c => c.id !== post.character_id && !c.is_archived && !c.is_blocked)
       .sort(() => Math.random() - 0.5)
-      .slice(0, Math.min(5, allCharacters.length - 1));
+      .slice(0, reactorCount);
 
     if (others.length === 0) continue;
 
@@ -226,7 +229,7 @@ Folgende Charaktere sehen diesen Tweet in ihrem Feed. Entscheide für JEDEN ob u
 ${others.map(c => `- ${c.name} (ID: ${c.id}): ${(c.personality || '').slice(0, 60)}. Stimmung: ${c.current_mood || 'neutral'}. Kategorie: ${c.category || 'Andere'}`).join('\n')}
 
 Regeln:
-- Nicht jeder muss reagieren (ca. 50-70% sollten liken, 20-40% kommentieren)
+- ${isVerified ? 'Dieser Account ist VERIFIZIERT (✓) – er ist bekannt/berühmt, deshalb reagieren FAST ALLE (80-100% liken, 50-80% kommentieren). Kommentare sind Fan-Reaktionen, bewundernde Antworten, Meinungen zum Post, oder Fragen.' : 'Nicht jeder muss reagieren (ca. 50-70% sollten liken, 20-40% kommentieren).'}
 - JEDER Charakter darf MAXIMAL 1 Kommentar schreiben
 - Kommentare sind kurz (1 Satz), natürlich, manchmal witzig, manchmal ernst
 - JEDER Charakter hat einen EIGENEN Stil – keine doppelten oder ähnlichen Kommentare
