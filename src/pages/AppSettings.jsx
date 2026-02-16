@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Moon, Sun, Bell, BellOff, Shield, LogOut, Loader2, ChevronRight, Trash2, Languages } from 'lucide-react';
+import { ArrowLeft, Moon, Sun, Bell, BellOff, Shield, LogOut, Loader2, ChevronRight, Trash2, Languages, Smile } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import BottomNav from '@/components/navigation/BottomNav';
+import CustomEmojiSettings from '@/components/settings/CustomEmojiSettings';
 
 export default function AppSettings() {
   const queryClient = useQueryClient();
