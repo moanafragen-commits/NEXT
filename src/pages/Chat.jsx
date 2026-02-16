@@ -84,6 +84,12 @@ export default function Chat() {
     enabled: !!characterId
   });
 
+  const { data: importantDates = [] } = useQuery({
+    queryKey: ['important-dates', characterId, user?.email],
+    queryFn: () => base44.entities.ImportantDate.filter({ character_id: characterId, user_email: user.email }),
+    enabled: !!characterId && !!user
+  });
+
   // Generate daily activity on chat open
   useEffect(() => {
     if (character && !character.is_archived) {
@@ -211,7 +217,8 @@ export default function Chat() {
         imageUrl: lastImage,
         sharedMemories,
         allCharacters,
-        recentActivities
+        recentActivities,
+        importantDates
       });
 
       const response = await base44.integrations.Core.InvokeLLM({
