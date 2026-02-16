@@ -7,9 +7,40 @@ import { generatePostReactions } from './FeedGenerator';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
+// Stable fallback names/avatars for posts without a real character
+const FALLBACK_PROFILES = [
+  { name: 'Luna Sternfeld', seed: 'luna_sternfeld' },
+  { name: 'Max Richter', seed: 'max_richter' },
+  { name: 'Elisa Wunderlich', seed: 'elisa_wunderlich' },
+  { name: 'Jonas Berger', seed: 'jonas_berger' },
+  { name: 'Mila Nordwind', seed: 'mila_nordwind' },
+  { name: 'Finn Schattenberg', seed: 'finn_schattenberg' },
+  { name: 'Sophie Lichtblick', seed: 'sophie_lichtblick' },
+  { name: 'Nico Falkenstein', seed: 'nico_falkenstein' },
+  { name: 'Lena Morgentau', seed: 'lena_morgentau' },
+  { name: 'Tim Wolkenfrei', seed: 'tim_wolkenfrei' },
+];
+
+function getFallbackProfile(postId) {
+  // Deterministic: same post always gets same fallback
+  let hash = 0;
+  for (let i = 0; i < (postId || '').length; i++) {
+    hash = ((hash << 5) - hash) + postId.charCodeAt(i);
+    hash |= 0;
+  }
+  const idx = Math.abs(hash) % FALLBACK_PROFILES.length;
+  const fb = FALLBACK_PROFILES[idx];
+  return {
+    name: fb.name,
+    avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${fb.seed}`,
+  };
+}
+
 export default function FeedPostCard({ post, character, isLiked, onLike, onOpenComments, commentsCount, allCharacters, onRepost }) {
-  const charName = character?.name || 'Unbekannt';
-  const charAvatar = character?.avatar_url || `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${charName}`;
+  const isRealChar = character && character.name && character.name !== 'Unbekannt';
+  const fallback = !isRealChar ? getFallbackProfile(post.id) : null;
+  const charName = isRealChar ? character.name : fallback.name;
+  const charAvatar = isRealChar ? (character.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${charName}`) : fallback.avatar_url;
   const charUsername = '@' + charName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_äöüß]/g, '');
   const timeAgo = getTimeAgo(post.created_date);
   const [reactLoading, setReactLoading] = useState(false);
@@ -123,10 +154,10 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
             {/* Retweets */}
             <button 
               onClick={handleRepost}
-              className={`flex items-center gap-1.5 group transition-colors ${reposted ? 'text-emerald-400' : 'text-gray-500 hover:text-emerald-400'}`}
+              className={`flex items-center gap-1.5 group transition-colors ${reposted ? 'text-emerald-500' : 'text-gray-500 hover:text-emerald-500'}`}
             >
-              <div className={`p-1.5 rounded-full transition-colors ${reposted ? '' : 'group-hover:bg-emerald-500/10'}`}>
-                <Repeat2 className="w-[18px] h-[18px]" />
+              <div className={`p-1.5 rounded-full transition-colors ${reposted ? 'bg-emerald-500/10' : 'group-hover:bg-emerald-500/10'}`}>
+                <Repeat2 className={`w-[18px] h-[18px] ${reposted ? 'text-emerald-500' : ''}`} />
               </div>
               {(displayRetweets + (reposted ? 1 : 0)) > 0 && <span className="text-[13px]">{formatCount(displayRetweets + (reposted ? 1 : 0))}</span>}
             </button>
