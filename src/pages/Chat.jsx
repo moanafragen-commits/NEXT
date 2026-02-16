@@ -105,36 +105,53 @@ export default function Chat() {
 
   // Generate daily activity, check illness, update weather, location, spontaneous messages on chat open
   useEffect(() => {
-    if (character && !character.is_archived && user) {
-      generateDailyActivity(character);
-      checkAndUpdateIllness(character).then(updated => {
+    if (!character || character.is_archived || !user) return;
+
+    const runBackgroundTasks = async () => {
+      // Stagger calls to avoid rate limiting
+      try { await updateWeatherState(user.email).then(w => setWeatherState(w)); } catch(e) {}
+      try { 
+        const updated = await checkAndUpdateIllness(character);
         if (updated.illness !== character.illness || updated.just_recovered) {
           queryClient.invalidateQueries({ queryKey: ['character', characterId] });
         }
-      });
-      // Weather
-      updateWeatherState(user.email).then(w => setWeatherState(w));
+      } catch(e) {}
+
+      // Small delay before next batch
+      await new Promise(r => setTimeout(r, 1500));
+
+      try { await generateDailyActivity(character); } catch(e) {}
+
       // Location sharing (random chance)
       if (Math.random() > 0.6) {
-        const loc = generateRandomLocation(character);
-        base44.entities.CharacterLocation.create({ character_id: characterId, ...loc });
+        try {
+          const loc = generateRandomLocation(character);
+          await base44.entities.CharacterLocation.create({ character_id: characterId, ...loc });
+        } catch(e) {}
       }
+
+      await new Promise(r => setTimeout(r, 1000));
+
       // Spontaneous messages
       const lastMsg = messages[messages.length - 1];
       if (shouldSendSpontaneous(character, lastMsg?.created_date)) {
-        generateSpontaneousMessage(character, user).then(() => {
+        try {
+          await generateSpontaneousMessage(character, user);
           queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
-        });
+        } catch(e) {}
       }
-      // Check achievements
-      base44.entities.Character.list().then(chars => {
-        base44.entities.CharacterMemory.filter({ user_email: user.email }).then(mems => {
-          base44.entities.Gift.filter({ user_email: user.email }).then(gifts => {
-            checkAndAwardAchievements(user, chars, messages, mems, gifts);
-          });
-        });
-      });
-    }
+
+      // Check achievements (delay to avoid rate limit)
+      await new Promise(r => setTimeout(r, 1500));
+      try {
+        const chars = await base44.entities.Character.list();
+        const mems = await base44.entities.CharacterMemory.filter({ user_email: user.email });
+        const gifts = await base44.entities.Gift.filter({ user_email: user.email });
+        checkAndAwardAchievements(user, chars, messages, mems, gifts);
+      } catch(e) {}
+    };
+
+    runBackgroundTasks();
   }, [character?.id, user?.email]);
   
   const scrollToBottom = () => {
