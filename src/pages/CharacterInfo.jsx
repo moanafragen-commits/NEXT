@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, BookOpen, MessageCircle, Settings, Sparkles, Plus, Brain, Heart, Target, TrendingUp, Dumbbell, Camera, Upload, Loader2, Music } from 'lucide-react';
+import { ArrowLeft, BookOpen, MessageCircle, Settings, Sparkles, Plus, Brain, Heart, Target, TrendingUp, Dumbbell, Camera, Upload, Loader2, Music, CalendarHeart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -15,6 +15,7 @@ import RelationshipPanel from '@/components/character/RelationshipPanel';
 import MoodMotivationPanel from '@/components/character/MoodMotivationPanel';
 import SpotifyMusicPanel from '@/components/character/SpotifyMusicPanel';
 import ActivityFeed from '@/components/character/ActivityFeed';
+import ImportantDatesPanel from '@/components/character/ImportantDatesPanel';
 
 export default function CharacterInfo() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -236,6 +237,19 @@ export default function CharacterInfo() {
           </div>
           <SpotifyMusicPanel character={character} />
         </div>
+
+        <Separator className="bg-white/5" />
+
+        {/* Important Dates */}
+        {user && (
+          <div className="p-6 space-y-4">
+            <div className="flex items-center gap-2 text-pink-400">
+              <CalendarHeart className="w-5 h-5" />
+              <h3 className="font-semibold">Wichtige Daten & Ereignisse</h3>
+            </div>
+            <ImportantDatesPanel characterId={characterId} userEmail={user.email} />
+          </div>
+        )}
 
         <Separator className="bg-white/5" />
 
