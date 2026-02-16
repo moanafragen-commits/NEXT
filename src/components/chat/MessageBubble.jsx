@@ -15,6 +15,49 @@ import { base44 } from '@/api/base44Client';
 import EmojiPicker from './EmojiPicker';
 import { toast } from 'sonner';
 
+function renderMessageContent(content, customEmojis) {
+  if (!content) return null;
+  
+  const customEmojiRegex = /\[custom-emoji:([^\]]+)\]/g;
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+  
+  while ((match = customEmojiRegex.exec(content)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push({ type: 'text', value: content.slice(lastIndex, match.index) });
+    }
+    parts.push({ type: 'custom-emoji', id: match[1] });
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < content.length) {
+    parts.push({ type: 'text', value: content.slice(lastIndex) });
+  }
+  
+  // If entire message is just one custom emoji, show it big
+  if (parts.length === 1 && parts[0].type === 'custom-emoji') {
+    const ce = customEmojis.find(e => e.id === parts[0].id);
+    if (ce) {
+      return <img src={ce.image_url} alt={ce.label || 'emoji'} className="w-16 h-16 object-contain" />;
+    }
+  }
+  
+  return (
+    <span className="text-sm leading-relaxed">
+      {parts.map((part, i) => {
+        if (part.type === 'custom-emoji') {
+          const ce = customEmojis.find(e => e.id === part.id);
+          if (ce) {
+            return <img key={i} src={ce.image_url} alt={ce.label || 'emoji'} className="w-6 h-6 inline-block align-middle object-contain" />;
+          }
+          return null;
+        }
+        return <ReactMarkdown key={i} className="inline prose prose-invert prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&>p]:inline">{part.value}</ReactMarkdown>;
+      })}
+    </span>
+  );
+}
+
 export default function MessageBubble({ message, characterAvatar, characterName, onPin, onReply, onBookmark, replyToMessage }) {
   const isUser = message.role === 'user';
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${characterName}`;
