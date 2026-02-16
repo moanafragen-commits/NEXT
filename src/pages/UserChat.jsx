@@ -7,6 +7,7 @@ import { ArrowLeft, Send, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotifications } from '@/components/notifications/NotificationManager';
+import { createNotification } from '@/components/notifications/NotificationHelper';
 
 export default function UserChat() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -89,6 +90,15 @@ export default function UserChat() {
         sender_email: user.email,
         recipient_email: recipientEmail,
         content
+      });
+      // Notify recipient about new DM
+      createNotification({
+        recipientEmail: recipientEmail,
+        type: 'dm',
+        actorName: user?.display_name || user?.full_name || 'Jemand',
+        actorAvatar: user?.avatar_url || '',
+        actorUsername: '@' + (user?.display_name || user?.full_name || 'user').toLowerCase().replace(/\s+/g, '_'),
+        messagePreview: content
       });
     },
     onSuccess: () => {

@@ -10,6 +10,7 @@ import NextHeader from '@/components/navigation/NextHeader';
 import TrendingSidebar from '@/components/feed/TrendingSidebar';
 import GenerateFeedButton from '@/components/feed/GenerateFeedButton';
 import { Button } from '@/components/ui/button';
+import { createNotification } from '@/components/notifications/NotificationHelper';
 
 export default function Feed() {
   const [openCommentsPostId, setOpenCommentsPostId] = useState(null);
@@ -68,6 +69,19 @@ export default function Feed() {
         await base44.entities.PostLike.create({ post_id: postId, user_email: user?.email });
         const post = posts.find(p => p.id === postId);
         await base44.entities.Post.update(postId, { likes_count: (post.likes_count || 0) + 1 });
+        // Notify post owner
+        if (post.created_by && post.created_by !== user?.email) {
+          const char = getCharacter(post.character_id);
+          createNotification({
+            recipientEmail: post.created_by,
+            type: 'like',
+            actorName: user?.display_name || user?.full_name || 'Jemand',
+            actorAvatar: user?.avatar_url || '',
+            actorUsername: '@' + (user?.display_name || user?.full_name || 'user').toLowerCase().replace(/\s+/g, '_'),
+            postId: post.id,
+            postPreview: post.content
+          });
+        }
       }
     },
     onSuccess: () => {
@@ -81,6 +95,18 @@ export default function Feed() {
       await base44.entities.Comment.create({ post_id: postId, user_email: user?.email, content });
       const post = posts.find(p => p.id === postId);
       await base44.entities.Post.update(postId, { comments_count: (post.comments_count || 0) + 1 });
+      // Notify post owner
+      if (post.created_by && post.created_by !== user?.email) {
+        createNotification({
+          recipientEmail: post.created_by,
+          type: 'comment',
+          actorName: user?.display_name || user?.full_name || 'Jemand',
+          actorAvatar: user?.avatar_url || '',
+          actorUsername: '@' + (user?.display_name || user?.full_name || 'user').toLowerCase().replace(/\s+/g, '_'),
+          postId: post.id,
+          postPreview: content
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });

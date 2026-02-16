@@ -1,13 +1,24 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Home, Search, Plus, Heart, User, Image, UserPlus, X, MessageCircle, Users, BookOpen, Share2, Trophy } from 'lucide-react';
+import { Home, Search, Plus, Heart, User, Image, UserPlus, X, MessageCircle, Users, BookOpen, Share2, Trophy, Bell } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 
 export default function BottomNav({ user }) {
   const location = useLocation();
   const currentPath = location.pathname;
   const [showCreateMenu, setShowCreateMenu] = useState(false);
+
+  const { data: unreadNotifications = [] } = useQuery({
+    queryKey: ['unread-notifications', user?.email],
+    queryFn: () => base44.entities.Notification.filter({ recipient_email: user?.email, is_read: false }),
+    enabled: !!user?.email,
+    refetchInterval: 15000
+  });
+
+  const unreadCount = unreadNotifications.length;
 
   const isActive = (pageName) => {
     return currentPath.includes(pageName);
@@ -17,7 +28,7 @@ export default function BottomNav({ user }) {
     { icon: Home, page: 'Feed', label: 'Home' },
     { icon: Search, page: 'Characters', label: 'Suche' },
     { icon: MessageCircle, page: 'Home', label: 'Chats' },
-    { icon: Users, page: 'GroupChats', label: 'Gruppen' },
+    { icon: Bell, page: 'Notifications', label: 'Aktivität', isBell: true },
     { icon: Plus, page: null, label: 'Erstellen', isCreate: true },
     { icon: Share2, page: 'RelationshipMap', label: 'Karte' },
     { icon: null, page: 'UserProfile', label: 'Profil', isProfile: true },
@@ -97,6 +108,19 @@ export default function BottomNav({ user }) {
 
             const Icon = item.icon;
             const active = isActive(item.page);
+
+            if (item.isBell) {
+              return (
+                <Link key={i} to={createPageUrl(item.page)} className="flex items-center justify-center w-10 h-14 relative">
+                  <Icon className={`w-6 h-6 ${active ? 'text-black fill-black' : 'text-black'}`} strokeWidth={active ? 2.5 : 1.5} />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1.5 right-0 min-w-[16px] h-4 px-1 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </Link>
+              );
+            }
 
             return (
               <Link key={i} to={createPageUrl(item.page)} className="flex items-center justify-center w-10 h-14">
