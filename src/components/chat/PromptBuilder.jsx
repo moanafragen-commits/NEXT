@@ -739,6 +739,7 @@ export function buildFullPrompt({ character, user, messages, memories, content, 
   const sharedMemoryContext = buildSharedMemoryContext(sharedMemories, character, allCharacters);
   const importantDatesContext = buildImportantDatesContext(importantDates);
   const imageContext = imageUrl ? `\n\nDer Nutzer hat ein Bild gesendet. Reagiere darauf natürlich.` : '';
+  const illnessContext = buildIllnessContext(character);
 
   // Absence reaction
   const absenceContext = getAbsenceContext(messages, character);
