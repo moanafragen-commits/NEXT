@@ -274,10 +274,11 @@ export default function Chat() {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
 
-      // Mark the latest user message as "read" (just one to save API calls)
-      const latestUserMsg = latestMessages.filter(m => m.role === 'user' && m.status !== 'read').slice(-1)[0];
-      if (latestUserMsg) {
-        await base44.entities.ChatMessage.update(latestUserMsg.id, { status: 'read', read_at: new Date().toISOString() }).catch(() => {});
+      // Mark all unread user messages as "read" (sequential with small delay)
+      const unreadUserMsgs = latestMessages.filter(m => m.role === 'user' && m.status !== 'read');
+      for (const msg of unreadUserMsgs) {
+        await base44.entities.ChatMessage.update(msg.id, { status: 'read', read_at: new Date().toISOString() }).catch(() => {});
+        if (unreadUserMsgs.length > 1) await new Promise(r => setTimeout(r, 400));
       }
 
       setIsTyping(true);
