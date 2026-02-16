@@ -21,24 +21,42 @@ export default function DreamBubble({ dream, characterName, characterId, dreamId
   const config = DREAM_TYPE_CONFIG[dream.dream_type] || DREAM_TYPE_CONFIG.normal;
   const Icon = config.icon;
 
+  const isNightmare = dream.dream_type === 'alptraum' || dream.dream_type === 'angst';
+  const isIntense = isNightmare && (dream.intensity || 5) >= 7;
+
   return (
-    <div className={`mx-4 my-3 rounded-2xl bg-gradient-to-r ${config.color} border ${config.border} p-4 backdrop-blur-sm`}>
+    <div className={`mx-4 my-3 rounded-2xl bg-gradient-to-r ${config.color} border ${config.border} p-4 backdrop-blur-sm ${isIntense ? 'animate-pulse-slow ring-1 ring-red-500/20' : ''}`}>
+      <style>{`
+        @keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: 0.85; } }
+        .animate-pulse-slow { animation: pulse-slow 3s ease-in-out infinite; }
+      `}</style>
       <div className="flex items-center gap-2 mb-2">
-        <Moon className="w-4 h-4 text-indigo-300" />
-        <span className="text-xs font-medium text-indigo-300">
-          {config.emoji} {characterName} hatte einen {config.label}
+        {isNightmare ? (
+          <Skull className="w-4 h-4 text-red-400" />
+        ) : (
+          <Moon className="w-4 h-4 text-indigo-300" />
+        )}
+        <span className={`text-xs font-medium ${isNightmare ? 'text-red-300' : 'text-indigo-300'}`}>
+          {config.emoji} {characterName} hatte {isNightmare ? 'einen' : 'einen'} {config.label}
+          {isIntense && ' 😰'}
         </span>
         <div className="ml-auto flex items-center gap-1">
           {Array.from({ length: Math.min(5, Math.ceil(dream.intensity / 2)) }).map((_, i) => (
-            <div key={i} className="w-1.5 h-1.5 rounded-full bg-indigo-400/60" />
+            <div key={i} className={`w-1.5 h-1.5 rounded-full ${isNightmare ? 'bg-red-400/60' : 'bg-indigo-400/60'}`} />
           ))}
         </div>
       </div>
+      {isNightmare && isIntense && (
+        <div className="text-[10px] text-red-400/70 mb-2 flex items-center gap-1">
+          <Zap className="w-3 h-3" />
+          <span>{characterName} ist noch sehr aufgewühlt davon...</span>
+        </div>
+      )}
       <p className="text-sm text-gray-200 leading-relaxed italic">
         "{dream.dream_content}"
       </p>
       {dream.mood_on_waking && (
-        <p className="text-xs text-gray-400 mt-2">
+        <p className={`text-xs mt-2 ${isNightmare ? 'text-red-400/80' : 'text-gray-400'}`}>
           Stimmung beim Aufwachen: {dream.mood_on_waking}
         </p>
       )}
