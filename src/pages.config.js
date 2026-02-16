@@ -72,6 +72,7 @@ import UserProfile from './pages/UserProfile';
 import UserStatusView from './pages/UserStatusView';
 import CharacterDiary from './pages/CharacterDiary';
 import Diaries from './pages/Diaries';
+import RelationshipMap from './pages/RelationshipMap';
 import __Layout from './Layout.jsx';
 
 
@@ -101,6 +102,7 @@ export const PAGES = {
     "UserStatusView": UserStatusView,
     "CharacterDiary": CharacterDiary,
     "Diaries": Diaries,
+    "RelationshipMap": RelationshipMap,
 }
 
 export const pagesConfig = {
