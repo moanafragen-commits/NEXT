@@ -18,7 +18,13 @@ const CATEGORIES = [
   "Fantasie", "Berühmtheit", "Historisch", "Fiktional",
   "Assistent", "Experte", "Kreativ", "Abenteurer",
   "Anime", "Gaming", "Sci-Fi", "Mystery",
-  "Romantisch", "Humorvoll", "Philosophisch", "Andere"
+  "Romantisch", "Humorvoll", "Philosophisch",
+  "Nachrichtensender",
+  "Influencer", "Sportler", "Musiker", "Politiker",
+  "Wissenschaftler", "Künstler", "Unternehmer", "Streamer",
+  "Model", "Koch", "Arzt", "Anwalt", "Journalist", "Aktivist",
+  "Tier/Maskottchen",
+  "Andere"
 ];
 const WRITING_STYLES = [
   { value: "formell", label: "📝 Formell" },

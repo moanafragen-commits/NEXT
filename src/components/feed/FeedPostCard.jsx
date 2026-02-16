@@ -9,7 +9,8 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
   const timeAgo = getTimeAgo(post.created_date);
   const isCelebrity = character?.category === 'Berühmtheit';
   const isNews = character?.category === 'Nachrichtensender';
-  const isVerified = isCelebrity || isNews;
+  const isPublicFigure = ['Influencer', 'Sportler', 'Musiker', 'Politiker', 'Wissenschaftler', 'Künstler', 'Unternehmer', 'Streamer', 'Model', 'Journalist', 'Aktivist'].includes(character?.category);
+  const isVerified = isCelebrity || isNews || isPublicFigure;
 
   // Celebrities & news get higher engagement numbers
   const displayLikes = isVerified 
@@ -50,7 +51,7 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
             <Link to={createPageUrl(`Chat?characterId=${character?.id}`)} className="flex items-center gap-1 min-w-0">
               <span className="text-[15px] font-bold truncate">{character?.name}</span>
               {isVerified && (
-                <BadgeCheck className={`w-[18px] h-[18px] flex-shrink-0 ${isNews ? 'text-amber-500 fill-amber-500' : 'text-blue-500 fill-blue-500'}`} />
+                <BadgeCheck className={`w-[18px] h-[18px] flex-shrink-0 ${isNews ? 'text-amber-500 fill-amber-500' : isPublicFigure ? 'text-purple-500 fill-purple-500' : 'text-blue-500 fill-blue-500'}`} />
               )}
             </Link>
             <span className="text-gray-600 text-[13px] flex-shrink-0">· {timeAgo}</span>
