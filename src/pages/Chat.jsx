@@ -210,7 +210,8 @@ export default function Chat() {
         content: combinedContent,
         imageUrl: lastImage,
         sharedMemories,
-        allCharacters
+        allCharacters,
+        recentActivities
       });
 
       const response = await base44.integrations.Core.InvokeLLM({
