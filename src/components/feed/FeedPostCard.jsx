@@ -7,10 +7,13 @@ import { generatePostReactions } from './FeedGenerator';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
-export default function FeedPostCard({ post, character, isLiked, onLike, onOpenComments, commentsCount, allCharacters }) {
-  const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character?.name}`;
+export default function FeedPostCard({ post, character, isLiked, onLike, onOpenComments, commentsCount, allCharacters, onRepost }) {
+  const charName = character?.name || 'Unbekannt';
+  const charAvatar = character?.avatar_url || `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${charName}`;
+  const charUsername = '@' + charName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_äöüß]/g, '');
   const timeAgo = getTimeAgo(post.created_date);
   const [reactLoading, setReactLoading] = useState(false);
+  const [reposted, setReposted] = useState(false);
   const queryClient = useQueryClient();
 
   const handleAIReact = async (e) => {
@@ -24,6 +27,15 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
     if (count > 0) toast.success(`${count} Reaktion${count > 1 ? 'en' : ''}!`);
     setReactLoading(false);
   };
+
+  const handleRepost = () => {
+    setReposted(!reposted);
+    if (!reposted) {
+      toast.success('Repostet!');
+      if (onRepost) onRepost(post);
+    }
+  };
+
   const isCelebrity = character?.category === 'Berühmtheit';
   const isNews = character?.category === 'Nachrichtensender';
   const isPublicFigure = ['Influencer', 'Sportler', 'Musiker', 'Politiker', 'Wissenschaftler', 'Künstler', 'Unternehmer', 'Streamer', 'Model', 'Journalist', 'Aktivist'].includes(character?.category);
@@ -55,25 +67,25 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
         {/* Avatar */}
         <Link to={createPageUrl(`Chat?characterId=${character?.id}`)} className="flex-shrink-0">
           <img
-            src={character?.avatar_url || defaultAvatar}
-            alt={character?.name}
+            src={charAvatar}
+            alt={charName}
             className="w-10 h-10 rounded-full object-cover ring-1 ring-white/10"
           />
         </Link>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          {/* Header */}
-          <div className="flex items-center gap-1 mb-0.5">
+          {/* Header row: Name + verified + @handle + time */}
+          <div className="flex items-center gap-1 mb-1">
             <Link to={createPageUrl(`Chat?characterId=${character?.id}`)} className="flex items-center gap-1 min-w-0">
-              <span className="text-[15px] font-bold truncate">{character?.name}</span>
+              <span className="text-[15px] font-bold truncate text-white">{charName}</span>
               {isVerified && (
-                <BadgeCheck className={`w-[18px] h-[18px] flex-shrink-0 ${isNews ? 'text-amber-500 fill-amber-500' : isPublicFigure ? 'text-purple-500 fill-purple-500' : 'text-blue-500 fill-blue-500'}`} />
+                <BadgeCheck className={`w-[16px] h-[16px] flex-shrink-0 ${isNews ? 'text-amber-500 fill-amber-500' : isPublicFigure ? 'text-purple-500 fill-purple-500' : 'text-blue-500 fill-blue-500'}`} />
               )}
             </Link>
+            <span className="text-gray-500 text-[13px] truncate">{charUsername}</span>
             <span className="text-gray-600 text-[13px] flex-shrink-0">· {timeAgo}</span>
             <div className="ml-auto flex-shrink-0 flex items-center gap-1">
-              {/* AI React Button */}
               <button
                 onClick={handleAIReact}
                 disabled={reactLoading}
@@ -87,11 +99,6 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
               </button>
             </div>
           </div>
-
-          {/* Handle */}
-          <p className="text-gray-600 text-[13px] -mt-0.5 mb-1.5">
-            @{(character?.name || '').toLowerCase().replace(/\s+/g, '_')}
-          </p>
 
           {/* Text content */}
           <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words mb-2 text-gray-100">
@@ -114,11 +121,14 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
             </button>
 
             {/* Retweets */}
-            <button className="flex items-center gap-1.5 text-gray-500 hover:text-emerald-400 group transition-colors">
-              <div className="p-1.5 rounded-full group-hover:bg-emerald-500/10 transition-colors">
+            <button 
+              onClick={handleRepost}
+              className={`flex items-center gap-1.5 group transition-colors ${reposted ? 'text-emerald-400' : 'text-gray-500 hover:text-emerald-400'}`}
+            >
+              <div className={`p-1.5 rounded-full transition-colors ${reposted ? '' : 'group-hover:bg-emerald-500/10'}`}>
                 <Repeat2 className="w-[18px] h-[18px]" />
               </div>
-              {displayRetweets > 0 && <span className="text-[13px]">{formatCount(displayRetweets)}</span>}
+              {(displayRetweets + (reposted ? 1 : 0)) > 0 && <span className="text-[13px]">{formatCount(displayRetweets + (reposted ? 1 : 0))}</span>}
             </button>
 
             {/* Likes */}
