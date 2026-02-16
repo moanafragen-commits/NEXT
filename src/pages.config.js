@@ -71,6 +71,7 @@ import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
 import UserStatusView from './pages/UserStatusView';
 import CharacterDiary from './pages/CharacterDiary';
+import Diaries from './pages/Diaries';
 import __Layout from './Layout.jsx';
 
 
@@ -99,6 +100,7 @@ export const PAGES = {
     "UserProfile": UserProfile,
     "UserStatusView": UserStatusView,
     "CharacterDiary": CharacterDiary,
+    "Diaries": Diaries,
 }
 
 export const pagesConfig = {
