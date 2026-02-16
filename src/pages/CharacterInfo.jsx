@@ -239,8 +239,25 @@ export default function CharacterInfo() {
 
         <Separator className="bg-white/5" />
 
-        {/* Development Link */}
-        <div className="px-6 py-4">
+        {/* Daily Activities */}
+        <div className="p-6 space-y-4">
+          <div className="flex items-center gap-2 text-emerald-400">
+            <TrendingUp className="w-5 h-5" />
+            <h3 className="font-semibold">Tagesaktivitäten</h3>
+          </div>
+          <ActivityFeed characterId={characterId} />
+        </div>
+
+        <Separator className="bg-white/5" />
+
+        {/* Development & Diary Links */}
+        <div className="px-6 py-4 space-y-3">
+          <Link to={createPageUrl(`CharacterDiary?characterId=${characterId}`)}>
+            <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white mb-3">
+              <BookOpen className="w-4 h-4 mr-2" />
+              Tagebuch lesen
+            </Button>
+          </Link>
           <Link to={createPageUrl(`CharacterDevelopment?characterId=${characterId}`)}>
             <Button className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white">
               <TrendingUp className="w-4 h-4 mr-2" />
