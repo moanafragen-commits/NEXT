@@ -26,6 +26,14 @@ export default function MessageBubble({ message, characterAvatar, characterName,
     queryFn: () => base44.entities.MessageReaction.filter({ message_id: message.id })
   });
 
+  const { data: customEmojis = [] } = useQuery({
+    queryKey: ['custom-emojis'],
+    queryFn: () => base44.entities.CustomEmoji.list('-created_date', 100)
+  });
+
+  const customEmojiMap = {};
+  customEmojis.forEach(ce => { customEmojiMap[ce.original_emoji] = ce.image_url; });
+
   const { data: user } = useQuery({
     queryKey: ['user'],
     queryFn: () => base44.auth.me()
@@ -165,7 +173,7 @@ export default function MessageBubble({ message, characterAvatar, characterName,
                       : 'bg-[#262626] border border-white/10 hover:bg-white/10'
                   }`}
                 >
-                  <span>{emoji}</span>
+                  <span>{customEmojiMap[emoji] ? <img src={customEmojiMap[emoji]} alt={emoji} className="w-4 h-4 inline object-contain" /> : emoji}</span>
                   <span className="text-gray-400">{users.length}</span>
                 </button>
               );
