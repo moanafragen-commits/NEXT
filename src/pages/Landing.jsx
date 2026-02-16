@@ -38,6 +38,19 @@ export default function Landing() {
                 NEXT
               </span>
             </div>
+          </nav>
+
+          {/* Hero Content */}
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h1 className="text-6xl md:text-7xl font-bold mb-6 leading-tight">
+                Willkommen bei <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">NEXT</span>
+              </h1>
+            </div>
             <Button onClick={handleSignUp} variant="ghost" className="text-white hover:bg-white/10">
               Login
             </Button>
