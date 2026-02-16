@@ -28,6 +28,7 @@ import TopBar from '@/components/gamification/TopBar';
 import { useUserLevel } from '@/components/gamification/useUserLevel';
 import { XP_REWARDS } from '@/components/gamification/LevelUtils';
 import EventBanner from '@/components/events/EventBanner';
+import DynamicEventFeed from '@/components/events/DynamicEventFeed';
 import CharacterWidget from '@/components/widgets/CharacterWidget';
 
 export default function Home() {
@@ -401,6 +402,9 @@ export default function Home() {
 
         {/* Event Banner */}
         {user && <EventBanner userEmail={user.email} />}
+
+        {/* Dynamic Events */}
+        {user && <DynamicEventFeed userEmail={user.email} />}
 
         {/* Character Widgets */}
         {user && characters.filter(c => c.is_favorite && !c.is_archived).length > 0 && (

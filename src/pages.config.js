@@ -68,6 +68,8 @@ import Feed from './pages/Feed';
 import GroupChat from './pages/GroupChat';
 import GroupChats from './pages/GroupChats';
 import Home from './pages/Home';
+import JobDetail from './pages/JobDetail';
+import Jobs from './pages/Jobs';
 import Landing from './pages/Landing';
 import MemoryTraining from './pages/MemoryTraining';
 import NotificationSettings from './pages/NotificationSettings';
@@ -78,8 +80,6 @@ import UserChat from './pages/UserChat';
 import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
 import UserStatusView from './pages/UserStatusView';
-import Jobs from './pages/Jobs';
-import JobDetail from './pages/JobDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -105,6 +105,8 @@ export const PAGES = {
     "GroupChat": GroupChat,
     "GroupChats": GroupChats,
     "Home": Home,
+    "JobDetail": JobDetail,
+    "Jobs": Jobs,
     "Landing": Landing,
     "MemoryTraining": MemoryTraining,
     "NotificationSettings": NotificationSettings,
@@ -115,8 +117,6 @@ export const PAGES = {
     "UserChats": UserChats,
     "UserProfile": UserProfile,
     "UserStatusView": UserStatusView,
-    "Jobs": Jobs,
-    "JobDetail": JobDetail,
 }
 
 export const pagesConfig = {
