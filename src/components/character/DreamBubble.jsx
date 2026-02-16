@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Moon, Cloud, Sparkles, Skull, Heart, Eye, Clock, Zap, Brain } from 'lucide-react';
+import { Moon, Cloud, Sparkles, Skull, Heart, Eye, Clock, Zap, Brain, AlertTriangle } from 'lucide-react';
 
 const DREAM_TYPE_CONFIG = {
   normal: { icon: Cloud, color: 'from-blue-500/20 to-indigo-500/20', border: 'border-blue-500/30', label: 'Traum', emoji: '💭' },
