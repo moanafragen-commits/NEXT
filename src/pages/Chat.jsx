@@ -91,10 +91,15 @@ export default function Chat() {
     enabled: !!characterId && !!user
   });
 
-  // Generate daily activity on chat open
+  // Generate daily activity and check illness on chat open
   useEffect(() => {
     if (character && !character.is_archived) {
       generateDailyActivity(character);
+      checkAndUpdateIllness(character).then(updated => {
+        if (updated.illness !== character.illness || updated.just_recovered) {
+          queryClient.invalidateQueries({ queryKey: ['character', characterId] });
+        }
+      });
     }
   }, [character?.id]);
   
