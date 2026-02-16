@@ -26,6 +26,8 @@ import { XP_REWARDS } from '@/components/gamification/LevelUtils';
 import { useEquippedTheme } from '@/components/shop/useEquippedTheme';
 import { SongBadge, LocationBadge, RelationshipBadge, EnergyBadge, MotivationBadge, ActivityBadge } from '@/components/chat/HeaderBadges';
 import { checkAndGenerateEvent } from '@/components/character/CharacterEventSystem';
+import { generateDream, getUnsharedDream, markDreamShared } from '@/components/character/DreamSystem';
+import DreamBubble from '@/components/character/DreamBubble';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -104,6 +106,7 @@ export default function Chat() {
 
   const [weatherState, setWeatherState] = useState(null);
   const [activeEvent, setActiveEvent] = useState(null);
+  const [currentDream, setCurrentDream] = useState(null);
 
   // Generate daily activity, check illness, update weather, location, spontaneous messages on chat open
   useEffect(() => {
@@ -129,6 +132,22 @@ export default function Chat() {
       await new Promise(r => setTimeout(r, 2000));
 
       try { const evt = await checkAndGenerateEvent(character, user.email); if (evt) setActiveEvent(evt); } catch(e) {}
+
+      await new Promise(r => setTimeout(r, 2000));
+
+      // Dream system - generate or fetch unshared dream
+      try {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour <= 12) {
+          // Morning: try to generate a dream
+          const dream = await generateDream(character, user);
+          if (dream) setCurrentDream(dream);
+        } else {
+          // Rest of day: check for unshared dreams
+          const dream = await getUnsharedDream(characterId, user.email);
+          if (dream) setCurrentDream(dream);
+        }
+      } catch(e) {}
 
       await new Promise(r => setTimeout(r, 2000));
 
@@ -294,7 +313,8 @@ export default function Chat() {
         recentActivities,
         importantDates,
         weatherState,
-        activeEvent
+        activeEvent,
+        currentDream
       });
 
       const response = await base44.integrations.Core.InvokeLLM({
@@ -403,6 +423,12 @@ export default function Chat() {
       
       // Save AI response
       await base44.entities.ChatMessage.create({ character_id: characterId, role: 'assistant', content: response.response, status: 'delivered' });
+
+      // Mark dream as shared after first AI response
+      if (currentDream && !currentDream.shared_with_user) {
+        markDreamShared(currentDream.id).catch(() => {});
+        setCurrentDream(prev => prev ? { ...prev, shared_with_user: true } : null);
+      }
 
       // Generate diary entry in background (non-blocking)
       generateDiaryEntry(character, user, latestMessages, response.new_mood).catch(() => {});
@@ -594,6 +620,11 @@ export default function Chat() {
       
       {/* Messages */}
       <main className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+        {/* Dream Bubble */}
+        {!showPinned && !searchQuery && currentDream && !currentDream.shared_with_user && (
+          <DreamBubble dream={currentDream} characterName={character.name} />
+        )}
+
         {/* Greeting */}
         {!showPinned && !searchQuery && messages.length === 0 && character.greeting && (
           <motion.div
