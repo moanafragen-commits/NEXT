@@ -114,7 +114,7 @@ export default function Chat() {
 
     const runBackgroundTasks = async () => {
       // Stagger all calls heavily to avoid rate limiting
-      try { const w = await updateWeatherState(user.email); setWeatherState(w); } catch(e) {}
+      try { const w = await updateWeatherState(user.email, character); setWeatherState(w); } catch(e) {}
       
       await new Promise(r => setTimeout(r, 2000));
       
