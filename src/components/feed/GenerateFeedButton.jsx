@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { generateFeedPosts, generatePostReactions } from './FeedGenerator';
 import { toast } from 'sonner';
 
-export default function GenerateFeedButton({ characters, messages, weatherState, onGenerated }) {
+export default function GenerateFeedButton({ characters, messages, weatherState, onGenerated, userEmail }) {
   const [generating, setGenerating] = useState(false);
   const [step, setStep] = useState('');
 
@@ -16,28 +16,22 @@ export default function GenerateFeedButton({ characters, messages, weatherState,
     }
 
     setGenerating(true);
-    setStep('Posts werden generiert...');
+    setStep('Interaktionen analysieren...');
 
+    // Posts + automatic cross-reactions are now handled inside generateFeedPosts
+    setStep('Posts & Reaktionen werden generiert...');
     const posts = await generateFeedPosts({
       characters,
       messages,
       weatherState,
       count: 3,
-      withImages: false
+      userEmail
     });
-
-    if (posts.length > 0) {
-      setStep('Reaktionen werden generiert...');
-      for (const post of posts) {
-        const char = characters.find(c => c.id === post.character_id);
-        await generatePostReactions(post, char, characters);
-      }
-    }
 
     setGenerating(false);
     setStep('');
     onGenerated();
-    toast.success(`${posts.length} neue Posts im Feed!`);
+    toast.success(`${posts.length} neue Posts mit Reaktionen im Feed!`);
   };
 
   return (

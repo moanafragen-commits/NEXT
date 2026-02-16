@@ -140,6 +140,7 @@ export default function Feed() {
           characters={activeChars}
           messages={allMessages}
           weatherState={weatherState}
+          userEmail={user?.email}
           onGenerated={() => {
             queryClient.invalidateQueries({ queryKey: ['posts'] });
             queryClient.invalidateQueries({ queryKey: ['likes'] });

@@ -1,6 +1,6 @@
 import { base44 } from '@/api/base44Client';
 
-// Trending topics pool - rotates based on day
+// ─── TRENDING TOPICS ───────────────────────────────────────────
 const TREND_POOLS = [
   ["KI-Revolution", "Klimawandel-Debatte", "Neues Social-Media-Gesetz", "Mars-Mission Update", "Kryptowährung Crash"],
   ["Olympische Spiele", "Neue Netflix-Serie viral", "Foodtrend: Protein-Eis", "Erdbeben in Japan", "E-Auto Durchbruch"],
@@ -14,7 +14,6 @@ const TREND_POOLS = [
 function getTodaysTrends() {
   const dayOfWeek = new Date().getDay();
   const trends = TREND_POOLS[dayOfWeek];
-  // Pick 2-3 random trends
   const shuffled = [...trends].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, 2 + Math.floor(Math.random() * 2));
 }
@@ -38,54 +37,95 @@ function getSeasonContext() {
   return "Winter";
 }
 
-// Score characters for post priority
-function scoreCharacter(char, messages = [], memories = []) {
-  let score = 50; // base
+// ─── USER INTERACTION ANALYSIS (Personalization) ───────────────
+async function analyzeUserPreferences(userEmail) {
+  if (!userEmail) return null;
+
+  const [likes, comments] = await Promise.all([
+    base44.entities.PostLike.filter({ user_email: userEmail }),
+    base44.entities.Comment.filter({ user_email: userEmail })
+  ]);
+
+  // Get the post IDs the user has interacted with
+  const likedPostIds = likes.map(l => l.post_id);
+  const commentedPostIds = comments.map(c => c.post_id);
+  const allInteractedIds = [...new Set([...likedPostIds, ...commentedPostIds])];
+
+  if (allInteractedIds.length === 0) return null;
+
+  // Fetch those posts to find patterns
+  const posts = await base44.entities.Post.list('-created_date', 200);
+  const interactedPosts = posts.filter(p => allInteractedIds.includes(p.id));
+
+  // Find which characters the user engages with most
+  const charEngagement = {};
+  for (const p of interactedPosts) {
+    charEngagement[p.character_id] = (charEngagement[p.character_id] || 0) + 1;
+  }
+
+  // Extract content themes from liked/commented posts
+  const contentSamples = interactedPosts.slice(0, 10).map(p => p.content).join(' | ');
+
+  // Favorite characters (sorted by engagement)
+  const favoriteCharIds = Object.entries(charEngagement)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([id]) => id);
+
+  return {
+    favoriteCharIds,
+    totalLikes: likes.length,
+    totalComments: comments.length,
+    contentSamples,
+    engagementLevel: allInteractedIds.length > 20 ? 'hoch' : allInteractedIds.length > 5 ? 'mittel' : 'niedrig'
+  };
+}
+
+// ─── CHARACTER SCORING (with personalization) ──────────────────
+function scoreCharacter(char, messages = [], userPrefs = null) {
+  let score = 50;
   if (char.is_favorite) score += 30;
   if (char.is_archived || char.is_blocked) score -= 100;
-  
-  // Recent interaction boost
+
   const charMsgs = messages.filter(m => m.character_id === char.id);
   if (charMsgs.length > 20) score += 20;
   else if (charMsgs.length > 5) score += 10;
-  
-  // Relationship depth
+
   const trust = char.trust_level || 5;
   score += (trust - 5) * 5;
-  
-  // Mood-based posting likelihood
+
   const activeMoods = ['euphorisch', 'aufgeregt', 'motiviert', 'fröhlich', 'albern', 'übermütig', 'stolz', 'wütend', 'dramatisch', 'rebellisch'];
   if (activeMoods.includes(char.current_mood || char.mood_default)) score += 15;
-  
+
   const quietMoods = ['müde', 'einsam', 'traurig', 'ängstlich', 'distanziert', 'gleichgültig'];
   if (quietMoods.includes(char.current_mood || char.mood_default)) score -= 10;
-  
-  // Category bonus for social-media-active types
+
   const socialCats = ['Influencer', 'Streamer', 'Berühmtheit', 'Nachrichtensender', 'Musiker', 'Sportler', 'Model', 'Aktivist'];
   if (socialCats.includes(char.category)) score += 15;
-  
-  // Random factor
+
+  // Personalization boost: user's favorite characters post more
+  if (userPrefs?.favoriteCharIds?.includes(char.id)) {
+    score += 25;
+  }
+
   score += Math.floor(Math.random() * 20) - 10;
-  
   return Math.max(0, score);
 }
 
-// Pick which characters should post
-function selectPostingCharacters(characters, messages, count = 3) {
+function selectPostingCharacters(characters, messages, count = 3, userPrefs = null) {
   const active = characters.filter(c => !c.is_archived && !c.is_blocked);
   if (active.length === 0) return [];
-  
-  const scored = active.map(c => ({ char: c, score: scoreCharacter(c, messages) }));
+
+  const scored = active.map(c => ({ char: c, score: scoreCharacter(c, messages, userPrefs) }));
   scored.sort((a, b) => b.score - a.score);
-  
-  // Top chars get higher chance, but add randomness
+
   const pool = scored.slice(0, Math.min(scored.length, count * 2));
   const shuffled = pool.sort(() => Math.random() - 0.5);
   return shuffled.slice(0, Math.min(count, shuffled.length)).map(s => s.char);
 }
 
-// Generate a single post for a character
-async function generateSinglePost(character, weatherState, trends, withImage = false) {
+// ─── SINGLE POST GENERATION (with trend & personalization) ─────
+async function generateSinglePost(character, weatherState, trends, userPrefs) {
   const timeCtx = getTimeContext();
   const season = getSeasonContext();
   const mood = character.current_mood || character.mood_default || 'neutral';
@@ -94,7 +134,7 @@ async function generateSinglePost(character, weatherState, trends, withImage = f
   const isPublic = ['Influencer', 'Sportler', 'Musiker', 'Politiker', 'Wissenschaftler', 'Künstler', 'Unternehmer', 'Streamer', 'Model', 'Journalist', 'Aktivist'].includes(character.category);
 
   const weatherHint = weatherState ? `Aktuelles Wetter: ${weatherState.weather}, ${weatherState.temperature}°C in ${weatherState.city || 'der Stadt'}.` : '';
-  const trendHint = trends.length > 0 ? `Aktuelle Trends: ${trends.join(', ')}.` : '';
+  const trendHint = trends.length > 0 ? `Aktuelle Trends auf der Plattform: ${trends.join(', ')}.` : '';
   
   const contextParts = [
     character.personality,
@@ -105,37 +145,37 @@ async function generateSinglePost(character, weatherState, trends, withImage = f
     character.living_situation && `Wohnt: ${character.living_situation}`,
   ].filter(Boolean).join('. ');
 
-  let rolePrompt = '';
-  if (isNews) {
-    rolePrompt = `Du bist ${character.name}, ein Nachrichtensender. Poste eine aktuelle Nachrichtenmeldung. Nutze ${trendHint ? 'eines dieser Trend-Themen als Inspiration: ' + trendHint : 'ein aktuelles Weltgeschehen'}. Schreibe im typischen Nachrichtenstil mit 🔴 BREAKING wenn passend.`;
-  } else if (isCeleb || isPublic) {
-    rolePrompt = `Du bist ${character.name} (${character.category}). ${contextParts}. Aktuelle Stimmung: ${mood}. ${weatherHint} ${trendHint} Tageszeit: ${timeCtx}, Jahreszeit: ${season}. Poste einen authentischen Tweet der zu deiner aktuellen Situation passt. Kann über deinen Beruf, Alltag, Meinung zu Trends, oder etwas Persönliches sein.`;
-  } else {
-    rolePrompt = `Du bist ${character.name}. ${contextParts}. Aktuelle Stimmung: ${mood}. ${weatherHint} ${trendHint} Tageszeit: ${timeCtx}, Jahreszeit: ${season}. Poste einen kurzen, authentischen Tweet. Er kann über deinen Tag, eine Beobachtung, ein Gefühl, eine Reaktion auf einen Trend, oder etwas Alltägliches gehen. Sei menschlich und natürlich.`;
+  // Personalization hint
+  let personalizationHint = '';
+  if (userPrefs && userPrefs.contentSamples) {
+    personalizationHint = `\nDer Nutzer interagiert besonders gern mit Posts über diese Themen (nutze das subtil als Inspiration, NICHT kopieren): "${userPrefs.contentSamples.slice(0, 200)}"`;
   }
 
-  const schema = {
-    type: "object",
-    properties: {
-      tweet: { type: "string", description: "Der Tweet-Text auf Deutsch, max 280 Zeichen, mit Emojis wenn passend" },
-    }
-  };
-  
-  if (withImage) {
-    schema.properties.image_prompt = { type: "string", description: "Kurzer englischer Prompt für KI-Bildgenerierung passend zum Tweet. Fotorealistisch, kein Text im Bild." };
-    schema.properties.has_image = { type: "boolean", description: "true wenn ein Bild zum Tweet passt, false für reinen Text-Tweet" };
+  // Trend integration: 40% chance the post references a trend directly
+  const useTrend = trends.length > 0 && Math.random() < 0.4;
+  const chosenTrend = useTrend ? trends[Math.floor(Math.random() * trends.length)] : null;
+  const trendDirective = chosenTrend 
+    ? `\nDein Post MUSS sich auf diesen aktuellen Trend beziehen: "${chosenTrend}". Reagiere darauf aus deiner Perspektive.`
+    : '';
+
+  let rolePrompt;
+  if (isNews) {
+    rolePrompt = `Du bist ${character.name}, ein Nachrichtensender. Poste eine aktuelle Nachrichtenmeldung. ${trendHint} Nutze eines dieser Trend-Themen als Inspiration. Schreibe im typischen Nachrichtenstil mit 🔴 BREAKING wenn passend.${personalizationHint}`;
+  } else if (isCeleb || isPublic) {
+    rolePrompt = `Du bist ${character.name} (${character.category}). ${contextParts}. Aktuelle Stimmung: ${mood}. ${weatherHint} ${trendHint} Tageszeit: ${timeCtx}, Jahreszeit: ${season}.${trendDirective} Poste einen authentischen Tweet der zu deiner aktuellen Situation passt.${personalizationHint}`;
+  } else {
+    rolePrompt = `Du bist ${character.name}. ${contextParts}. Aktuelle Stimmung: ${mood}. ${weatherHint} ${trendHint} Tageszeit: ${timeCtx}, Jahreszeit: ${season}.${trendDirective} Poste einen kurzen, authentischen Tweet. Er kann über deinen Tag, eine Beobachtung, ein Gefühl, eine Reaktion auf einen Trend, oder etwas Alltägliches gehen.${personalizationHint}`;
   }
 
   const result = await base44.integrations.Core.InvokeLLM({
-    prompt: `${rolePrompt}\n\nSchreibe NUR den Tweet-Text (1-3 Sätze, max 280 Zeichen). Kein Hashtag-Spam (max 1-2 Hashtags). Natürlich und authentisch.${withImage ? ' Entscheide ob ein Bild zum Tweet passt.' : ''}`,
-    response_json_schema: schema
+    prompt: `${rolePrompt}\n\nSchreibe NUR den Tweet-Text (1-3 Sätze, max 280 Zeichen). Kein Hashtag-Spam (max 1-2 Hashtags). Natürlich und authentisch.`,
+    response_json_schema: {
+      type: "object",
+      properties: {
+        tweet: { type: "string", description: "Der Tweet-Text auf Deutsch, max 280 Zeichen, mit Emojis wenn passend" }
+      }
+    }
   });
-
-  let imageUrl = '';
-  if (withImage && result.has_image && result.image_prompt) {
-    const img = await base44.integrations.Core.GenerateImage({ prompt: result.image_prompt });
-    imageUrl = img.url || '';
-  }
 
   const isVerified = isNews || isCeleb || isPublic;
   const baseLikes = isVerified ? Math.floor(Math.random() * 5000 + 500) : Math.floor(Math.random() * 30 + 2);
@@ -143,32 +183,107 @@ async function generateSinglePost(character, weatherState, trends, withImage = f
   return {
     character_id: character.id,
     content: result.tweet,
-    image_url: imageUrl,
+    image_url: '',
     likes_count: baseLikes,
     comments_count: 0,
-    image_prompt: result.image_prompt || ''
+    image_prompt: ''
   };
 }
 
-// Main feed generation function
-export async function generateFeedPosts({ characters, messages = [], weatherState = null, count = 3, withImages = true }) {
+// ─── CROSS-CHARACTER REACTIONS (automatic) ─────────────────────
+async function generateCrossReactions(newPosts, allCharacters) {
+  if (newPosts.length === 0 || allCharacters.length < 2) return;
+
+  // For each new post, let other characters react
+  for (const post of newPosts) {
+    const postChar = allCharacters.find(c => c.id === post.character_id);
+    if (!postChar) continue;
+
+    // Pick 2-5 random other characters to potentially react
+    const others = allCharacters
+      .filter(c => c.id !== post.character_id && !c.is_archived && !c.is_blocked)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, Math.min(5, allCharacters.length - 1));
+
+    if (others.length === 0) continue;
+
+    const result = await base44.integrations.Core.InvokeLLM({
+      prompt: `Tweet von "${postChar.name}" (@${postChar.name.toLowerCase().replace(/\s+/g, '_')}): "${post.content}"
+
+Folgende Charaktere sehen diesen Tweet in ihrem Feed. Entscheide für JEDEN ob und wie sie reagieren basierend auf ihrer Persönlichkeit und Beziehung zum Thema:
+
+${others.map(c => `- ${c.name} (ID: ${c.id}): ${(c.personality || '').slice(0, 60)}. Stimmung: ${c.current_mood || 'neutral'}. Kategorie: ${c.category || 'Andere'}`).join('\n')}
+
+Regeln:
+- Nicht jeder muss reagieren (ca. 50-70% sollten liken, 20-40% kommentieren)
+- Kommentare sind kurz (1 Satz), natürlich, manchmal witzig, manchmal ernst
+- Charaktere mit ähnlichen Interessen reagieren eher
+- Schüchterne/introvertierte Charaktere reagieren seltener
+- Kommentare können auch Antworten aufeinander sein (z.B. "@name genau!")`,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          reactions: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                character_id: { type: "string" },
+                should_like: { type: "boolean" },
+                should_comment: { type: "boolean" },
+                comment_text: { type: "string" }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    let newLikes = 0, newComments = 0;
+    for (const r of (result.reactions || [])) {
+      if (r.should_like) {
+        await base44.entities.PostLike.create({ post_id: post.id, user_email: r.character_id });
+        newLikes++;
+      }
+      if (r.should_comment && r.comment_text) {
+        await base44.entities.Comment.create({ post_id: post.id, user_email: r.character_id, content: r.comment_text });
+        newComments++;
+      }
+    }
+
+    if (newLikes > 0 || newComments > 0) {
+      await base44.entities.Post.update(post.id, {
+        likes_count: (post.likes_count || 0) + newLikes,
+        comments_count: (post.comments_count || 0) + newComments
+      });
+    }
+  }
+}
+
+// ─── MAIN FEED GENERATION ──────────────────────────────────────
+export async function generateFeedPosts({ characters, messages = [], weatherState = null, count = 3, userEmail = null }) {
   const trends = getTodaysTrends();
-  const selected = selectPostingCharacters(characters, messages, count);
-  
+
+  // Analyze user preferences for personalization
+  const userPrefs = userEmail ? await analyzeUserPreferences(userEmail) : null;
+
+  const selected = selectPostingCharacters(characters, messages, count, userPrefs);
   if (selected.length === 0) return [];
 
   const posts = [];
-  
   for (const char of selected) {
-    const postData = await generateSinglePost(char, weatherState, trends, false);
+    const postData = await generateSinglePost(char, weatherState, trends, userPrefs);
     const created = await base44.entities.Post.create(postData);
-    posts.push({ ...created, ...postData });
+    posts.push({ ...created, ...postData, id: created.id });
   }
+
+  // Automatic cross-character reactions
+  await generateCrossReactions(posts, characters);
 
   return posts;
 }
 
-// Generate AI reactions for a post  
+// Manual reaction trigger (existing button)
 export async function generatePostReactions(post, postCharacter, allCharacters) {
   const otherChars = allCharacters.filter(c => c.id !== post.character_id && !c.is_archived && !c.is_blocked).slice(0, 6);
   if (otherChars.length === 0) return 0;
