@@ -16,6 +16,13 @@ import MoodMotivationPanel from '@/components/character/MoodMotivationPanel';
 import SpotifyMusicPanel from '@/components/character/SpotifyMusicPanel';
 import ActivityFeed from '@/components/character/ActivityFeed';
 import ImportantDatesPanel from '@/components/character/ImportantDatesPanel';
+import DailySchedulePanel from '@/components/character/DailySchedulePanel';
+import GiftSystem from '@/components/character/GiftSystem';
+import CharacterRoomView from '@/components/character/CharacterRoomView';
+import AchievementDisplay from '@/components/character/AchievementSystem';
+import RelationshipStats from '@/components/character/RelationshipStats';
+import MiniGames from '@/components/character/MiniGames';
+import LocationSharing from '@/components/character/LocationSharing';
 
 export default function CharacterInfo() {
   const urlParams = new URLSearchParams(window.location.search);
