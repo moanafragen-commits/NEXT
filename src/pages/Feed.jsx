@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Loader2, RefreshCw } from 'lucide-react';
+import { Loader2, RefreshCw, TrendingUp } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import FeedPostCard from '@/components/feed/FeedPostCard';
 import FeedCommentSheet from '@/components/feed/FeedCommentSheet';
@@ -15,6 +15,7 @@ import { createNotification } from '@/components/notifications/NotificationHelpe
 
 export default function Feed() {
   const [openCommentsPostId, setOpenCommentsPostId] = useState(null);
+  const [activeTrend, setActiveTrend] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -154,7 +155,7 @@ export default function Feed() {
 
         {/* Trending Topics */}
         <div className="px-4 py-3">
-          <TrendingSidebar />
+          <TrendingSidebar activeTrend={activeTrend} onTrendClick={setActiveTrend} />
         </div>
 
         {/* Posts */}
@@ -169,7 +170,28 @@ export default function Feed() {
           </div>
         ) : (
           <div>
-            {posts.map((post) => {
+            {/* Trend filter banner */}
+            {activeTrend && (
+              <div className="px-4 py-2 bg-emerald-500/10 border-b border-emerald-500/20 flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-emerald-400" />
+                <span className="text-sm text-emerald-300 font-medium">Posts zu "{activeTrend}"</span>
+                <span className="text-xs text-gray-500 ml-auto">
+                  {posts.filter(p => {
+                    const keywords = activeTrend.toLowerCase().split(/[\s\-]+/);
+                    const content = (p.content || '').toLowerCase();
+                    return keywords.some(kw => kw.length > 3 && content.includes(kw));
+                  }).length} Treffer
+                </span>
+              </div>
+            )}
+            {(activeTrend
+              ? posts.filter(p => {
+                  const keywords = activeTrend.toLowerCase().split(/[\s\-]+/);
+                  const content = (p.content || '').toLowerCase();
+                  return keywords.some(kw => kw.length > 3 && content.includes(kw));
+                })
+              : posts
+            ).map((post) => {
               const character = getCharacter(post.character_id);
               const displayChar = character || {
                 id: post.character_id,

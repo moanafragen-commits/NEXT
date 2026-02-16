@@ -11,11 +11,22 @@ const TREND_POOLS = [
   ["Festival-Saison startet", "Homeoffice-Pflicht Debatte", "Neuer Impfstoff entwickelt", "Deepfake-Skandal", "Weltwassertag"]
 ];
 
+// Stable trends per day (no re-shuffle on every call)
+let _cachedTrends = null;
+let _cachedDay = null;
+
 function getTodaysTrends() {
   const dayOfWeek = new Date().getDay();
+  if (_cachedDay === dayOfWeek && _cachedTrends) return _cachedTrends;
   const trends = TREND_POOLS[dayOfWeek];
   const shuffled = [...trends].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, 2 + Math.floor(Math.random() * 2));
+  _cachedTrends = shuffled.slice(0, 3);
+  _cachedDay = dayOfWeek;
+  return _cachedTrends;
+}
+
+function getAllTrendKeywords() {
+  return TREND_POOLS.flat();
 }
 
 function getTimeContext() {
@@ -337,4 +348,4 @@ Entscheide für jeden ob und wie sie reagieren. JEDER Charakter darf MAXIMAL 1 K
   return newLikes + newComments;
 }
 
-export { getTodaysTrends, getTimeContext, scoreCharacter };
+export { getTodaysTrends, getTimeContext, scoreCharacter, getAllTrendKeywords };
