@@ -77,6 +77,19 @@ export default function Chat() {
     queryKey: ['all-characters-for-sharing'],
     queryFn: () => base44.entities.Character.list(),
   });
+
+  const { data: recentActivities = [] } = useQuery({
+    queryKey: ['character-activities', characterId],
+    queryFn: () => base44.entities.CharacterActivity.filter({ character_id: characterId }, '-created_date', 5),
+    enabled: !!characterId
+  });
+
+  // Generate daily activity on chat open
+  useEffect(() => {
+    if (character && !character.is_archived) {
+      generateDailyActivity(character);
+    }
+  }, [character?.id]);
   
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
