@@ -711,6 +711,17 @@ export function buildFullPrompt({ character, user, messages, memories, content, 
   // Milestones
   const milestoneContext = checkMilestones(messages, memories, character);
   
+  // Recent activities context (what the character has been doing)
+  let activityContext = '';
+  if (recentActivities && recentActivities.length > 0) {
+    const shareableActivities = recentActivities.filter(a => a.shareable !== false).slice(0, 3);
+    if (shareableActivities.length > 0) {
+      activityContext = `\n\nWAS DU ZULETZT GEMACHT HAST (erzähle davon wenn es natürlich passt):
+${shareableActivities.map(a => `- ${a.description}${a.npc_involved ? ` (mit ${a.npc_involved})` : ''}`).join('\n')}
+Du kannst von diesen Erlebnissen berichten, als wären sie gerade passiert. Das macht dich lebendiger und realer.`;
+    }
+  }
+
   // Time-of-day personality modifiers
   const hour = now.getHours();
   let timeModifier = '';
