@@ -30,6 +30,7 @@ import { XP_REWARDS } from '@/components/gamification/LevelUtils';
 import EventBanner from '@/components/events/EventBanner';
 import DynamicEventFeed from '@/components/events/DynamicEventFeed';
 import CharacterWidget from '@/components/widgets/CharacterWidget';
+import SeasonalBanner from '@/components/seasonal/SeasonalBanner';
 
 export default function Home() {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -314,6 +315,12 @@ export default function Home() {
                     </Link>
                   </DropdownMenuItem>
                 <DropdownMenuItem asChild className="text-gray-200 hover:bg-white/5 cursor-pointer">
+                  <Link to={createPageUrl('NewsFeed')} className="flex items-center">
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Nachrichten
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="text-gray-200 hover:bg-white/5 cursor-pointer">
                   <Link to={createPageUrl('CharacterLibrary')} className="flex items-center">
                     <Grid className="w-4 h-4 mr-2" />
                     Bibliothek
@@ -399,6 +406,9 @@ export default function Home() {
 
         {/* Gamification TopBar */}
         {user && <TopBar userEmail={user.email} />}
+
+        {/* Seasonal Banner */}
+        <SeasonalBanner />
 
         {/* Event Banner */}
         {user && <EventBanner userEmail={user.email} />}
