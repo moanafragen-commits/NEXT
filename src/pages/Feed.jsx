@@ -9,6 +9,7 @@ import BottomNav from '@/components/navigation/BottomNav';
 import NextHeader from '@/components/navigation/NextHeader';
 import TrendingSidebar from '@/components/feed/TrendingSidebar';
 import GenerateFeedButton from '@/components/feed/GenerateFeedButton';
+import ComposeBox from '@/components/feed/ComposeBox';
 import { Button } from '@/components/ui/button';
 import { createNotification } from '@/components/notifications/NotificationHelper';
 
@@ -135,6 +136,9 @@ export default function Feed() {
       </header>
 
       <div className="max-w-2xl mx-auto pb-20 relative z-[1]">
+        {/* User Compose Box */}
+        <ComposeBox user={user} characters={characters} />
+
         {/* Generate Feed Button */}
         <GenerateFeedButton
           characters={activeChars}

@@ -38,10 +38,16 @@ function getFallbackProfile(postId) {
 }
 
 export default function FeedPostCard({ post, character, isLiked, onLike, onOpenComments, commentsCount, allCharacters, onRepost, currentUser }) {
-  const isRealChar = character && character.name && character.name !== 'Unbekannt';
-  const fallback = !isRealChar ? getFallbackProfile(post.id) : null;
-  const charName = isRealChar ? character.name : fallback.name;
-  const charAvatar = isRealChar ? (character.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${charName}`) : fallback.avatar_url;
+  const isUserPost = post.is_user_post;
+  const isRealChar = !isUserPost && character && character.name && character.name !== 'Unbekannt';
+  const fallback = (!isRealChar && !isUserPost) ? getFallbackProfile(post.id) : null;
+
+  const charName = isUserPost
+    ? (post.user_display_name || currentUser?.display_name || currentUser?.full_name || 'Du')
+    : isRealChar ? character.name : fallback.name;
+  const charAvatar = isUserPost
+    ? (post.user_avatar_url || currentUser?.avatar_url || '')
+    : isRealChar ? (character.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${charName}`) : fallback.avatar_url;
   const charUsername = '@' + charName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_äöüß]/g, '');
   const timeAgo = getTimeAgo(post.created_date);
   const [reactLoading, setReactLoading] = useState(false);
@@ -109,24 +115,38 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
     >
       <div className="flex gap-3">
         {/* Avatar */}
-        <Link to={createPageUrl(`Chat?characterId=${character?.id}`)} className="flex-shrink-0">
-          <img
-            src={charAvatar}
-            alt={charName}
-            className="w-10 h-10 rounded-full object-cover ring-1 ring-white/10"
-          />
-        </Link>
+        {isUserPost ? (
+          <div className="flex-shrink-0">
+            {charAvatar ? (
+              <img src={charAvatar} alt={charName} className="w-10 h-10 rounded-full object-cover ring-1 ring-white/10" />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white text-sm font-bold ring-1 ring-white/10">
+                {charName[0]?.toUpperCase() || 'U'}
+              </div>
+            )}
+          </div>
+        ) : (
+          <Link to={createPageUrl(`Chat?characterId=${character?.id}`)} className="flex-shrink-0">
+            <img src={charAvatar} alt={charName} className="w-10 h-10 rounded-full object-cover ring-1 ring-white/10" />
+          </Link>
+        )}
 
         {/* Content */}
         <div className="flex-1 min-w-0">
           {/* Header row: Name + verified + @handle + time */}
           <div className="flex items-center gap-1 mb-1">
-            <Link to={createPageUrl(`Chat?characterId=${character?.id}`)} className="flex items-center gap-1 min-w-0">
-              <span className="text-[15px] font-bold truncate text-white">{charName}</span>
-              {isVerified && (
-                <BadgeCheck className={`w-[16px] h-[16px] flex-shrink-0 ${isNews ? 'text-amber-500 fill-amber-500' : isPublicFigure ? 'text-purple-500 fill-purple-500' : 'text-blue-500 fill-blue-500'}`} />
-              )}
-            </Link>
+            {isUserPost ? (
+              <span className="flex items-center gap-1 min-w-0">
+                <span className="text-[15px] font-bold truncate text-white">{charName}</span>
+              </span>
+            ) : (
+              <Link to={createPageUrl(`Chat?characterId=${character?.id}`)} className="flex items-center gap-1 min-w-0">
+                <span className="text-[15px] font-bold truncate text-white">{charName}</span>
+                {isVerified && (
+                  <BadgeCheck className={`w-[16px] h-[16px] flex-shrink-0 ${isNews ? 'text-amber-500 fill-amber-500' : isPublicFigure ? 'text-purple-500 fill-purple-500' : 'text-blue-500 fill-blue-500'}`} />
+                )}
+              </Link>
+            )}
             <span className="text-gray-500 text-[13px] truncate">{charUsername}</span>
             <span className="text-gray-600 text-[13px] flex-shrink-0">· {timeAgo}</span>
             <div className="ml-auto flex-shrink-0 flex items-center gap-1">
