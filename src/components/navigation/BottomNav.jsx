@@ -65,20 +65,20 @@ export default function BottomNav({ user }) {
       </AnimatePresence>
 
       <nav className="fixed bottom-0 left-0 right-0 z-[9999] bg-white border-t border-gray-200 auto-theme-nav">
-        <div className="flex items-center justify-around h-14 max-w-lg mx-auto">
+        <div className="flex items-center justify-around h-14 max-w-lg mx-auto px-1">
           {navItems.map((item, i) => {
             if (item.isProfile) {
               return (
-                <Link key={i} to={createPageUrl('UserProfile')} className="flex items-center justify-center w-14 h-14">
+                <Link key={i} to={createPageUrl('UserProfile')} className="flex items-center justify-center w-10 h-14">
                   {user?.avatar_url ? (
                     <img
                       src={user.avatar_url}
                       alt="Profil"
-                      className={`w-7 h-7 rounded-full object-cover ${isActive('UserProfile') ? 'ring-2 ring-black' : 'ring-1 ring-gray-300'}`}
+                      className={`w-6 h-6 rounded-full object-cover ${isActive('UserProfile') ? 'ring-2 ring-black' : 'ring-1 ring-gray-300'}`}
                     />
                   ) : (
-                    <div className={`w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center ${isActive('UserProfile') ? 'ring-2 ring-black' : ''}`}>
-                      <User className="w-4 h-4 text-gray-500" />
+                    <div className={`w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center ${isActive('UserProfile') ? 'ring-2 ring-black' : ''}`}>
+                      <User className="w-3.5 h-3.5 text-gray-500" />
                     </div>
                   )}
                 </Link>
@@ -87,9 +87,9 @@ export default function BottomNav({ user }) {
 
             if (item.isCreate) {
               return (
-                <button key={i} onClick={() => setShowCreateMenu(!showCreateMenu)} className="flex items-center justify-center w-14 h-14">
-                  <div className={`w-7 h-7 border-2 border-black rounded-lg flex items-center justify-center transition-transform ${showCreateMenu ? 'rotate-45' : ''}`}>
-                    <Plus className="w-4 h-4 text-black" strokeWidth={2.5} />
+                <button key={i} onClick={() => setShowCreateMenu(!showCreateMenu)} className="flex items-center justify-center w-10 h-14">
+                  <div className={`w-6 h-6 border-2 border-black rounded-lg flex items-center justify-center transition-transform ${showCreateMenu ? 'rotate-45' : ''}`}>
+                    <Plus className="w-3.5 h-3.5 text-black" strokeWidth={2.5} />
                   </div>
                 </button>
               );
@@ -99,8 +99,8 @@ export default function BottomNav({ user }) {
             const active = isActive(item.page);
 
             return (
-              <Link key={i} to={createPageUrl(item.page)} className="flex items-center justify-center w-14 h-14">
-                <Icon className={`w-7 h-7 ${active ? 'text-black fill-black' : 'text-black'}`} strokeWidth={active ? 2.5 : 1.5} />
+              <Link key={i} to={createPageUrl(item.page)} className="flex items-center justify-center w-10 h-14">
+                <Icon className={`w-6 h-6 ${active ? 'text-black fill-black' : 'text-black'}`} strokeWidth={active ? 2.5 : 1.5} />
               </Link>
             );
           })}
