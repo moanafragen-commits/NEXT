@@ -286,37 +286,16 @@ export default function Chat() {
       
       setIsTyping(false);
       
-      // Update mood
+      // Build a single character update object to minimize API calls
+      const charUpdates = {};
       if (response.new_mood && response.new_mood !== character.current_mood) {
-        await base44.entities.Character.update(characterId, { current_mood: response.new_mood });
-        queryClient.invalidateQueries({ queryKey: ['character', characterId] });
+        charUpdates.current_mood = response.new_mood;
       }
-      
-      // Update motivation progress
       if (response.motivation_progress_delta && character.current_motivation) {
-        const newProgress = Math.min(100, Math.max(0, (character.motivation_progress || 0) + response.motivation_progress_delta));
-        await base44.entities.Character.update(characterId, { motivation_progress: newProgress });
-        queryClient.invalidateQueries({ queryKey: ['character', characterId] });
+        charUpdates.motivation_progress = Math.min(100, Math.max(0, (character.motivation_progress || 0) + response.motivation_progress_delta));
       }
-      
-      // Boost recalled memories
-      if (response.recalled_memory_ids?.length > 0) {
-        for (const memId of response.recalled_memory_ids) {
-          const mem = allMemories.find(m => m.id === memId);
-          if (mem) {
-            await base44.entities.CharacterMemory.update(memId, {
-              strength: Math.min(100, (mem.strength || 50) + 20),
-              recall_count: (mem.recall_count || 0) + 1,
-              last_recalled_date: new Date().toISOString(),
-            });
-          }
-        }
-      }
-
-      // Process relationship changes
       if (response.relationship_changes) {
         const rc = response.relationship_changes;
-        const charUpdates = {};
         if (rc.trust_delta) charUpdates.trust_level = Math.min(10, Math.max(1, (character.trust_level || 5) + rc.trust_delta));
         if (rc.jealousy_delta) charUpdates.jealousy_level = Math.min(10, Math.max(1, (character.jealousy_level || 3) + rc.jealousy_delta));
         if (rc.closeness_delta) charUpdates.empathy_level = Math.min(10, Math.max(1, (character.empathy_level || 5) + rc.closeness_delta));
@@ -324,57 +303,91 @@ export default function Chat() {
           const phaseToEvolution = { 'kennenlernphase': 'sich_annähernd', 'aufbauphase': 'sich_annähernd', 'vertrauensphase': 'sich_vertiefend', 'tiefe_verbindung': 'sich_vertiefend', 'krise': 'sich_entfernend', 'versöhnung': 'sich_annähernd', 'stabil': 'statisch' };
           if (phaseToEvolution[rc.relationship_phase]) charUpdates.relationship_evolution = phaseToEvolution[rc.relationship_phase];
         }
-        if (Object.keys(charUpdates).length > 0) {
-          await base44.entities.Character.update(characterId, charUpdates);
-          queryClient.invalidateQueries({ queryKey: ['character', characterId] });
-        }
-        if (rc.event_type && rc.event_description) {
-          const mainChange = rc.trust_delta ? 'Vertrauen' : rc.jealousy_delta ? 'Eifersucht' : rc.closeness_delta ? 'Nähe' : null;
-          const oldVal = rc.trust_delta ? String(character.trust_level || 5) : rc.jealousy_delta ? String(character.jealousy_level || 3) : rc.closeness_delta ? String(character.empathy_level || 5) : null;
-          const newVal = rc.trust_delta ? String(charUpdates.trust_level || character.trust_level || 5) : rc.jealousy_delta ? String(charUpdates.jealousy_level || character.jealousy_level || 3) : rc.closeness_delta ? String(charUpdates.empathy_level || character.empathy_level || 5) : null;
-          await base44.entities.RelationshipEvent.create({ character_id: characterId, user_email: user.email, event_type: rc.event_type, description: rc.event_description, attribute_changed: mainChange, old_value: oldVal, new_value: newVal, impact_score: rc.impact_score || 0 });
-          queryClient.invalidateQueries({ queryKey: ['relationship-events'] });
-        }
+      }
+      if (response.proactive_topic && character.proactive_topics) {
+        charUpdates.current_motivation = response.proactive_topic;
+      }
+      
+      // Single character update call
+      if (Object.keys(charUpdates).length > 0) {
+        await base44.entities.Character.update(characterId, charUpdates);
+        queryClient.invalidateQueries({ queryKey: ['character', characterId] });
       }
 
-      // Save new memories
+      // Run all secondary updates in parallel (non-blocking)
+      const secondaryTasks = [];
+
+      // Boost recalled memories
+      if (response.recalled_memory_ids?.length > 0) {
+        secondaryTasks.push(
+          Promise.all(response.recalled_memory_ids.map(memId => {
+            const mem = allMemories.find(m => m.id === memId);
+            return mem ? base44.entities.CharacterMemory.update(memId, {
+              strength: Math.min(100, (mem.strength || 50) + 20),
+              recall_count: (mem.recall_count || 0) + 1,
+              last_recalled_date: new Date().toISOString(),
+            }) : Promise.resolve();
+          })).catch(() => {})
+        );
+      }
+
+      // Relationship event
+      if (response.relationship_changes?.event_type && response.relationship_changes?.event_description) {
+        const rc = response.relationship_changes;
+        const mainChange = rc.trust_delta ? 'Vertrauen' : rc.jealousy_delta ? 'Eifersucht' : rc.closeness_delta ? 'Nähe' : null;
+        const oldVal = rc.trust_delta ? String(character.trust_level || 5) : rc.jealousy_delta ? String(character.jealousy_level || 3) : rc.closeness_delta ? String(character.empathy_level || 5) : null;
+        const newVal = rc.trust_delta ? String(charUpdates.trust_level || character.trust_level || 5) : rc.jealousy_delta ? String(charUpdates.jealousy_level || character.jealousy_level || 3) : rc.closeness_delta ? String(charUpdates.empathy_level || character.empathy_level || 5) : null;
+        secondaryTasks.push(
+          base44.entities.RelationshipEvent.create({ character_id: characterId, user_email: user.email, event_type: rc.event_type, description: rc.event_description, attribute_changed: mainChange, old_value: oldVal, new_value: newVal, impact_score: rc.impact_score || 0 })
+            .then(() => queryClient.invalidateQueries({ queryKey: ['relationship-events'] })).catch(() => {})
+        );
+      }
+
+      // Save new memories (bulk)
       if (response.new_memories?.length > 0) {
-        for (const memory of response.new_memories) {
-          if (memory.content && memory.importance >= 3) {
-            const isDuplicate = memories.some(existing => existing.memory_text && memory.content && existing.memory_text.toLowerCase().includes(memory.content.toLowerCase().slice(0, 30)));
-            if (!isDuplicate) {
-              await base44.entities.CharacterMemory.create({ character_id: characterId, user_email: user.email, memory_text: memory.content, memory_type: memory.memory_type || 'fact', memory_category: memory.memory_category || 'general', importance_level: memory.importance >= 8 ? 'hoch' : memory.importance >= 5 ? 'mittel' : 'niedrig', last_interaction_date: new Date().toISOString(), strength: Math.min(100, memory.importance * 12), recall_count: 0, source: 'ai_extracted' });
-            }
-          }
+        const newMems = response.new_memories.filter(memory => {
+          if (!memory.content || memory.importance < 3) return false;
+          return !memories.some(existing => existing.memory_text && memory.content && existing.memory_text.toLowerCase().includes(memory.content.toLowerCase().slice(0, 30)));
+        }).map(memory => ({
+          character_id: characterId, user_email: user.email, memory_text: memory.content, memory_type: memory.memory_type || 'fact', memory_category: memory.memory_category || 'general', importance_level: memory.importance >= 8 ? 'hoch' : memory.importance >= 5 ? 'mittel' : 'niedrig', last_interaction_date: new Date().toISOString(), strength: Math.min(100, memory.importance * 12), recall_count: 0, source: 'ai_extracted'
+        }));
+        if (newMems.length > 0) {
+          secondaryTasks.push(
+            base44.entities.CharacterMemory.bulkCreate(newMems)
+              .then(() => queryClient.invalidateQueries({ queryKey: ['memories', characterId, user.email] })).catch(() => {})
+          );
         }
-        queryClient.invalidateQueries({ queryKey: ['memories', characterId, user.email] });
       }
 
       // Mark used shared memories
       if (response.used_shared_memory_ids?.length > 0) {
-        for (const smId of response.used_shared_memory_ids) {
-          try { await base44.entities.SharedMemory.update(smId, { is_used: true }); } catch (e) { /* memory may have been deleted */ }
-        }
-        queryClient.invalidateQueries({ queryKey: ['shared-memories', characterId, user.email] });
+        secondaryTasks.push(
+          Promise.all(response.used_shared_memory_ids.map(smId =>
+            base44.entities.SharedMemory.update(smId, { is_used: true }).catch(() => {})
+          )).then(() => queryClient.invalidateQueries({ queryKey: ['shared-memories', characterId, user.email] })).catch(() => {})
+        );
       }
-      
-      // Share info with other characters
+
+      // Share info with other characters (bulk per target)
       if (response.info_to_share?.length > 0) {
         const otherChars = allCharacters.filter(c => c.id !== characterId && !c.is_archived);
+        const sharesData = [];
         for (const info of response.info_to_share) {
           if (info.content && info.importance >= 5 && otherChars.length > 0) {
             const shareCount = Math.min(otherChars.length, Math.ceil(Math.random() * 3));
             const shuffled = [...otherChars].sort(() => Math.random() - 0.5);
             for (const target of shuffled.slice(0, shareCount)) {
-              await base44.entities.SharedMemory.create({ source_character_id: characterId, target_character_id: target.id, user_email: user.email, content: info.content, share_type: info.share_type || 'gossip', accuracy: info.accuracy || 80, is_used: false });
+              sharesData.push({ source_character_id: characterId, target_character_id: target.id, user_email: user.email, content: info.content, share_type: info.share_type || 'gossip', accuracy: info.accuracy || 80, is_used: false });
             }
           }
         }
+        if (sharesData.length > 0) {
+          secondaryTasks.push(base44.entities.SharedMemory.bulkCreate(sharesData).catch(() => {}));
+        }
       }
 
-      if (response.proactive_topic && character.proactive_topics) {
-        await base44.entities.Character.update(characterId, { current_motivation: response.proactive_topic });
-      }
+      // Fire all secondary tasks in parallel (don't await)
+      Promise.all(secondaryTasks).catch(() => {});
       
       // Save AI response
       await base44.entities.ChatMessage.create({ character_id: characterId, role: 'assistant', content: response.response, status: 'delivered' });
