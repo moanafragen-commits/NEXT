@@ -49,10 +49,12 @@
  */
 import Activity from './pages/Activity';
 import AppSettings from './pages/AppSettings';
+import CharacterChat from './pages/CharacterChat';
 import CharacterDevelopment from './pages/CharacterDevelopment';
 import CharacterDiary from './pages/CharacterDiary';
 import CharacterInfo from './pages/CharacterInfo';
 import CharacterLibrary from './pages/CharacterLibrary';
+import CharacterMap from './pages/CharacterMap';
 import CharacterSocial from './pages/CharacterSocial';
 import CharacterStatus from './pages/CharacterStatus';
 import Characters from './pages/Characters';
@@ -71,23 +73,23 @@ import MemoryTraining from './pages/MemoryTraining';
 import NotificationSettings from './pages/NotificationSettings';
 import Notifications from './pages/Notifications';
 import RelationshipMap from './pages/RelationshipMap';
+import Shop from './pages/Shop';
 import UserChat from './pages/UserChat';
 import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
 import UserStatusView from './pages/UserStatusView';
-import Shop from './pages/Shop';
-import CharacterChat from './pages/CharacterChat';
-import CharacterMap from './pages/CharacterMap';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Activity": Activity,
     "AppSettings": AppSettings,
+    "CharacterChat": CharacterChat,
     "CharacterDevelopment": CharacterDevelopment,
     "CharacterDiary": CharacterDiary,
     "CharacterInfo": CharacterInfo,
     "CharacterLibrary": CharacterLibrary,
+    "CharacterMap": CharacterMap,
     "CharacterSocial": CharacterSocial,
     "CharacterStatus": CharacterStatus,
     "Characters": Characters,
@@ -106,13 +108,11 @@ export const PAGES = {
     "NotificationSettings": NotificationSettings,
     "Notifications": Notifications,
     "RelationshipMap": RelationshipMap,
+    "Shop": Shop,
     "UserChat": UserChat,
     "UserChats": UserChats,
     "UserProfile": UserProfile,
     "UserStatusView": UserStatusView,
-    "Shop": Shop,
-    "CharacterChat": CharacterChat,
-    "CharacterMap": CharacterMap,
 }
 
 export const pagesConfig = {

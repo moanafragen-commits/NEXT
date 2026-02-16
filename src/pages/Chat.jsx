@@ -110,8 +110,11 @@ export default function Chat() {
     if (!character || character.is_archived || !user) return;
 
     const runBackgroundTasks = async () => {
-      // Stagger calls to avoid rate limiting
-      try { await updateWeatherState(user.email).then(w => setWeatherState(w)); } catch(e) {}
+      // Stagger all calls heavily to avoid rate limiting
+      try { const w = await updateWeatherState(user.email); setWeatherState(w); } catch(e) {}
+      
+      await new Promise(r => setTimeout(r, 2000));
+      
       try { 
         const updated = await checkAndUpdateIllness(character);
         if (updated.illness !== character.illness || updated.just_recovered) {
@@ -119,23 +122,27 @@ export default function Chat() {
         }
       } catch(e) {}
 
-      // Small delay before next batch
-      await new Promise(r => setTimeout(r, 1500));
+      await new Promise(r => setTimeout(r, 2000));
 
       try { await generateDailyActivity(character); } catch(e) {}
+      
+      await new Promise(r => setTimeout(r, 2000));
+
       try { const evt = await checkAndGenerateEvent(character, user.email); if (evt) setActiveEvent(evt); } catch(e) {}
 
-      // Location sharing (random chance)
-      if (Math.random() > 0.6) {
+      await new Promise(r => setTimeout(r, 2000));
+
+      // Location sharing (low chance to reduce calls)
+      if (Math.random() > 0.8) {
         try {
           const loc = generateRandomLocation(character);
           await base44.entities.CharacterLocation.create({ character_id: characterId, ...loc });
         } catch(e) {}
       }
 
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise(r => setTimeout(r, 2000));
 
-      // Spontaneous messages
+      // Spontaneous messages (only if no recent messages)
       const lastMsg = messages[messages.length - 1];
       if (shouldSendSpontaneous(character, lastMsg?.created_date)) {
         try {
@@ -144,14 +151,7 @@ export default function Chat() {
         } catch(e) {}
       }
 
-      // Check achievements (delay to avoid rate limit)
-      await new Promise(r => setTimeout(r, 1500));
-      try {
-        const chars = await base44.entities.Character.list();
-        const mems = await base44.entities.CharacterMemory.filter({ user_email: user.email });
-        const gifts = await base44.entities.Gift.filter({ user_email: user.email });
-        checkAndAwardAchievements(user, chars, messages, mems, gifts);
-      } catch(e) {}
+      // Skip achievements on chat open - too many API calls, let it run elsewhere
     };
 
     runBackgroundTasks();
@@ -165,20 +165,31 @@ export default function Chat() {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  // Mark unread assistant messages as read when opening the chat
+  // Mark unread assistant messages as read when opening the chat (batched with delays)
+  const markedRef = useRef(new Set());
   useEffect(() => {
     if (!messages.length || !characterId) return;
-    const unreadAssistantMsgs = messages.filter(m => m.role === 'assistant' && m.status !== 'read');
+    const unreadAssistantMsgs = messages.filter(m => m.role === 'assistant' && m.status !== 'read' && !markedRef.current.has(m.id));
     if (unreadAssistantMsgs.length === 0) return;
     
+    // Mark IDs immediately to prevent re-runs
+    unreadAssistantMsgs.forEach(m => markedRef.current.add(m.id));
+    
     const markAsRead = async () => {
-      for (const msg of unreadAssistantMsgs) {
-        await base44.entities.ChatMessage.update(msg.id, { status: 'read', read_at: new Date().toISOString() });
+      // Process in small batches of 3 with delays
+      for (let i = 0; i < unreadAssistantMsgs.length; i += 3) {
+        const batch = unreadAssistantMsgs.slice(i, i + 3);
+        await Promise.all(batch.map(msg => 
+          base44.entities.ChatMessage.update(msg.id, { status: 'read', read_at: new Date().toISOString() })
+        ));
+        if (i + 3 < unreadAssistantMsgs.length) await new Promise(r => setTimeout(r, 500));
       }
       queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
       queryClient.invalidateQueries({ queryKey: ['all-messages'] });
     };
-    markAsRead();
+    // Delay the mark-as-read to not compete with initial data loading
+    const timer = setTimeout(markAsRead, 2000);
+    return () => clearTimeout(timer);
   }, [messages, characterId]);
   
   const togglePinMutation = useMutation({
@@ -250,12 +261,16 @@ export default function Chat() {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
 
-      // Mark all unread user messages as "read" (blue checkmarks) - non-blocking
+      // Mark unread user messages as "read" - staggered to avoid rate limit
       const unreadUserMsgs = latestMessages.filter(m => m.role === 'user' && m.status !== 'read');
       if (unreadUserMsgs.length > 0) {
-        Promise.all(unreadUserMsgs.map(msg => 
-          base44.entities.ChatMessage.update(msg.id, { status: 'read', read_at: new Date().toISOString() })
-        )).then(() => queryClient.invalidateQueries({ queryKey: ['messages', characterId] })).catch(() => {});
+        (async () => {
+          for (let i = 0; i < Math.min(unreadUserMsgs.length, 5); i++) {
+            await base44.entities.ChatMessage.update(unreadUserMsgs[i].id, { status: 'read', read_at: new Date().toISOString() }).catch(() => {});
+            if (i < unreadUserMsgs.length - 1) await new Promise(r => setTimeout(r, 300));
+          }
+          queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
+        })();
       }
 
       setIsTyping(true);
@@ -318,80 +333,73 @@ export default function Chat() {
         queryClient.invalidateQueries({ queryKey: ['character', characterId] });
       }
 
-      // Run all secondary updates in parallel (non-blocking)
-      const secondaryTasks = [];
-
-      // Boost recalled memories
-      if (response.recalled_memory_ids?.length > 0) {
-        secondaryTasks.push(
-          Promise.all(response.recalled_memory_ids.map(memId => {
+      // Run secondary updates sequentially with delays to avoid rate limits
+      const runSecondary = async () => {
+        // 1. Boost recalled memories (max 3)
+        if (response.recalled_memory_ids?.length > 0) {
+          for (const memId of response.recalled_memory_ids.slice(0, 3)) {
             const mem = allMemories.find(m => m.id === memId);
-            return mem ? base44.entities.CharacterMemory.update(memId, {
-              strength: Math.min(100, (mem.strength || 50) + 20),
-              recall_count: (mem.recall_count || 0) + 1,
-              last_recalled_date: new Date().toISOString(),
-            }) : Promise.resolve();
-          })).catch(() => {})
-        );
-      }
-
-      // Relationship event
-      if (response.relationship_changes?.event_type && response.relationship_changes?.event_description) {
-        const rc = response.relationship_changes;
-        const mainChange = rc.trust_delta ? 'Vertrauen' : rc.jealousy_delta ? 'Eifersucht' : rc.closeness_delta ? 'Nähe' : null;
-        const oldVal = rc.trust_delta ? String(character.trust_level || 5) : rc.jealousy_delta ? String(character.jealousy_level || 3) : rc.closeness_delta ? String(character.empathy_level || 5) : null;
-        const newVal = rc.trust_delta ? String(charUpdates.trust_level || character.trust_level || 5) : rc.jealousy_delta ? String(charUpdates.jealousy_level || character.jealousy_level || 3) : rc.closeness_delta ? String(charUpdates.empathy_level || character.empathy_level || 5) : null;
-        secondaryTasks.push(
-          base44.entities.RelationshipEvent.create({ character_id: characterId, user_email: user.email, event_type: rc.event_type, description: rc.event_description, attribute_changed: mainChange, old_value: oldVal, new_value: newVal, impact_score: rc.impact_score || 0 })
-            .then(() => queryClient.invalidateQueries({ queryKey: ['relationship-events'] })).catch(() => {})
-        );
-      }
-
-      // Save new memories (bulk)
-      if (response.new_memories?.length > 0) {
-        const newMems = response.new_memories.filter(memory => {
-          if (!memory.content || memory.importance < 3) return false;
-          return !memories.some(existing => existing.memory_text && memory.content && existing.memory_text.toLowerCase().includes(memory.content.toLowerCase().slice(0, 30)));
-        }).map(memory => ({
-          character_id: characterId, user_email: user.email, memory_text: memory.content, memory_type: memory.memory_type || 'fact', memory_category: memory.memory_category || 'general', importance_level: memory.importance >= 8 ? 'hoch' : memory.importance >= 5 ? 'mittel' : 'niedrig', last_interaction_date: new Date().toISOString(), strength: Math.min(100, memory.importance * 12), recall_count: 0, source: 'ai_extracted'
-        }));
-        if (newMems.length > 0) {
-          secondaryTasks.push(
-            base44.entities.CharacterMemory.bulkCreate(newMems)
-              .then(() => queryClient.invalidateQueries({ queryKey: ['memories', characterId, user.email] })).catch(() => {})
-          );
-        }
-      }
-
-      // Mark used shared memories
-      if (response.used_shared_memory_ids?.length > 0) {
-        secondaryTasks.push(
-          Promise.all(response.used_shared_memory_ids.map(smId =>
-            base44.entities.SharedMemory.update(smId, { is_used: true }).catch(() => {})
-          )).then(() => queryClient.invalidateQueries({ queryKey: ['shared-memories', characterId, user.email] })).catch(() => {})
-        );
-      }
-
-      // Share info with other characters (bulk per target)
-      if (response.info_to_share?.length > 0) {
-        const otherChars = allCharacters.filter(c => c.id !== characterId && !c.is_archived);
-        const sharesData = [];
-        for (const info of response.info_to_share) {
-          if (info.content && info.importance >= 5 && otherChars.length > 0) {
-            const shareCount = Math.min(otherChars.length, Math.ceil(Math.random() * 3));
-            const shuffled = [...otherChars].sort(() => Math.random() - 0.5);
-            for (const target of shuffled.slice(0, shareCount)) {
-              sharesData.push({ source_character_id: characterId, target_character_id: target.id, user_email: user.email, content: info.content, share_type: info.share_type || 'gossip', accuracy: info.accuracy || 80, is_used: false });
+            if (mem) {
+              await base44.entities.CharacterMemory.update(memId, {
+                strength: Math.min(100, (mem.strength || 50) + 20),
+                recall_count: (mem.recall_count || 0) + 1,
+                last_recalled_date: new Date().toISOString(),
+              }).catch(() => {});
+              await new Promise(r => setTimeout(r, 300));
             }
           }
         }
-        if (sharesData.length > 0) {
-          secondaryTasks.push(base44.entities.SharedMemory.bulkCreate(sharesData).catch(() => {}));
-        }
-      }
 
-      // Fire all secondary tasks in parallel (don't await)
-      Promise.all(secondaryTasks).catch(() => {});
+        // 2. Save new memories (bulk - single call)
+        if (response.new_memories?.length > 0) {
+          const newMems = response.new_memories.filter(memory => {
+            if (!memory.content || memory.importance < 3) return false;
+            return !memories.some(existing => existing.memory_text && memory.content && existing.memory_text.toLowerCase().includes(memory.content.toLowerCase().slice(0, 30)));
+          }).map(memory => ({
+            character_id: characterId, user_email: user.email, memory_text: memory.content, memory_type: memory.memory_type || 'fact', memory_category: memory.memory_category || 'general', importance_level: memory.importance >= 8 ? 'hoch' : memory.importance >= 5 ? 'mittel' : 'niedrig', last_interaction_date: new Date().toISOString(), strength: Math.min(100, memory.importance * 12), recall_count: 0, source: 'ai_extracted'
+          }));
+          if (newMems.length > 0) {
+            await base44.entities.CharacterMemory.bulkCreate(newMems).catch(() => {});
+            queryClient.invalidateQueries({ queryKey: ['memories', characterId, user.email] });
+            await new Promise(r => setTimeout(r, 500));
+          }
+        }
+
+        // 3. Relationship event
+        if (response.relationship_changes?.event_type && response.relationship_changes?.event_description) {
+          const rc = response.relationship_changes;
+          const mainChange = rc.trust_delta ? 'Vertrauen' : rc.jealousy_delta ? 'Eifersucht' : rc.closeness_delta ? 'Nähe' : null;
+          const oldVal = rc.trust_delta ? String(character.trust_level || 5) : rc.jealousy_delta ? String(character.jealousy_level || 3) : rc.closeness_delta ? String(character.empathy_level || 5) : null;
+          const newVal = rc.trust_delta ? String(charUpdates.trust_level || character.trust_level || 5) : rc.jealousy_delta ? String(charUpdates.jealousy_level || character.jealousy_level || 3) : rc.closeness_delta ? String(charUpdates.empathy_level || character.empathy_level || 5) : null;
+          await base44.entities.RelationshipEvent.create({ character_id: characterId, user_email: user.email, event_type: rc.event_type, description: rc.event_description, attribute_changed: mainChange, old_value: oldVal, new_value: newVal, impact_score: rc.impact_score || 0 }).catch(() => {});
+          await new Promise(r => setTimeout(r, 500));
+        }
+
+        // 4. Mark used shared memories (max 3)
+        if (response.used_shared_memory_ids?.length > 0) {
+          for (const smId of response.used_shared_memory_ids.slice(0, 3)) {
+            await base44.entities.SharedMemory.update(smId, { is_used: true }).catch(() => {});
+            await new Promise(r => setTimeout(r, 300));
+          }
+        }
+
+        // 5. Share info with other characters (single bulk call, limit shares)
+        if (response.info_to_share?.length > 0) {
+          const otherChars = allCharacters.filter(c => c.id !== characterId && !c.is_archived);
+          const sharesData = [];
+          for (const info of response.info_to_share.slice(0, 2)) {
+            if (info.content && info.importance >= 5 && otherChars.length > 0) {
+              const target = otherChars[Math.floor(Math.random() * otherChars.length)];
+              sharesData.push({ source_character_id: characterId, target_character_id: target.id, user_email: user.email, content: info.content, share_type: info.share_type || 'gossip', accuracy: info.accuracy || 80, is_used: false });
+            }
+          }
+          if (sharesData.length > 0) {
+            await base44.entities.SharedMemory.bulkCreate(sharesData).catch(() => {});
+          }
+        }
+      };
+      // Run non-blocking
+      runSecondary().catch(() => {});
       
       // Save AI response
       await base44.entities.ChatMessage.create({ character_id: characterId, role: 'assistant', content: response.response, status: 'delivered' });
