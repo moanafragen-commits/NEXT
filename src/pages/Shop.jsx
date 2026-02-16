@@ -3,20 +3,24 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Store, Sparkles, Filter } from 'lucide-react';
+import { ArrowLeft, Store, Sparkles } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 import { useUserLevel } from '@/components/gamification/useUserLevel';
 import CoinDisplay from '@/components/gamification/CoinDisplay';
 import LevelBadge from '@/components/gamification/LevelBadge';
 import ShopItemCard from '@/components/shop/ShopItemCard';
-import { CHAT_THEMES } from '@/components/shop/ChatThemes';
+import { getAllShopItems } from '@/components/shop/ShopData';
 
 const CATEGORY_TABS = [
-  { key: 'all', label: '🛒 Alles', icon: Store },
+  { key: 'all', label: '🛒 Alles' },
   { key: 'chat_theme', label: '🎨 Themes' },
-  { key: 'gift', label: '🎁 Geschenke' },
   { key: 'avatar_frame', label: '🖼️ Rahmen' },
+  { key: 'chat_bubble', label: '💬 Blasen' },
+  { key: 'name_color', label: '✏️ Namen' },
+  { key: 'premium_gift', label: '🎁 Geschenke' },
+  { key: 'voice_effect', label: '🎙️ Stimmen' },
+  { key: 'xp_boost', label: '⚡ Boosts' },
   { key: 'profile_badge', label: '🏅 Badges' },
 ];
 
@@ -42,29 +46,24 @@ export default function Shop() {
     enabled: !!user
   });
 
-  // Seed shop items if none exist
+  // Seed shop items if fewer than expected
   useEffect(() => {
-    if (shopItems.length === 0 && user) {
+    if (shopItems.length < 10 && user) {
       seedShopItems();
     }
   }, [shopItems.length, user]);
 
   const seedShopItems = async () => {
-    const themeItems = Object.entries(CHAT_THEMES)
-      .filter(([key]) => key !== 'default')
-      .map(([key, theme]) => ({
-        item_key: `theme_${key}`,
-        name: theme.name,
-        description: `Chat-Hintergrund: ${theme.name}`,
-        category: 'chat_theme',
-        price: key === 'gold' ? 500 : key === 'galaxy' || key === 'neon' ? 300 : 150,
-        rarity: key === 'gold' ? 'legendary' : key === 'galaxy' || key === 'neon' ? 'epic' : key === 'sunset' || key === 'cherry' ? 'rare' : 'common',
-        is_active: true,
-        meta: JSON.stringify({ bg: theme.bg, messageBg: theme.messageBg, userBg: theme.userBg, themeKey: key })
-      }));
-
-    await base44.entities.ShopItem.bulkCreate(themeItems);
-    queryClient.invalidateQueries({ queryKey: ['shop-items'] });
+    const allItems = getAllShopItems();
+    const existingKeys = new Set(shopItems.map(i => i.item_key));
+    const newItems = allItems.filter(i => !existingKeys.has(i.item_key));
+    if (newItems.length > 0) {
+      // Bulk create in batches of 20
+      for (let i = 0; i < newItems.length; i += 20) {
+        await base44.entities.ShopItem.bulkCreate(newItems.slice(i, i + 20));
+      }
+      queryClient.invalidateQueries({ queryKey: ['shop-items'] });
+    }
   };
 
   const buyMutation = useMutation({
@@ -80,26 +79,29 @@ export default function Shop() {
       });
     },
     onSuccess: (_, item) => {
-      toast.success(`${item.name} gekauft!`);
+      toast.success(`${item.name} gekauft! 🎉`);
       queryClient.invalidateQueries({ queryKey: ['shop-purchases'] });
     },
     onError: (err) => {
-      toast.error(err.message || 'Kauf fehlgeschlagen');
+      toast.error(err.message || 'Nicht genug Coins!');
     }
   });
 
   const equipMutation = useMutation({
     mutationFn: async (item) => {
-      // Unequip all of same category first
+      // Unequip all of same category
       const sameCat = purchases.filter(p => p.category === item.category && p.is_equipped);
       for (const p of sameCat) {
         await base44.entities.ShopPurchase.update(p.id, { is_equipped: false });
       }
-      // Equip this one (toggle off if already equipped)
+      // Toggle: equip if wasn't equipped
       const purchase = purchases.find(p => p.item_key === item.item_key);
       const wasEquipped = sameCat.some(p => p.item_key === item.item_key);
       if (purchase && !wasEquipped) {
         await base44.entities.ShopPurchase.update(purchase.id, { is_equipped: true });
+        toast.success(`${item.name} ausgerüstet!`);
+      } else {
+        toast.success(`${item.name} abgelegt`);
       }
     },
     onSuccess: () => {
@@ -114,7 +116,6 @@ export default function Shop() {
     ? shopItems
     : shopItems.filter(i => i.category === activeCategory);
 
-  // Sort: legendary first, then by price desc
   const sortedItems = [...filteredItems].sort((a, b) => {
     const rarityOrder = { legendary: 0, epic: 1, rare: 2, common: 3 };
     const ra = rarityOrder[a.rarity] ?? 3;
@@ -123,10 +124,15 @@ export default function Shop() {
     return (b.price || 0) - (a.price || 0);
   });
 
+  const categoryCount = (key) => {
+    if (key === 'all') return shopItems.length;
+    return shopItems.filter(i => i.category === key).length;
+  };
+
   return (
-    <div className="min-h-screen bg-[#111] text-white">
+    <div className="min-h-screen bg-[#111] text-white pb-20">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-[#1a1a1a] border-b border-white/5 px-4 py-3">
+      <header className="sticky top-0 z-10 bg-[#1a1a1a]/95 backdrop-blur-md border-b border-white/5 px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link to={createPageUrl('Home')}>
@@ -146,18 +152,21 @@ export default function Shop() {
         </div>
 
         {/* Category Tabs */}
-        <div className="flex gap-2 mt-3 overflow-x-auto pb-1 scrollbar-hide">
+        <div className="flex gap-2 mt-3 overflow-x-auto pb-1 scrollbar-hide -mx-4 px-4">
           {CATEGORY_TABS.map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveCategory(tab.key)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+              className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                 activeCategory === tab.key
-                  ? 'bg-emerald-600 text-white'
+                  ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20'
                   : 'bg-white/5 text-gray-400 hover:bg-white/10'
               }`}
             >
               {tab.label}
+              {categoryCount(tab.key) > 0 && (
+                <span className="ml-1 text-[10px] opacity-60">{categoryCount(tab.key)}</span>
+              )}
             </button>
           ))}
         </div>
