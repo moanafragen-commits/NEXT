@@ -24,6 +24,7 @@ import { calculateReplyDelay, getDelayReason, getCharacterAvailability, isRepeat
 import { getTagColor } from '@/components/chat/TagManager';
 import BottomNav from '@/components/navigation/BottomNav';
 import NextHeader from '@/components/navigation/NextHeader';
+import TopBar from '@/components/gamification/TopBar';
 
 export default function Home() {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -375,6 +376,9 @@ export default function Home() {
             </div>
             )}
             </header>
+
+        {/* Gamification TopBar */}
+        {user && <TopBar userEmail={user.email} />}
 
         {/* Status Bar */}
         <div className="px-4 py-3 overflow-x-auto border-b border-white/[0.03] scrollbar-hide bg-gradient-to-b from-transparent to-black/20">
