@@ -25,6 +25,8 @@ import { getTagColor } from '@/components/chat/TagManager';
 import BottomNav from '@/components/navigation/BottomNav';
 import NextHeader from '@/components/navigation/NextHeader';
 import TopBar from '@/components/gamification/TopBar';
+import { useUserLevel } from '@/components/gamification/useUserLevel';
+import { XP_REWARDS } from '@/components/gamification/LevelUtils';
 
 export default function Home() {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -42,6 +44,7 @@ export default function Home() {
   });
 
   const { permission, requestPermission } = useNotifications(user);
+  const { addXP } = useUserLevel(user?.email);
 
   const { data: unreadUserMessages = 0 } = useQuery({
     queryKey: ['unread-user-messages'],
@@ -239,6 +242,8 @@ export default function Home() {
       setIsTyping(false);
       queryClient.invalidateQueries({ queryKey: ['messages', charId] });
       queryClient.invalidateQueries({ queryKey: ['all-messages'] });
+      // Award XP for message + reply
+      if (addXP) addXP({ xp: XP_REWARDS.send_message + XP_REWARDS.receive_reply, coins: 2 });
     },
     onError: () => {
       setIsTyping(false);
