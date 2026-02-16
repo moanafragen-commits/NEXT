@@ -19,6 +19,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import EmojiPicker from './EmojiPicker';
+import QuickReactions from './QuickReactions';
 import { toast } from 'sonner';
 
 function renderMessageContent(content, customEmojis) {
