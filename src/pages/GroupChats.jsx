@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 import BottomNav from '@/components/navigation/BottomNav';
+import NextHeader from '@/components/navigation/NextHeader';
 
 export default function GroupChats() {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -133,20 +134,15 @@ export default function GroupChats() {
   };
 
   return (
-    <div className="min-h-screen bg-[#111] text-white pb-20">
-      <header className="sticky top-0 z-10 bg-[#1a1a1a] border-b border-white/5">
+    <div className="min-h-screen bg-[#0a0a0a] text-white pb-20">
+      <header className="sticky top-0 z-10 glass border-b border-white/[0.06]">
         <div className="flex items-center gap-3 p-4">
-          <Link to={createPageUrl('Home')}>
-            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/10">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <h1 className="text-xl font-semibold">Gruppenchats</h1>
+          <NextHeader />
           <div className="flex-1" />
           <Button 
             onClick={() => setShowCreateModal(true)}
             size="sm"
-            className="bg-emerald-600 hover:bg-emerald-500"
+            className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-xl"
           >
             <Plus className="w-4 h-4 mr-1" />
             Neue Gruppe

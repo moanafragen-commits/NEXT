@@ -23,6 +23,7 @@ import UnreadBadge from '@/components/notifications/UnreadBadge';
 import { calculateReplyDelay, getDelayReason, getCharacterAvailability, isRepeatNag } from '@/components/chat/ReplyDelayCalculator';
 import { getTagColor } from '@/components/chat/TagManager';
 import BottomNav from '@/components/navigation/BottomNav';
+import NextHeader from '@/components/navigation/NextHeader';
 
 export default function Home() {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -260,12 +261,7 @@ export default function Home() {
       {/* Header */}
       <header className="sticky top-0 z-10 glass border-b border-white/5">
         <div className="flex items-center justify-between p-4">
-          <h1 className="text-2xl font-extrabold bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent flex items-center gap-2 text-glow tracking-tight">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center glow-emerald">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
-            NEXT
-          </h1>
+          <NextHeader />
           <div className="flex items-center gap-1">
             <Link to={createPageUrl('UserChats')}>
               <Button 

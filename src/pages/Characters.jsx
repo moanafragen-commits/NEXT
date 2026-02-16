@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from 'framer-motion';
 import BottomNav from '@/components/navigation/BottomNav';
 import CreateCharacterModal from '@/components/chat/CreateCharacterModal';
+import NextHeader from '@/components/navigation/NextHeader';
 
 export default function Characters() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -70,20 +71,20 @@ export default function Characters() {
   const defaultAvatar = (name) => `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${name}`;
 
   return (
-    <div className="min-h-screen bg-white text-black auto-theme">
-      <header className="sticky top-0 z-10 bg-white border-b border-gray-200 auto-theme-header">
+    <div className="min-h-screen bg-[#0a0a0a] text-white auto-theme">
+      <header className="sticky top-0 z-10 glass border-b border-white/[0.06] auto-theme-header">
         <div className="px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-base font-semibold">Entdecken</h1>
-            <span className="text-xs text-gray-400 auto-theme-text-secondary">{characters.length} Charakter{characters.length !== 1 ? 'e' : ''}</span>
+            <NextHeader />
+            <span className="text-xs text-gray-500">{characters.length} Charakter{characters.length !== 1 ? 'e' : ''}</span>
           </div>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <div className="relative group">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-emerald-400 transition-colors" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Suchen..."
-              className="bg-gray-100 border-0 text-black pl-10 rounded-xl placeholder-gray-400 focus-visible:ring-gray-300 h-10 text-sm auto-theme-input"
+              className="bg-white/5 border border-white/5 text-white pl-10 rounded-2xl placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-emerald-500/30 h-10 text-sm transition-all duration-300"
             />
           </div>
         </div>
@@ -92,7 +93,7 @@ export default function Characters() {
       <main className="max-w-lg mx-auto pb-20">
         {isLoading ? (
           <div className="flex justify-center py-20">
-            <div className="w-6 h-6 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin" />
           </div>
         ) : filteredCharacters.length === 0 ? (
           <div className="text-center py-20">
@@ -108,7 +109,7 @@ export default function Characters() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: index * 0.02 }}
-                  className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition-colors group"
+                  className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors group"
                 >
                   <Link to={createPageUrl(`Chat?characterId=${character.id}`)} className="flex-shrink-0">
                     <img
@@ -120,7 +121,7 @@ export default function Characters() {
 
                   <Link to={createPageUrl(`Chat?characterId=${character.id}`)} className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <h3 className="text-[14px] font-semibold text-black truncate">{character.name}</h3>
+                      <h3 className="text-[14px] font-semibold text-white truncate">{character.name}</h3>
                       {character.is_favorite && <Star className="w-3 h-3 text-yellow-500 fill-yellow-500 flex-shrink-0" />}
                     </div>
                     <div className="flex items-center gap-1.5 mt-0.5">
@@ -144,7 +145,7 @@ export default function Characters() {
                       <Star className={`w-4 h-4 ${character.is_favorite ? 'fill-yellow-500' : ''}`} />
                     </button>
                     <Link to={createPageUrl(`Chat?characterId=${character.id}`)}>
-                      <button className="p-1.5 rounded-full text-gray-300 hover:text-black">
+                      <button className="p-1.5 rounded-full text-gray-500 hover:text-white">
                         <MessageCircle className="w-4 h-4" />
                       </button>
                     </Link>

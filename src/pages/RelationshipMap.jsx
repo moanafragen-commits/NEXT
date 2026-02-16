@@ -9,6 +9,7 @@ import { AnimatePresence } from 'framer-motion';
 import BottomNav from '@/components/navigation/BottomNav';
 import RelationshipMapCanvas from '@/components/relationship/RelationshipMapCanvas';
 import ConnectionDetail from '@/components/relationship/ConnectionDetail';
+import NextHeader from '@/components/navigation/NextHeader';
 
 export default function RelationshipMap() {
   const [selectedLink, setSelectedLink] = useState(null);
@@ -43,20 +44,13 @@ export default function RelationshipMap() {
   const activeCharacters = characters.filter(c => !c.is_archived);
 
   return (
-    <div className="min-h-screen bg-[#111] text-white flex flex-col auto-theme">
+    <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col auto-theme">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-[#1a1a1a] border-b border-white/5 p-4 auto-theme-header">
+      <header className="sticky top-0 z-10 glass border-b border-white/[0.06] p-4 auto-theme-header">
         <div className="flex items-center gap-3">
-          <Link to={createPageUrl('Home')}>
-            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/10">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <Share2 className="w-5 h-5 text-emerald-400" />
-          <div>
-            <h1 className="text-lg font-semibold">Beziehungskarte</h1>
-            <p className="text-xs text-gray-500">{activeCharacters.length} Charaktere verbunden</p>
-          </div>
+          <NextHeader>
+            <span className="text-xs text-gray-500 ml-1">{activeCharacters.length} verbunden</span>
+          </NextHeader>
         </div>
       </header>
 

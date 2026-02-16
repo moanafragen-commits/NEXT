@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { motion } from 'framer-motion';
 import BottomNav from '@/components/navigation/BottomNav';
+import NextHeader from '@/components/navigation/NextHeader';
 
 export default function UserProfile() {
   const queryClient = useQueryClient();
@@ -92,23 +93,20 @@ export default function UserProfile() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white text-black auto-theme">
+    <div className="min-h-screen bg-[#0a0a0a] text-white auto-theme">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white border-b border-gray-200 auto-theme-header">
+      <header className="sticky top-0 z-10 glass border-b border-white/[0.06] auto-theme-header">
         <div className="flex items-center justify-between px-4 py-3">
-          <button onClick={() => window.history.back()}>
-            <ArrowLeft className="w-6 h-6" />
-          </button>
-          <h1 className="text-base font-semibold">{user?.display_name || user?.full_name || 'Profil'}</h1>
+          <NextHeader />
           <Link to={createPageUrl('AppSettings')}>
-            <Settings className="w-5 h-5 text-gray-500" />
+            <Settings className="w-5 h-5 text-gray-400 hover:text-white transition-colors" />
           </Link>
         </div>
       </header>
@@ -158,7 +156,7 @@ export default function UserProfile() {
           {!editing && (
             <button
               onClick={() => setEditing(true)}
-              className="w-full mt-3 py-1.5 rounded-lg bg-gray-100 text-[13px] font-semibold text-black hover:bg-gray-200 transition-colors"
+              className="w-full mt-3 py-1.5 rounded-lg bg-white/10 text-[13px] font-semibold text-white hover:bg-white/15 transition-colors"
             >
               Profil bearbeiten
             </button>
@@ -205,16 +203,16 @@ export default function UserProfile() {
         )}
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-200">
+        <div className="flex border-b border-white/[0.06]">
           <button
             onClick={() => setTab('posts')}
-            className={`flex-1 py-3 flex justify-center ${tab === 'posts' ? 'border-b-2 border-black' : 'text-gray-400'}`}
+            className={`flex-1 py-3 flex justify-center ${tab === 'posts' ? 'border-b-2 border-emerald-400 text-emerald-400' : 'text-gray-500'}`}
           >
             <Grid className="w-5 h-5" />
           </button>
           <button
             onClick={() => setTab('saved')}
-            className={`flex-1 py-3 flex justify-center ${tab === 'saved' ? 'border-b-2 border-black' : 'text-gray-400'}`}
+            className={`flex-1 py-3 flex justify-center ${tab === 'saved' ? 'border-b-2 border-emerald-400 text-emerald-400' : 'text-gray-500'}`}
           >
             <Bookmark className="w-5 h-5" />
           </button>

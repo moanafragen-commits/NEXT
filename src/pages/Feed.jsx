@@ -6,6 +6,7 @@ import { AnimatePresence } from 'framer-motion';
 import FeedPostCard from '@/components/feed/FeedPostCard';
 import FeedCommentSheet from '@/components/feed/FeedCommentSheet';
 import BottomNav from '@/components/navigation/BottomNav';
+import NextHeader from '@/components/navigation/NextHeader';
 import { seedFeedIfEmpty } from '@/components/feed/SeedFeedData';
 
 export default function Feed() {
@@ -97,7 +98,7 @@ export default function Feed() {
       {/* Header */}
       <header className="sticky top-0 z-10 glass border-b border-white/[0.06] auto-theme-header">
         <div className="flex items-center justify-center px-4 py-3">
-          <h1 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent text-glow">NEXT</h1>
+          <NextHeader />
         </div>
       </header>
 
