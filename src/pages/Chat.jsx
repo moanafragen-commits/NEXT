@@ -274,7 +274,11 @@ export default function Chat() {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
 
-      // Skip marking user messages as read during AI response to reduce API calls
+      // Mark the latest user message as "read" (just one to save API calls)
+      const latestUserMsg = latestMessages.filter(m => m.role === 'user' && m.status !== 'read').slice(-1)[0];
+      if (latestUserMsg) {
+        await base44.entities.ChatMessage.update(latestUserMsg.id, { status: 'read', read_at: new Date().toISOString() }).catch(() => {});
+      }
 
       setIsTyping(true);
       await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 3000));
