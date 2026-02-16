@@ -76,9 +76,9 @@ export default function Feed() {
   return (
     <div className="min-h-screen bg-white text-black auto-theme">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white border-b border-gray-200 auto-theme-header">
+      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-gray-200 auto-theme-header">
         <div className="flex items-center justify-center px-4 py-3">
-          <h1 className="text-xl font-bold tracking-tight">NEXT</h1>
+          <h1 className="text-xl font-extrabold tracking-tight">𝕏</h1>
         </div>
       </header>
 
@@ -96,7 +96,7 @@ export default function Feed() {
           <div>
             {posts.map((post) => {
               const character = getCharacter(post.character_id);
-              if (!character || !post.image_url) return null;
+              if (!character) return null;
 
               return (
                 <FeedPostCard

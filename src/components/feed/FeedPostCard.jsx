@@ -1,101 +1,120 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal } from 'lucide-react';
+import { Heart, MessageCircle, Repeat2, Share, MoreHorizontal, BadgeCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
-import AIReactButton from '@/components/feed/AIReactButton';
 
 export default function FeedPostCard({ post, character, isLiked, onLike, onOpenComments, commentsCount, allCharacters }) {
-  const [doubleTapHeart, setDoubleTapHeart] = useState(false);
-  const [saved, setSaved] = useState(false);
-
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character?.name}`;
   const timeAgo = getTimeAgo(post.created_date);
+  const isCelebrity = character?.category === 'Berühmtheit';
 
-  const handleDoubleClick = () => {
-    if (!isLiked) onLike();
-    setDoubleTapHeart(true);
-    setTimeout(() => setDoubleTapHeart(false), 1000);
+  // Celebrities get higher engagement numbers
+  const displayLikes = isCelebrity 
+    ? Math.max(post.likes_count || 0, Math.floor(Math.random() * 5000 + 1200))
+    : (post.likes_count || 0);
+  
+  const displayRetweets = isCelebrity
+    ? Math.floor(displayLikes * 0.3)
+    : Math.floor((post.likes_count || 0) * 0.1);
+
+  const formatCount = (n) => {
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+    return String(n);
   };
 
   return (
-    <div className="bg-white border-b border-gray-100 auto-theme-card">
-      {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2.5">
-        <Link to={createPageUrl(`Chat?characterId=${character?.id}`)} className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full ring-[1.5px] ring-gray-200 overflow-hidden">
-            <img
-              src={character?.avatar_url || defaultAvatar}
-              alt={character?.name}
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <span className="text-[13px] font-semibold">{character?.name}</span>
+    <div className="border-b border-gray-100 px-4 py-3 hover:bg-gray-50/50 transition-colors auto-theme-card">
+      <div className="flex gap-3">
+        {/* Avatar */}
+        <Link to={createPageUrl(`Chat?characterId=${character?.id}`)} className="flex-shrink-0">
+          <img
+            src={character?.avatar_url || defaultAvatar}
+            alt={character?.name}
+            className="w-10 h-10 rounded-full object-cover"
+          />
         </Link>
-        <button className="text-gray-500 hover:text-black">
-          <MoreHorizontal className="w-5 h-5" />
-        </button>
-      </div>
 
-      {/* Image */}
-      <div className="relative" onDoubleClick={handleDoubleClick}>
-        <img
-          src={post.image_url}
-          alt={post.content}
-          className="w-full aspect-square object-cover"
-        />
-        {doubleTapHeart && (
-          <motion.div
-            initial={{ scale: 0, opacity: 1 }}
-            animate={{ scale: 1.2, opacity: 0 }}
-            transition={{ duration: 0.8 }}
-            className="absolute inset-0 flex items-center justify-center"
-          >
-            <Heart className="w-24 h-24 text-white fill-white drop-shadow-lg" />
-          </motion.div>
-        )}
-      </div>
-
-      {/* Actions */}
-      <div className="px-3 py-2.5">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-4">
-            <button onClick={onLike} className="hover:opacity-60 transition-opacity">
-              <Heart className={`w-6 h-6 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
-            </button>
-            <button onClick={onOpenComments} className="hover:opacity-60 transition-opacity">
-              <MessageCircle className="w-6 h-6" />
-            </button>
-            <Link to={createPageUrl(`Chat?characterId=${character?.id}`)}>
-              <Send className="w-5 h-5 hover:opacity-60 transition-opacity" />
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          {/* Header */}
+          <div className="flex items-center gap-1 mb-0.5">
+            <Link to={createPageUrl(`Chat?characterId=${character?.id}`)} className="flex items-center gap-1 min-w-0">
+              <span className="text-[15px] font-bold truncate">{character?.name}</span>
+              {isCelebrity && (
+                <BadgeCheck className="w-[18px] h-[18px] text-blue-500 fill-blue-500 flex-shrink-0" />
+              )}
             </Link>
-            <AIReactButton post={post} postCharacter={character} allCharacters={allCharacters || []} />
+            <span className="text-gray-500 text-[13px] flex-shrink-0">· {timeAgo}</span>
+            <div className="ml-auto flex-shrink-0">
+              <button className="text-gray-400 hover:text-gray-600 p-1 -mr-1 rounded-full hover:bg-gray-100 transition-colors">
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-          <button onClick={() => setSaved(!saved)} className="hover:opacity-60 transition-opacity">
-            <Bookmark className={`w-6 h-6 ${saved ? 'fill-current' : ''}`} />
-          </button>
+
+          {/* Handle */}
+          <p className="text-gray-500 text-[13px] -mt-0.5 mb-1.5">
+            @{(character?.name || '').toLowerCase().replace(/\s+/g, '_')}
+          </p>
+
+          {/* Text content */}
+          <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words mb-2">
+            {post.content}
+          </p>
+
+          {/* Optional image */}
+          {post.image_url && (
+            <div className="rounded-2xl overflow-hidden border border-gray-200 mb-2">
+              <img
+                src={post.image_url}
+                alt=""
+                className="w-full max-h-80 object-cover"
+              />
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="flex items-center justify-between max-w-[400px] -ml-2 mt-1">
+            {/* Comments */}
+            <button 
+              onClick={onOpenComments}
+              className="flex items-center gap-1.5 text-gray-500 hover:text-blue-500 group transition-colors"
+            >
+              <div className="p-1.5 rounded-full group-hover:bg-blue-500/10 transition-colors">
+                <MessageCircle className="w-[18px] h-[18px]" />
+              </div>
+              {commentsCount > 0 && <span className="text-[13px]">{formatCount(commentsCount)}</span>}
+            </button>
+
+            {/* Retweets */}
+            <button className="flex items-center gap-1.5 text-gray-500 hover:text-green-500 group transition-colors">
+              <div className="p-1.5 rounded-full group-hover:bg-green-500/10 transition-colors">
+                <Repeat2 className="w-[18px] h-[18px]" />
+              </div>
+              {displayRetweets > 0 && <span className="text-[13px]">{formatCount(displayRetweets)}</span>}
+            </button>
+
+            {/* Likes */}
+            <button 
+              onClick={onLike}
+              className={`flex items-center gap-1.5 group transition-colors ${isLiked ? 'text-pink-600' : 'text-gray-500 hover:text-pink-600'}`}
+            >
+              <div className={`p-1.5 rounded-full transition-colors ${isLiked ? '' : 'group-hover:bg-pink-600/10'}`}>
+                <Heart className={`w-[18px] h-[18px] ${isLiked ? 'fill-pink-600' : ''}`} />
+              </div>
+              <span className="text-[13px]">{formatCount(displayLikes)}</span>
+            </button>
+
+            {/* Share */}
+            <button className="flex items-center text-gray-500 hover:text-blue-500 group transition-colors">
+              <div className="p-1.5 rounded-full group-hover:bg-blue-500/10 transition-colors">
+                <Share className="w-[18px] h-[18px]" />
+              </div>
+            </button>
+          </div>
         </div>
-
-        {/* Likes */}
-        <p className="text-[13px] font-semibold mb-1">
-          {post.likes_count || 0} Gefällt mir
-        </p>
-
-        {/* Caption */}
-        <div className="text-[13px] mb-1">
-          <span className="font-semibold mr-1.5">{character?.name}</span>
-          {post.content}
-        </div>
-
-        {/* Comments preview */}
-        {(commentsCount > 0) && (
-          <button onClick={onOpenComments} className="text-[13px] text-gray-400 mb-1">
-            Alle {commentsCount} Kommentare ansehen
-          </button>
-        )}
-
-        {/* Time */}
-        <p className="text-[10px] text-gray-400 uppercase mt-1">{timeAgo}</p>
       </div>
     </div>
   );
@@ -109,9 +128,9 @@ function getTimeAgo(dateStr) {
   const diffH = Math.floor(diffMs / 3600000);
   const diffD = Math.floor(diffMs / 86400000);
 
-  if (diffMin < 1) return 'Gerade eben';
-  if (diffMin < 60) return `Vor ${diffMin} Min.`;
-  if (diffH < 24) return `Vor ${diffH} Std.`;
-  if (diffD < 7) return `Vor ${diffD} Tag${diffD > 1 ? 'en' : ''}`;
+  if (diffMin < 1) return 'Jetzt';
+  if (diffMin < 60) return `${diffMin}m`;
+  if (diffH < 24) return `${diffH}h`;
+  if (diffD < 7) return `${diffD}d`;
   return new Date(dateStr).toLocaleDateString('de-DE', { day: 'numeric', month: 'short' });
 }
