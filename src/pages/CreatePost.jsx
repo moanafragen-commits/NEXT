@@ -48,39 +48,30 @@ export default function CreatePost() {
         ? `\n\nDer User möchte folgende Caption verwenden: "${caption.trim()}". Passe den Bild-Prompt dazu an.`
         : '';
 
-      // Step 1: Generate caption + image prompt
-      setStep('Caption wird erstellt...');
+      // Step 1: Generate tweet text
+      setStep('Tweet wird erstellt...');
+      const isCelebrity = character.category === 'Berühmtheit';
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: `Du bist ${character.name}. ${context}${topicHint}${captionHint}
 
-Erstelle einen Instagram-Post für diesen Charakter.
+Erstelle einen Tweet/Post für diesen Charakter.${isCelebrity ? ' Dieser Charakter ist eine BERÜHMTHEIT mit einem verifizierten Account (blauer Haken). Der Post sollte authentisch für eine öffentliche Person klingen – Statements, Meinungen, Ankündigungen, Humor oder Einblicke ins Leben.' : ''}
 
-Erstelle:
-1. Einen detaillierten Bild-Prompt auf Englisch für KI-Bildgenerierung (fotorealistisch, kein Text im Bild). Das Bild soll etwas zeigen, das der Charakter fotografieren/teilen würde.
-2. Eine kurze Instagram-Caption auf Deutsch (1-3 Sätze, mit Emojis), geschrieben aus der Ich-Perspektive des Charakters.${caption.trim() ? ' Verwende die vom User vorgegebene Caption als Basis.' : ''}`,
+Erstelle einen kurzen Tweet-Text auf Deutsch (1-3 Sätze, max 280 Zeichen, mit Emojis wenn passend), geschrieben aus der Ich-Perspektive des Charakters. Kein Hashtag-Spam.${caption.trim() ? ' Verwende die vom User vorgegebene Caption als Basis.' : ''}`,
         response_json_schema: {
           type: "object",
           properties: {
-            image_prompt: { type: "string" },
-            caption: { type: "string" }
+            tweet_text: { type: "string" }
           }
         }
       });
 
-      // Step 2: Generate image
-      setStep('Bild wird generiert...');
-      const imageResult = await base44.integrations.Core.GenerateImage({
-        prompt: result.image_prompt
-      });
-
-      // Step 3: Create post
+      // Step 2: Create post (text-only, no image)
       setStep('Post wird erstellt...');
       const post = await base44.entities.Post.create({
         character_id: character.id,
-        content: caption.trim() || result.caption,
-        image_url: imageResult.url,
-        image_prompt: result.image_prompt,
-        likes_count: 0,
+        content: caption.trim() || result.tweet_text,
+        image_url: '',
+        likes_count: isCelebrity ? Math.floor(Math.random() * 5000 + 500) : 0,
         comments_count: 0
       });
 
@@ -90,8 +81,7 @@ Erstelle:
 
       if (otherChars.length > 0) {
         const reactResult = await base44.integrations.Core.InvokeLLM({
-          prompt: `Ein Instagram-Post von "${character.name}" mit der Caption: "${caption.trim() || result.caption}"
-Bild-Beschreibung: ${result.image_prompt}
+          prompt: `Ein Tweet von "${character.name}" mit dem Text: "${caption.trim() || result.tweet_text}"
 
 Folgende KI-Charaktere sehen diesen Post. Entscheide für jeden, ob sie liken und/oder kommentieren würden.
 
@@ -164,7 +154,7 @@ Generiere realistische Reaktionen passend zur Persönlichkeit.`,
           <button onClick={() => window.history.back()} className="text-black">
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-base font-semibold">Neuer Post</h1>
+          <h1 className="text-base font-semibold">Neuer Tweet</h1>
           <div className="w-6" />
         </div>
       </header>
@@ -222,7 +212,7 @@ Generiere realistische Reaktionen passend zur Persönlichkeit.`,
           ) : (
             <>
               <Sparkles className="w-5 h-5" />
-              Post generieren
+              Tweet generieren
             </>
           )}
         </Button>
