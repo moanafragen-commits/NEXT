@@ -8,14 +8,16 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character?.name}`;
   const timeAgo = getTimeAgo(post.created_date);
   const isCelebrity = character?.category === 'Berühmtheit';
+  const isNews = character?.category === 'Nachrichtensender';
+  const isVerified = isCelebrity || isNews;
 
-  // Celebrities get higher engagement numbers
-  const displayLikes = isCelebrity 
-    ? Math.max(post.likes_count || 0, Math.floor(Math.random() * 5000 + 1200))
+  // Celebrities & news get higher engagement numbers
+  const displayLikes = isVerified 
+    ? Math.max(post.likes_count || 0, Math.floor(Math.random() * (isNews ? 8000 : 5000) + (isNews ? 2000 : 1200)))
     : (post.likes_count || 0);
   
-  const displayRetweets = isCelebrity
-    ? Math.floor(displayLikes * 0.3)
+  const displayRetweets = isVerified
+    ? Math.floor(displayLikes * (isNews ? 0.6 : 0.3))
     : Math.floor((post.likes_count || 0) * 0.1);
 
   const formatCount = (n) => {
@@ -42,8 +44,8 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
           <div className="flex items-center gap-1 mb-0.5">
             <Link to={createPageUrl(`Chat?characterId=${character?.id}`)} className="flex items-center gap-1 min-w-0">
               <span className="text-[15px] font-bold truncate">{character?.name}</span>
-              {isCelebrity && (
-                <BadgeCheck className="w-[18px] h-[18px] text-blue-500 fill-blue-500 flex-shrink-0" />
+              {isVerified && (
+                <BadgeCheck className={`w-[18px] h-[18px] flex-shrink-0 ${isNews ? 'text-amber-500 fill-amber-500' : 'text-blue-500 fill-blue-500'}`} />
               )}
             </Link>
             <span className="text-gray-500 text-[13px] flex-shrink-0">· {timeAgo}</span>

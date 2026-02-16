@@ -51,12 +51,22 @@ export default function CreatePost() {
       // Step 1: Generate tweet text
       setStep('Tweet wird erstellt...');
       const isCelebrity = character.category === 'Berühmtheit';
+      const isNews = character.category === 'Nachrichtensender';
+      const isVerified = isCelebrity || isNews;
+
+      let roleHint = '';
+      if (isCelebrity) {
+        roleHint = ' Dieser Charakter ist eine BERÜHMTHEIT mit einem verifizierten Account (blauer Haken). Der Post sollte authentisch für eine öffentliche Person klingen – Statements, Meinungen, Ankündigungen, Humor oder Einblicke ins Leben.';
+      } else if (isNews) {
+        roleHint = ' Dieser Charakter ist ein NACHRICHTENSENDER/PRESSEMEDIUM (z.B. wie CNN, BBC, Tagesschau, BILD etc.). Posts sollten wie echte Nachrichten-Tweets klingen: Breaking News, aktuelle Meldungen, Politik, Wirtschaft, Sport, Wissenschaft, Kultur, Wetter – NICHT nur über Berühmtheiten! Variiere zwischen verschiedenen Themengebieten. Kurz, sachlich, aber je nach Medium auch mit eigenem Ton (seriös vs. Boulevard). Nutze ggf. 🔴 BREAKING oder ähnliche Formate.';
+      }
+
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: `Du bist ${character.name}. ${context}${topicHint}${captionHint}
 
-Erstelle einen Tweet/Post für diesen Charakter.${isCelebrity ? ' Dieser Charakter ist eine BERÜHMTHEIT mit einem verifizierten Account (blauer Haken). Der Post sollte authentisch für eine öffentliche Person klingen – Statements, Meinungen, Ankündigungen, Humor oder Einblicke ins Leben.' : ''}
+Erstelle einen Tweet/Post für diesen Charakter.${roleHint}
 
-Erstelle einen kurzen Tweet-Text auf Deutsch (1-3 Sätze, max 280 Zeichen, mit Emojis wenn passend), geschrieben aus der Ich-Perspektive des Charakters. Kein Hashtag-Spam.${caption.trim() ? ' Verwende die vom User vorgegebene Caption als Basis.' : ''}`,
+Erstelle einen kurzen Tweet-Text auf Deutsch (1-3 Sätze, max 280 Zeichen, mit Emojis wenn passend)${isNews ? ', im Stil eines Nachrichten-Tweets' : ', geschrieben aus der Ich-Perspektive des Charakters'}. Kein Hashtag-Spam.${caption.trim() ? ' Verwende die vom User vorgegebene Caption als Basis.' : ''}`,
         response_json_schema: {
           type: "object",
           properties: {
@@ -71,7 +81,7 @@ Erstelle einen kurzen Tweet-Text auf Deutsch (1-3 Sätze, max 280 Zeichen, mit E
         character_id: character.id,
         content: caption.trim() || result.tweet_text,
         image_url: '',
-        likes_count: isCelebrity ? Math.floor(Math.random() * 5000 + 500) : 0,
+        likes_count: isVerified ? Math.floor(Math.random() * (isNews ? 8000 : 5000) + (isNews ? 1000 : 500)) : 0,
         comments_count: 0
       });
 
