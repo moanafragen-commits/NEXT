@@ -117,13 +117,19 @@ export default function Feed() {
           <div>
             {posts.map((post) => {
               const character = getCharacter(post.character_id);
-              if (!character) return null;
+              // Create a fallback character for posts with missing/invalid character_id
+              const displayChar = character || {
+                id: post.character_id,
+                name: 'Unbekannt',
+                avatar_url: `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${post.character_id}`,
+                category: 'Andere'
+              };
 
               return (
                 <FeedPostCard
                   key={post.id}
                   post={post}
-                  character={character}
+                  character={displayChar}
                   isLiked={hasLiked(post.id)}
                   onLike={() => likeMutation.mutate(post.id)}
                   onOpenComments={() => setOpenCommentsPostId(post.id)}
