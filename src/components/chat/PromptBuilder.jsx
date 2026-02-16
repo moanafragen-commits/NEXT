@@ -4,6 +4,7 @@ import { buildIllnessContext } from '@/components/character/IllnessSystem';
 import { buildWeatherContext } from '@/components/character/WeatherSystem';
 import { getNightModeContext } from '@/components/character/NightModeSystem';
 import { getEventContext } from '@/components/character/CharacterEventSystem';
+import { buildDreamContext } from '@/components/character/DreamSystem';
 
 /**
  * Builds the full system prompt and context for the AI character response.
@@ -734,7 +735,7 @@ function buildImportantDatesContext(importantDates) {
   return parts.length > 1 ? parts.join('\n') : '';
 }
 
-export function buildFullPrompt({ character, user, messages, memories, content, imageUrl, sharedMemories, allCharacters, recentActivities, recentDiary, importantDates, weatherState, activeEvent }) {
+export function buildFullPrompt({ character, user, messages, memories, content, imageUrl, sharedMemories, allCharacters, recentActivities, recentDiary, importantDates, weatherState, activeEvent, currentDream }) {
   // Build conversation history (last 20 messages - balanced context vs speed)
   const history = messages.slice(-20).map(m => ({
     role: m.role,
@@ -763,6 +764,7 @@ export function buildFullPrompt({ character, user, messages, memories, content, 
   const weatherContext = buildWeatherContext(weatherState);
   const nightModeContext = getNightModeContext(character);
   const eventContext = getEventContext(activeEvent);
+  const dreamContext = buildDreamContext(currentDream);
 
   // Absence reaction
   const absenceContext = getAbsenceContext(messages, character);
@@ -782,7 +784,7 @@ Du kannst von diesen Erlebnissen berichten, als wären sie gerade passiert. Das 
   }
 
   // Assemble full prompt
-  const prompt = `${personalityContext}${relationshipContext}${moodContext}${strongContext}${sharedMemoryContext}${importantDatesContext}${illnessContext}${weatherContext}${nightModeContext}${eventContext}${dateTimeContext}${absenceContext}${milestoneContext}${activityContext}${communicationRules}${dynamicStyleDirective}${conversationSummary}${proactivityDirective}
+  const prompt = `${personalityContext}${relationshipContext}${moodContext}${strongContext}${sharedMemoryContext}${importantDatesContext}${illnessContext}${weatherContext}${nightModeContext}${eventContext}${dreamContext}${dateTimeContext}${absenceContext}${milestoneContext}${activityContext}${communicationRules}${dynamicStyleDirective}${conversationSummary}${proactivityDirective}
 
 KERNREGELN:
 - Du bist ${character.name}, ein MENSCH – kein Assistent. Nutzer: "${user?.display_name || user?.full_name || 'Nutzer'}"
