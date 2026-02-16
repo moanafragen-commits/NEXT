@@ -27,14 +27,19 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
   };
 
   return (
-    <div className="border-b border-gray-100 px-4 py-3 hover:bg-gray-50/50 transition-colors auto-theme-card">
+    <motion.div 
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+      className="border-b border-white/[0.05] px-4 py-3 hover:bg-white/[0.02] transition-all duration-300 auto-theme-card"
+    >
       <div className="flex gap-3">
         {/* Avatar */}
         <Link to={createPageUrl(`Chat?characterId=${character?.id}`)} className="flex-shrink-0">
           <img
             src={character?.avatar_url || defaultAvatar}
             alt={character?.name}
-            className="w-10 h-10 rounded-full object-cover"
+            className="w-10 h-10 rounded-full object-cover ring-1 ring-white/10"
           />
         </Link>
 
@@ -48,27 +53,27 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
                 <BadgeCheck className={`w-[18px] h-[18px] flex-shrink-0 ${isNews ? 'text-amber-500 fill-amber-500' : 'text-blue-500 fill-blue-500'}`} />
               )}
             </Link>
-            <span className="text-gray-500 text-[13px] flex-shrink-0">· {timeAgo}</span>
+            <span className="text-gray-600 text-[13px] flex-shrink-0">· {timeAgo}</span>
             <div className="ml-auto flex-shrink-0">
-              <button className="text-gray-400 hover:text-gray-600 p-1 -mr-1 rounded-full hover:bg-gray-100 transition-colors">
+              <button className="text-gray-600 hover:text-gray-400 p-1 -mr-1 rounded-full hover:bg-white/5 transition-colors">
                 <MoreHorizontal className="w-4 h-4" />
               </button>
             </div>
           </div>
 
           {/* Handle */}
-          <p className="text-gray-500 text-[13px] -mt-0.5 mb-1.5">
+          <p className="text-gray-600 text-[13px] -mt-0.5 mb-1.5">
             @{(character?.name || '').toLowerCase().replace(/\s+/g, '_')}
           </p>
 
           {/* Text content */}
-          <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words mb-2">
+          <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words mb-2 text-gray-100">
             {post.content}
           </p>
 
           {/* Optional image */}
           {post.image_url && (
-            <div className="rounded-2xl overflow-hidden border border-gray-200 mb-2">
+            <div className="rounded-2xl overflow-hidden border border-white/10 mb-2">
               <img
                 src={post.image_url}
                 alt=""
@@ -82,7 +87,7 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
             {/* Comments */}
             <button 
               onClick={onOpenComments}
-              className="flex items-center gap-1.5 text-gray-500 hover:text-blue-500 group transition-colors"
+              className="flex items-center gap-1.5 text-gray-500 hover:text-blue-400 group transition-colors"
             >
               <div className="p-1.5 rounded-full group-hover:bg-blue-500/10 transition-colors">
                 <MessageCircle className="w-[18px] h-[18px]" />
@@ -91,8 +96,8 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
             </button>
 
             {/* Retweets */}
-            <button className="flex items-center gap-1.5 text-gray-500 hover:text-green-500 group transition-colors">
-              <div className="p-1.5 rounded-full group-hover:bg-green-500/10 transition-colors">
+            <button className="flex items-center gap-1.5 text-gray-500 hover:text-emerald-400 group transition-colors">
+              <div className="p-1.5 rounded-full group-hover:bg-emerald-500/10 transition-colors">
                 <Repeat2 className="w-[18px] h-[18px]" />
               </div>
               {displayRetweets > 0 && <span className="text-[13px]">{formatCount(displayRetweets)}</span>}
@@ -101,16 +106,16 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
             {/* Likes */}
             <button 
               onClick={onLike}
-              className={`flex items-center gap-1.5 group transition-colors ${isLiked ? 'text-pink-600' : 'text-gray-500 hover:text-pink-600'}`}
+              className={`flex items-center gap-1.5 group transition-colors ${isLiked ? 'text-pink-500' : 'text-gray-500 hover:text-pink-500'}`}
             >
-              <div className={`p-1.5 rounded-full transition-colors ${isLiked ? '' : 'group-hover:bg-pink-600/10'}`}>
-                <Heart className={`w-[18px] h-[18px] ${isLiked ? 'fill-pink-600' : ''}`} />
+              <div className={`p-1.5 rounded-full transition-colors ${isLiked ? '' : 'group-hover:bg-pink-500/10'}`}>
+                <Heart className={`w-[18px] h-[18px] transition-transform ${isLiked ? 'fill-pink-500 scale-110' : 'group-hover:scale-110'}`} />
               </div>
               <span className="text-[13px]">{formatCount(displayLikes)}</span>
             </button>
 
             {/* Share */}
-            <button className="flex items-center text-gray-500 hover:text-blue-500 group transition-colors">
+            <button className="flex items-center text-gray-500 hover:text-blue-400 group transition-colors">
               <div className="p-1.5 rounded-full group-hover:bg-blue-500/10 transition-colors">
                 <Share className="w-[18px] h-[18px]" />
               </div>
@@ -118,7 +123,7 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
