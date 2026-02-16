@@ -25,6 +25,49 @@ const LOCATION_TEMPLATES = {
 
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
+const CITY_COORDS = {
+  berlin: { lat: 52.52, lng: 13.405 },
+  münchen: { lat: 48.1351, lng: 11.582 },
+  hamburg: { lat: 53.5511, lng: 9.9937 },
+  köln: { lat: 50.9375, lng: 6.9603 },
+  frankfurt: { lat: 50.1109, lng: 8.6821 },
+  stuttgart: { lat: 48.7758, lng: 9.1829 },
+  düsseldorf: { lat: 51.2277, lng: 6.7735 },
+  leipzig: { lat: 51.3397, lng: 12.3731 },
+  dortmund: { lat: 51.5136, lng: 7.4653 },
+  essen: { lat: 51.4556, lng: 7.0116 },
+  bremen: { lat: 53.0793, lng: 8.8017 },
+  dresden: { lat: 51.0504, lng: 13.7373 },
+  hannover: { lat: 52.3759, lng: 9.732 },
+  nürnberg: { lat: 49.4521, lng: 11.0767 },
+  wien: { lat: 48.2082, lng: 16.3738 },
+  zürich: { lat: 47.3769, lng: 8.5417 },
+  los_angeles: { lat: 34.0522, lng: -118.2437 },
+  new_york: { lat: 40.7128, lng: -74.006 },
+  london: { lat: 51.5074, lng: -0.1278 },
+  paris: { lat: 48.8566, lng: 2.3522 },
+  tokyo: { lat: 35.6762, lng: 139.6503 },
+  seoul: { lat: 37.5665, lng: 126.978 },
+  rom: { lat: 41.9028, lng: 12.4964 },
+  barcelona: { lat: 41.3874, lng: 2.1686 },
+  amsterdam: { lat: 52.3676, lng: 4.9041 },
+};
+
+function getCityCoordinates(cityName) {
+  if (!cityName) return CITY_COORDS.berlin;
+  const lower = cityName.toLowerCase().replace(/ü/g, 'ue').replace(/ö/g, 'oe').replace(/ä/g, 'ae');
+  // Direct match
+  for (const [key, coords] of Object.entries(CITY_COORDS)) {
+    if (lower.includes(key) || key.includes(lower)) return coords;
+  }
+  // Fuzzy match on original names
+  const lowerOriginal = cityName.toLowerCase();
+  for (const [key, coords] of Object.entries(CITY_COORDS)) {
+    if (lowerOriginal.includes(key)) return coords;
+  }
+  return CITY_COORDS.berlin;
+}
+
 function getCharacterLocations(character) {
   const city = character.living_situation || '';
   const job = character.occupation || '';
@@ -171,12 +214,27 @@ export function generateRandomLocation(character) {
     andere: 'Unterwegs'
   };
 
+  // Generate realistic coordinates based on character's city
+  const cityCoords = getCityCoordinates(loc.cityName);
+  const jitter = () => (Math.random() - 0.5) * 0.03; // ~1.5km radius scatter
+  const lat = cityCoords.lat + jitter();
+  const lng = cityCoords.lng + jitter();
+
+  // Generate a plausible address
+  const streets = ['Hauptstraße', 'Bahnhofstraße', 'Berliner Straße', 'Marktplatz', 'Schillerstraße', 'Goethestraße', 'Friedrichstraße', 'Lindenallee', 'Parkweg', 'Am Stadtpark', 'Königstraße', 'Mozartstraße', 'Rosenstraße'];
+  const streetNum = Math.floor(Math.random() * 120) + 1;
+  const address = `${pick(streets)} ${streetNum}`;
+
   return {
     location_name: locationNames[type],
     location_type: type,
     emoji: template.emoji,
     description: activity,
-    shared_at: new Date().toISOString()
+    shared_at: new Date().toISOString(),
+    latitude: lat,
+    longitude: lng,
+    city: loc.cityName || 'Berlin',
+    address
   };
 }
 
