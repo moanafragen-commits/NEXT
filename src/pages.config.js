@@ -80,6 +80,8 @@ import UserChat from './pages/UserChat';
 import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
 import UserStatusView from './pages/UserStatusView';
+import NewsFeed from './pages/NewsFeed';
+import DreamWorldPage from './pages/DreamWorldPage';
 import __Layout from './Layout.jsx';
 
 
@@ -117,6 +119,8 @@ export const PAGES = {
     "UserChats": UserChats,
     "UserProfile": UserProfile,
     "UserStatusView": UserStatusView,
+    "NewsFeed": NewsFeed,
+    "DreamWorldPage": DreamWorldPage,
 }
 
 export const pagesConfig = {
