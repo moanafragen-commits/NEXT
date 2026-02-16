@@ -48,7 +48,14 @@ export default function Shop() {
 
   // Seed shop items if fewer than expected
   useEffect(() => {
-    if (shopItems.length < 10 && user) {
+    if (user && shopItems.length > 0) {
+      const allItems = getAllShopItems();
+      const existingKeys = new Set(shopItems.map(i => i.item_key));
+      const missing = allItems.filter(i => !existingKeys.has(i.item_key));
+      if (missing.length > 0) {
+        seedShopItems();
+      }
+    } else if (user && shopItems.length === 0) {
       seedShopItems();
     }
   }, [shopItems.length, user]);
