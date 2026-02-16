@@ -202,6 +202,13 @@ export function getDelayReason(character) {
   if (mood === 'müde') return 'ist müde, antwortet langsam...';
   if (mood === 'gelangweilt') return 'scrollt durch andere Chats...';
   
+  // Illness delay reason
+  if (character.illness) {
+    if (character.illness_severity === 'schwer') return `liegt krank im Bett (${character.illness})...`;
+    if (character.illness_severity === 'mittel') return `fühlt sich nicht gut (${character.illness})...`;
+    return `ist leicht angeschlagen...`;
+  }
+
   return 'tippt...';
 }
 
