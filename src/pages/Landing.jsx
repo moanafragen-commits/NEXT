@@ -24,14 +24,14 @@ export default function Landing() {
 
         <div className="relative z-10 container mx-auto px-6 pt-20 pb-32">
           <nav className="flex justify-between items-center mb-20">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
-                <Sparkles className="w-6 h-6" />
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
-                NEXT
-              </span>
-            </div>
+            <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                    <Sparkles className="w-5 h-5" />
+                  </div>
+                  <span className="text-2xl font-black tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+                    NEXT
+                  </span>
+                </div>
             <Button onClick={handleSignUp} variant="ghost" className="text-white hover:bg-white/10">
               Login
             </Button>
