@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Briefcase, ChevronRight, Star, Coins } from 'lucide-react';
+import { Briefcase, ChevronRight, Star, Coins, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { toast } from 'sonner';
 
 const AVAILABLE_JOBS = [
   {
@@ -81,7 +82,7 @@ export default function JobBoard({ userEmail }) {
 
   const acceptJobMutation = useMutation({
     mutationFn: async (job) => {
-      await base44.entities.UserJob.create({
+      const createdJob = await base44.entities.UserJob.create({
         user_email: userEmail,
         job_title: job.job_title,
         employer: job.employer,
@@ -93,10 +94,74 @@ export default function JobBoard({ userEmail }) {
         icon_emoji: job.icon_emoji,
         status: 'aktiv'
       });
+
+      // Auto-generate initial calendar entries for this job
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `Du bist ${job.manager_name} von ${job.employer}. Ein neuer Mitarbeiter wurde als "${job.job_title}" eingestellt.
+Jobbeschreibung: ${job.description}
+
+Generiere 3-5 realistische Termine/Aufgaben für die erste Arbeitswoche (nächste 7 Tage).
+Es sollte eine Mischung sein aus:
+- Einführungstreffen / Onboarding
+- Erste echte Aufgaben passend zum Job
+- Meetings mit dem Manager
+- Deadlines für erste Abgaben
+
+Jeder Eintrag braucht: Titel, Beschreibung, Tag (1-7 = Tage ab heute), Uhrzeit, Priorität, Typ, Belohnung.`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            entries: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  description: { type: "string" },
+                  days_from_now: { type: "number" },
+                  time: { type: "string", description: "z.B. 10:00" },
+                  priority: { type: "string", enum: ["niedrig", "mittel", "hoch", "dringend"] },
+                  entry_type: { type: "string", enum: ["termin", "aufgabe"] },
+                  reward_coins: { type: "number" },
+                  reward_xp: { type: "number" },
+                  emoji: { type: "string" }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (result.entries && result.entries.length > 0) {
+        const calendarEntries = result.entries.map(entry => {
+          const date = new Date();
+          date.setDate(date.getDate() + (entry.days_from_now || 1));
+          return {
+            user_email: userEmail,
+            title: entry.title,
+            description: entry.description || '',
+            date: date.toISOString().split('T')[0],
+            time: entry.time || null,
+            entry_type: entry.entry_type || 'termin',
+            related_job_id: createdJob.id,
+            status: 'offen',
+            priority: entry.priority || 'mittel',
+            reward_coins: entry.reward_coins || Math.round(job.salary_coins * 0.5),
+            reward_xp: entry.reward_xp || Math.round(job.xp_reward * 0.5),
+            penalty_coins: Math.round((entry.reward_coins || 5) * 0.5),
+            penalty_xp: Math.round((entry.reward_xp || 5) * 0.3),
+            emoji: entry.emoji || job.icon_emoji || '💼',
+            color: 'purple'
+          };
+        });
+        await base44.entities.CalendarEntry.bulkCreate(calendarEntries);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar-entries'] });
       setSelectedJob(null);
+      toast.success('Job angenommen! Termine wurden im Kalender erstellt.');
     }
   });
 
@@ -200,7 +265,12 @@ export default function JobBoard({ userEmail }) {
                 disabled={acceptJobMutation.isPending}
                 className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-xl text-base font-semibold"
               >
-                {acceptJobMutation.isPending ? '...' : 'Job annehmen'}
+                {acceptJobMutation.isPending ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Termine werden erstellt...
+                  </span>
+                ) : 'Job annehmen'}
               </Button>
             </motion.div>
           </>
