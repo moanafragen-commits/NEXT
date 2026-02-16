@@ -29,7 +29,25 @@ export default function FeedCommentSheet({ post, character, comments, user, onCl
     queryFn: () => base44.entities.Character.list()
   });
 
-  const charMap = Object.fromEntries(characters.map(c => [c.id, c]));
+  const { data: aiCharacters = [] } = useQuery({
+    queryKey: ['ai-characters'],
+    queryFn: () => base44.entities.AICharacter.list()
+  });
+
+  // Build a combined map: character ID -> { name, avatar, category }
+  const charMap = {};
+  for (const c of characters) {
+    charMap[c.id] = c;
+  }
+  for (const c of aiCharacters) {
+    charMap[c.id] = {
+      id: c.id,
+      name: c.name,
+      avatar_url: c.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.username || c.name}`,
+      category: c.category === 'lifestyle' ? 'Influencer' : c.category === 'tech' ? 'Wissenschaftler' : 'Andere',
+      username: c.username
+    };
+  }
 
   useEffect(() => {
     // Focus input when sheet opens
@@ -59,19 +77,6 @@ export default function FeedCommentSheet({ post, character, comments, user, onCl
   };
 
   const getCommenter = (comment) => {
-    // Check if this comment was written by an AI character (user_email = character_id)
-    const char = charMap[comment.user_email];
-    if (char) {
-      const isVerified = ['Berühmtheit', 'Nachrichtensender', 'Influencer', 'Sportler', 'Musiker', 'Politiker', 'Wissenschaftler', 'Künstler', 'Unternehmer', 'Streamer', 'Model', 'Journalist', 'Aktivist'].includes(char.category);
-      return {
-        name: char.name,
-        username: '@' + (char.name || '').toLowerCase().replace(/\s+/g, '_'),
-        avatar: char.avatar_url || `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${char.name}`,
-        isAI: true,
-        isVerified,
-        category: char.category
-      };
-    }
     // Check if the comment was written by the current logged-in user
     const isCurrentUser = comment.user_email === user?.email;
     if (isCurrentUser) {
@@ -84,15 +89,28 @@ export default function FeedCommentSheet({ post, character, comments, user, onCl
         isVerified: false
       };
     }
-    // Fallback: unknown commenter (another user or orphaned character ID)
-    // Try to match as character ID in case charMap missed it
+    // Check if this comment was written by an AI character (user_email = character_id)
+    const char = charMap[comment.user_email];
+    if (char) {
+      const verifiedCats = ['Berühmtheit', 'Nachrichtensender', 'Influencer', 'Sportler', 'Musiker', 'Politiker', 'Wissenschaftler', 'Künstler', 'Unternehmer', 'Streamer', 'Model', 'Journalist', 'Aktivist'];
+      const isVerified = verifiedCats.includes(char.category);
+      return {
+        name: char.name,
+        username: '@' + (char.username || char.name || '').toLowerCase().replace(/\s+/g, '_'),
+        avatar: char.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${char.name}`,
+        isAI: true,
+        isVerified,
+        category: char.category
+      };
+    }
+    // Fallback
     const email = comment.user_email || '';
-    const fallbackName = email.includes('@') ? email.split('@')[0] : 'Unbekannt';
+    const fallbackName = email.includes('@') ? email.split('@')[0] : 'KI-Nutzer';
     return {
       name: fallbackName,
       username: '@' + fallbackName.toLowerCase().replace(/\s+/g, '_'),
-      avatar: `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${email}`,
-      isAI: false,
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+      isAI: true,
       isVerified: false
     };
   };
