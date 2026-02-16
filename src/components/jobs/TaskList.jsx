@@ -51,8 +51,27 @@ export default function TaskList({ jobId, userEmail, onTaskComplete }) {
     }
   });
 
+  // Auto-expire overdue tasks
+  const nowStr = new Date().toISOString();
+  React.useEffect(() => {
+    const overdue = tasks.filter(t => 
+      (t.status === 'offen' || t.status === 'in_arbeit') && 
+      t.deadline && 
+      t.deadline < nowStr
+    );
+    if (overdue.length > 0) {
+      overdue.forEach(t => {
+        base44.entities.JobTask.update(t.id, { status: 'abgelaufen' }).catch(() => {});
+      });
+      if (overdue.length > 0) {
+        setTimeout(() => queryClient.invalidateQueries({ queryKey: ['job-tasks', jobId] }), 1000);
+      }
+    }
+  }, [tasks]);
+
   const openTasks = tasks.filter(t => t.status === 'offen' || t.status === 'in_arbeit');
   const doneTasks = tasks.filter(t => t.status === 'erledigt');
+  const expiredTasks = tasks.filter(t => t.status === 'abgelaufen');
 
   if (isLoading) {
     return <div className="py-8 flex justify-center"><Loader2 className="w-5 h-5 text-gray-400 animate-spin" /></div>;
@@ -127,6 +146,22 @@ export default function TaskList({ jobId, userEmail, onTaskComplete }) {
                   </div>
                 </div>
               </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Expired Tasks */}
+      {expiredTasks.length > 0 && (
+        <div>
+          <h4 className="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2">⚠️ Abgelaufen ({expiredTasks.length})</h4>
+          <div className="space-y-1.5">
+            {expiredTasks.slice(0, 5).map(task => (
+              <div key={task.id} className="bg-red-500/5 border border-red-500/15 rounded-xl p-3 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                <span className="text-xs text-red-300 flex-1">{task.title}</span>
+                <span className="text-[10px] text-red-400">-{task.reward_coins || 5} 🪙</span>
+              </div>
             ))}
           </div>
         </div>

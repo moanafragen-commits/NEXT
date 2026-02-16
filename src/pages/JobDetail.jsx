@@ -50,10 +50,12 @@ export default function JobDetail() {
     }
   });
 
-  const handleTaskComplete = (task) => {
+  const handleTaskComplete = async (task) => {
     if (addXP) {
       addXP({ xp: task.reward_xp || 15, coins: task.reward_coins || 10 });
     }
+    queryClient.invalidateQueries({ queryKey: ['calendar-entries'] });
+    queryClient.invalidateQueries({ queryKey: ['all-job-tasks'] });
   };
 
   if (isLoading || !job) {
