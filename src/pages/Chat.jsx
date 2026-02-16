@@ -312,6 +312,9 @@ export default function Chat() {
       
       // Save AI response
       await base44.entities.ChatMessage.create({ character_id: characterId, role: 'assistant', content: response.response, status: 'delivered' });
+
+      // Generate diary entry in background (non-blocking)
+      generateDiaryEntry(character, user, latestMessages, response.new_mood).catch(() => {});
       
       queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
       queryClient.invalidateQueries({ queryKey: ['all-messages'] });
