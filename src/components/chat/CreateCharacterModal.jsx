@@ -7,10 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare, Zap, Brain, Shield, Lock, Lightbulb, ImagePlus, Briefcase, Clock, HeartCrack, Flame, Eye, Battery, Moon, Palette, Globe, Sword, BadgeCheck } from 'lucide-react';
+import { Sparkles, Loader2, Wand2, Upload, User, Settings, BookOpen, Heart, MessageSquare, Zap, Brain, Shield, Lock, Lightbulb, ImagePlus, Briefcase, Clock, HeartCrack, Flame, Eye, Battery, Moon, Palette, Globe, Sword, BadgeCheck, Music, Coffee } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
 import { base44 } from '@/api/base44Client';
 import { CHARACTER_TEMPLATES } from './CharacterTemplates';
+import MusicMediaTab from './tabs/MusicMediaTab';
+import DailyLifeTab from './tabs/DailyLifeTab';
 
 const CATEGORIES = [
   "Freund", "Mentor", "Familie", "Partner", "Kollege",
@@ -538,6 +540,14 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
               <TabsTrigger value="intimacy" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs">
                 <Flame className="w-3 h-3 mr-1" />
                 Intimität
+              </TabsTrigger>
+              <TabsTrigger value="music" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs">
+                <Music className="w-3 h-3 mr-1" />
+                Musik & Medien
+              </TabsTrigger>
+              <TabsTrigger value="dailylife" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs">
+                <Coffee className="w-3 h-3 mr-1" />
+                Alltag
               </TabsTrigger>
               <TabsTrigger value="world" className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 text-xs">
                 <Globe className="w-3 h-3 mr-1" />
@@ -2325,6 +2335,16 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                 <Label className="text-gray-300">Aftercare-Verhalten</Label>
                 <Textarea value={formData.aftercare_style} onChange={(e) => setFormData(prev => ({ ...prev, aftercare_style: e.target.value }))} placeholder="z.B. Kuschelt und redet, schläft sofort ein, wird distanziert, macht Witze..." className="bg-[#262626] border-white/10 text-white placeholder-gray-500 min-h-[70px]" />
               </div>
+            </TabsContent>
+
+            {/* Music & Media Tab */}
+            <TabsContent value="music">
+              <MusicMediaTab formData={formData} setFormData={setFormData} />
+            </TabsContent>
+
+            {/* Daily Life Tab */}
+            <TabsContent value="dailylife">
+              <DailyLifeTab formData={formData} setFormData={setFormData} />
             </TabsContent>
 
             {/* World Tab */}
