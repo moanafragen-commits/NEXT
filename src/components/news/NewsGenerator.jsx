@@ -68,12 +68,19 @@ REGELN:
       content: a.content || '',
       category: a.category || category,
       emoji: a.emoji || '📰',
-      related_character_ids: relatedChar ? relatedChar.id : ''
+      related_character_ids: relatedChar ? relatedChar.id : '',
+      likes: [],
+      comments: []
     });
     newArticles.push(article);
   }
 
-  return [...newArticles, ...existing];
+  // Generate AI reactions (likes + comments) for all new articles
+  await generateArticleReactions(newArticles, characters);
+
+  // Refetch with reactions
+  const updated = await base44.entities.NewsArticle.filter({ user_email: userEmail }, '-created_date', 20);
+  return updated;
 }
 
 // Build news context for a SPECIFIC character – they know what's reported about them
@@ -103,6 +110,87 @@ export function getNewsContextForCharacter(articles, characterId, characterName)
   }
 
   return parts.join('\n');
+}
+
+// Generate AI likes & comments for articles
+async function generateArticleReactions(articles, characters) {
+  if (!articles.length || characters.length < 2) return;
+
+  const charList = characters.slice(0, 15).map(c => 
+    `- ${c.name} (ID: ${c.id}): ${c.personality?.slice(0, 60) || 'Keine Beschreibung'}${c.occupation ? `, Beruf: ${c.occupation}` : ''}`
+  ).join('\n');
+
+  const articleList = articles.map((a, i) => 
+    `Artikel ${i}: "${a.headline}" – ${a.content}`
+  ).join('\n');
+
+  const response = await base44.integrations.Core.InvokeLLM({
+    prompt: `Mehrere News-Artikel wurden veröffentlicht. Die Charaktere können darauf reagieren (liken & kommentieren).
+
+ARTIKEL:
+${articleList}
+
+CHARAKTERE:
+${charList}
+
+REGELN:
+- Jeder Charakter kann 0-2 Artikel liken (passend zu ihrer Persönlichkeit/Interessen)
+- Pro Artikel sollen 1-4 Charaktere kommentieren (kurz, natürlich, in character)
+- Betroffene Charaktere MÜSSEN auf ihren eigenen Artikel reagieren (genervt, stolz, etc.)
+- Kommentare sollen wie echte Social-Media-Kommentare klingen (kurz, mit Emojis)
+- Manche Charaktere können sarkastisch, andere supportive sein`,
+    response_json_schema: {
+      type: "object",
+      properties: {
+        article_reactions: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              article_index: { type: "number" },
+              likes: { type: "array", items: { type: "string" }, description: "Character-IDs die liken" },
+              comments: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    character_id: { type: "string" },
+                    content: { type: "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+
+  const now = new Date().toISOString();
+  for (const r of (response.article_reactions || [])) {
+    const article = articles[r.article_index];
+    if (!article) continue;
+
+    const likeIds = (r.likes || []).filter(id => characters.some(c => c.id === id));
+    const likeNames = likeIds.map(id => characters.find(c => c.id === id)?.name).filter(Boolean).join(', ');
+    const commentsList = (r.comments || []).map(cm => {
+      const char = characters.find(c => c.id === cm.character_id);
+      if (!char) return null;
+      return {
+        character_id: cm.character_id,
+        character_name: char.name,
+        avatar_url: char.avatar_url || '',
+        content: cm.content,
+        timestamp: now
+      };
+    }).filter(Boolean);
+
+    await base44.entities.NewsArticle.update(article.id, {
+      likes: likeIds,
+      like_names: likeNames,
+      comments: commentsList
+    });
+  }
 }
 
 // Legacy function for backwards compatibility
