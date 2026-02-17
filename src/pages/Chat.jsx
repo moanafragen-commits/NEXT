@@ -32,6 +32,7 @@ import ConflictBanner from '@/components/conflict/ConflictBanner';
 import { getConflictContext, checkForConflict } from '@/components/conflict/ConflictSystem';
 import { getSeasonalContext } from '@/components/seasonal/SeasonalBanner';
 import { getNewsContextForCharacter } from '@/components/news/NewsGenerator';
+import { buildGroupChatContext } from '@/components/chat/GroupChatContext';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
