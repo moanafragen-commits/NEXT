@@ -191,7 +191,7 @@ export default function ConnectionDetail({ link, characters, relationshipEvents 
             </Badge>
             {link.dynamic && (
               <Badge className="bg-purple-500/10 text-purple-300 border border-purple-500/20 text-xs px-2.5 py-1">
-                {link.dynamic}
+                {DYNAMIC_LABELS[link.dynamic] || link.dynamic}
               </Badge>
             )}
             {link.mood && (
@@ -204,11 +204,18 @@ export default function ConnectionDetail({ link, characters, relationshipEvents 
                 💝 {link.loveLanguage}
               </Badge>
             )}
-            {link.attachmentStyle && (
-              <Badge className="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-xs px-2.5 py-1">
-                🔗 {link.attachmentStyle}
-              </Badge>
-            )}
+          </div>
+        )}
+
+        {/* Attachment Style Detail */}
+        {!isCharLink && attachmentInfo && (
+          <div className="mb-4 p-3 rounded-xl bg-indigo-500/[0.06] border border-indigo-500/10">
+            <div className="flex items-center gap-2 mb-0.5">
+              <Shield className="w-3.5 h-3.5 text-indigo-400" />
+              <p className="text-[10px] text-indigo-400/80 uppercase tracking-wider font-semibold">Bindungsstil</p>
+            </div>
+            <p className="text-sm text-indigo-200 font-medium">{attachmentInfo.label}</p>
+            <p className="text-[11px] text-indigo-300/60 mt-0.5">{attachmentInfo.desc}</p>
           </div>
         )}
 
