@@ -119,6 +119,20 @@ export default function Chat() {
     enabled: !!user?.email
   });
 
+  // Group chat data for context awareness
+  const { data: groupChats = [] } = useQuery({
+    queryKey: ['group-chats-ctx'],
+    queryFn: () => base44.entities.GroupChat.list('-created_date', 20),
+  });
+  const { data: groupMembers = [] } = useQuery({
+    queryKey: ['group-members-ctx'],
+    queryFn: () => base44.entities.GroupChatMember.list('-created_date', 100),
+  });
+  const { data: groupMessages = [] } = useQuery({
+    queryKey: ['group-messages-ctx'],
+    queryFn: () => base44.entities.GroupChatMessage.list('-created_date', 100),
+  });
+
   // Generate daily activity, check illness, update weather, location, spontaneous messages on chat open
   const bgTasksRanRef = useRef(false);
   useEffect(() => {
