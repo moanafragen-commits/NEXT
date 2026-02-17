@@ -46,31 +46,26 @@ export default function Shop() {
     enabled: !!user
   });
 
-  // Seed shop items if fewer than expected
+  // Seed shop items once if empty
+  const seedingRef = React.useRef(false);
   useEffect(() => {
-    if (user && shopItems.length > 0) {
-      const allItems = getAllShopItems();
-      const existingKeys = new Set(shopItems.map(i => i.item_key));
-      const missing = allItems.filter(i => !existingKeys.has(i.item_key));
-      if (missing.length > 0) {
-        seedShopItems();
-      }
-    } else if (user && shopItems.length === 0) {
+    if (!user || seedingRef.current) return;
+    if (shopItems.length === 0) {
+      seedingRef.current = true;
       seedShopItems();
     }
-  }, [shopItems.length, user]);
+  }, [user, shopItems.length]);
 
   const seedShopItems = async () => {
+    // Double-check from server to prevent race conditions
+    const serverItems = await base44.entities.ShopItem.filter({ is_active: true });
+    if (serverItems.length > 0) return;
+
     const allItems = getAllShopItems();
-    const existingKeys = new Set(shopItems.map(i => i.item_key));
-    const newItems = allItems.filter(i => !existingKeys.has(i.item_key));
-    if (newItems.length > 0) {
-      // Bulk create in batches of 20
-      for (let i = 0; i < newItems.length; i += 20) {
-        await base44.entities.ShopItem.bulkCreate(newItems.slice(i, i + 20));
-      }
-      queryClient.invalidateQueries({ queryKey: ['shop-items'] });
+    for (let i = 0; i < allItems.length; i += 20) {
+      await base44.entities.ShopItem.bulkCreate(allItems.slice(i, i + 20));
     }
+    queryClient.invalidateQueries({ queryKey: ['shop-items'] });
   };
 
   const buyMutation = useMutation({
