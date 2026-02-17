@@ -31,7 +31,7 @@ import DreamBubble from '@/components/character/DreamBubble';
 import ConflictBanner from '@/components/conflict/ConflictBanner';
 import { getConflictContext, checkForConflict } from '@/components/conflict/ConflictSystem';
 import { getSeasonalContext } from '@/components/seasonal/SeasonalBanner';
-import { getNewsContext } from '@/components/news/NewsGenerator';
+import { getNewsContextForCharacter } from '@/components/news/NewsGenerator';
 
 export default function Chat() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -112,7 +112,11 @@ export default function Chat() {
   const [activeEvent, setActiveEvent] = useState(null);
   const [currentDream, setCurrentDream] = useState(null);
   const [activeConflict, setActiveConflict] = useState(null);
-  const [newsArticles, setNewsArticles] = useState([]);
+  const { data: newsArticles = [] } = useQuery({
+    queryKey: ['news-articles', user?.email],
+    queryFn: () => base44.entities.NewsArticle.filter({ user_email: user.email }, '-created_date', 10),
+    enabled: !!user?.email
+  });
 
   // Generate daily activity, check illness, update weather, location, spontaneous messages on chat open
   const bgTasksRanRef = useRef(false);
@@ -331,7 +335,7 @@ export default function Chat() {
 
       // Add conflict, seasonal, and news context
       const seasonalCtx = getSeasonalContext();
-      const newsCtx = getNewsContext(newsArticles);
+      const newsCtx = getNewsContextForCharacter(newsArticles, characterId, character.name);
       const prompt = basePrompt + conflictCtx + seasonalCtx + newsCtx;
 
       const response = await base44.integrations.Core.InvokeLLM({
