@@ -266,7 +266,18 @@ export default function Chat() {
     setReplyToMessage(null);
     queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
 
-    // 2. Queue AI response processing
+    // 2. Mark all user messages as read immediately (blue checkmarks)
+    const latestMsgs = await base44.entities.ChatMessage.filter({ character_id: characterId }, 'created_date', 100);
+    const unreadUser = latestMsgs.filter(m => m.role === 'user' && m.status !== 'read');
+    const now = new Date().toISOString();
+    for (const msg of unreadUser) {
+      await base44.entities.ChatMessage.update(msg.id, { status: 'read', read_at: now }).catch(() => {});
+    }
+    if (unreadUser.length > 0) {
+      queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
+    }
+
+    // 3. Queue AI response processing
     setPendingMessages(prev => [...prev, { content, imageUrl }]);
   };
 
