@@ -48,7 +48,24 @@ function StatCard({ label, value, icon, color }) {
   );
 }
 
-export default function ConnectionDetail({ link, characters, onClose }) {
+const eventTypeEmojis = {
+  trust_change: '🤝',
+  jealousy_change: '😤',
+  milestone: '🏆',
+  conflict: '⚡',
+  bonding: '💕',
+  revelation: '💡',
+  boundary_crossed: '🚧',
+  memory_formed: '🧠',
+  flirt_moment: '😏',
+  deep_talk: '🌙',
+  betrayal: '💔',
+  reconciliation: '🕊️',
+  inside_joke_born: '😂',
+  vulnerability_shared: '🥺',
+};
+
+export default function ConnectionDetail({ link, characters, relationshipEvents = [], onClose }) {
   if (!link) return null;
 
   const fromChar = link.from === 'user' ? null : characters.find(c => c.id === link.from);
@@ -56,6 +73,9 @@ export default function ConnectionDetail({ link, characters, onClose }) {
   const charName = toChar?.name || fromChar?.name || 'Unbekannt';
   const isCharLink = link.isCharLink;
   const char = toChar || fromChar;
+
+  // Filter events for this character
+  const charEvents = char ? relationshipEvents.filter(e => e.character_id === char.id).slice(0, 5) : [];
 
   return (
     <motion.div
@@ -230,12 +250,48 @@ export default function ConnectionDetail({ link, characters, onClose }) {
           </div>
         )}
 
-        {(!link.highlights || link.highlights.length === 0) && (
+        {(!link.highlights || link.highlights.length === 0) && charEvents.length === 0 && (
           <div className="text-center py-6">
             <div className="w-10 h-10 rounded-full bg-white/[0.03] flex items-center justify-center mx-auto mb-2">
               <Sparkles className="w-5 h-5 text-gray-600" />
             </div>
             <p className="text-xs text-gray-600">Noch keine besonderen Momente – chatte weiter!</p>
+          </div>
+        )}
+
+        {/* Relationship Timeline */}
+        {charEvents.length > 0 && (
+          <div className="mt-4 space-y-2">
+            <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-widest mb-2">Beziehungs-Timeline</p>
+            {charEvents.map((evt, i) => (
+              <motion.div
+                key={evt.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.08 }}
+                className="flex items-start gap-3 relative"
+              >
+                {i < charEvents.length - 1 && (
+                  <div className="absolute left-[14px] top-8 bottom-0 w-px bg-white/[0.06]" />
+                )}
+                <div className={`mt-0.5 w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-sm ${
+                  (evt.impact_score || 0) > 0 ? 'bg-emerald-500/15' : (evt.impact_score || 0) < 0 ? 'bg-red-500/15' : 'bg-white/[0.05]'
+                }`}>
+                  {eventTypeEmojis[evt.event_type] || '✨'}
+                </div>
+                <div className="flex-1 min-w-0 pb-3">
+                  <p className="text-xs text-white leading-relaxed">{evt.description}</p>
+                  <p className="text-[10px] text-gray-600 mt-0.5">
+                    {new Date(evt.created_date).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' })}
+                    {evt.impact_score ? (
+                      <span className={`ml-2 ${evt.impact_score > 0 ? 'text-emerald-500' : 'text-red-400'}`}>
+                        {evt.impact_score > 0 ? '+' : ''}{evt.impact_score} Impact
+                      </span>
+                    ) : null}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         )}
       </div>
