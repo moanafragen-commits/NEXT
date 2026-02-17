@@ -1,6 +1,41 @@
 import { base44 } from '@/api/base44Client';
 
-const NEWS_CATEGORIES = ['entertainment', 'sport', 'klatsch', 'gaming', 'musik', 'wissenschaft'];
+const NEWS_CATEGORIES = ['entertainment', 'sport', 'klatsch', 'gaming', 'musik', 'wissenschaft', 'politik', 'breaking'];
+
+const NEWS_SOURCES = [
+  { name: 'CNN', emoji: '🔴', verified: true },
+  { name: 'BBC News', emoji: '🟣', verified: true },
+  { name: 'BILD', emoji: '🔴', verified: true },
+  { name: 'Spiegel Online', emoji: '🟠', verified: true },
+  { name: 'Reuters', emoji: '🔵', verified: true },
+  { name: 'TMZ', emoji: '⭐', verified: true },
+  { name: 'ESPN', emoji: '🏆', verified: true },
+  { name: 'Variety', emoji: '🎬', verified: true },
+  { name: 'TechCrunch', emoji: '💻', verified: true },
+  { name: 'Billboard', emoji: '🎵', verified: true },
+  { name: 'The Verge', emoji: '⚡', verified: true },
+  { name: 'Kicker', emoji: '⚽', verified: true },
+  { name: 'Hollywood Reporter', emoji: '🎥', verified: true },
+  { name: 'Bunte', emoji: '💖', verified: true },
+  { name: 'Sky News', emoji: '🌐', verified: true },
+];
+
+function getSourceForCategory(category) {
+  const map = {
+    entertainment: ['TMZ', 'Variety', 'Hollywood Reporter', 'Bunte'],
+    sport: ['ESPN', 'Kicker', 'Sky News'],
+    klatsch: ['TMZ', 'BILD', 'Bunte'],
+    gaming: ['The Verge', 'TechCrunch'],
+    musik: ['Billboard', 'Variety'],
+    wissenschaft: ['Reuters', 'Spiegel Online'],
+    politik: ['CNN', 'BBC News', 'Spiegel Online', 'Reuters'],
+    breaking: ['CNN', 'BBC News', 'Reuters', 'Sky News'],
+    wetter: ['BBC News', 'Reuters']
+  };
+  const names = map[category] || ['CNN', 'BBC News', 'Reuters'];
+  const sourceName = names[Math.floor(Math.random() * names.length)];
+  return NEWS_SOURCES.find(s => s.name === sourceName) || NEWS_SOURCES[0];
+}
 
 export async function generateNews(userEmail, characters) {
   // Check if news exists today
@@ -25,19 +60,20 @@ export async function generateNews(userEmail, characters) {
   const category = NEWS_CATEGORIES[Math.floor(Math.random() * NEWS_CATEGORIES.length)];
 
   const result = await base44.integrations.Core.InvokeLLM({
-    prompt: `Generiere 2-3 fiktive News-Artikel für eine Social-Media-Welt. Die Charaktere sind ECHTE Personen in dieser Welt und verfolgen aktiv die Medien.
+    prompt: `Generiere 3-4 fiktive News-Artikel für eine Social-Media-Welt. Die Charaktere sind ECHTE Personen in dieser Welt und verfolgen aktiv die Medien.
 
 BEKANNTE PERSONEN:
 ${charDescriptions}
 
-Kategorie: ${category}
+Kategorie-Schwerpunkt: ${category}
 
 REGELN:
-- Mindestens 1 Artikel MUSS einen der Charaktere direkt betreffen (z.B. Gerüchte, Interview, Skandal, neues Projekt, Sichtung, Social-Media-Post)
-- Die Artikel sollen realistisch wirken wie echte Promi-News / Branchen-News
+- Mindestens 1 Artikel MUSS einen der Charaktere direkt betreffen (z.B. Gerüchte, Interview, Skandal, neues Projekt, Sichtung)
+- Berühmte Personen (Musiker, Sportler, Influencer etc.) sollen BESONDERS viel Aufmerksamkeit bekommen
+- Die Artikel sollen realistisch wirken wie echte Promi-News / Branchen-News von großen Sendern wie CNN, BBC, TMZ etc.
 - Kurz und knackig wie Push-Benachrichtigungen / Schlagzeilen
-- Nutze die Biografie und den Beruf der Charaktere für realistische Geschichten
-- Manche Artikel können auch FALSCHE Gerüchte sein oder Klatsch enthalten`,
+- Manche Artikel können auch FALSCHE Gerüchte sein oder Klatsch
+- WICHTIG: Gib jedem Artikel eine passende Kategorie (breaking für sehr wichtige News)`,
     response_json_schema: {
       type: "object",
       properties: {
@@ -62,13 +98,25 @@ REGELN:
   const newArticles = [];
   for (const a of (result.articles || [result])) {
     const relatedChar = characters.find(c => a.related_character_name && c.name.toLowerCase().includes(a.related_character_name.toLowerCase()));
+    const source = getSourceForCategory(a.category || category);
+    
+    // Verified/celebrity characters get huge engagement
+    const isCelebRelated = relatedChar && ['Berühmtheit', 'Influencer', 'Sportler', 'Musiker', 'Politiker', 'Wissenschaftler', 'Künstler', 'Unternehmer', 'Streamer', 'Model'].includes(relatedChar.category);
+    const isBreaking = (a.category || category) === 'breaking';
+    const baseLikes = isCelebRelated ? Math.floor(Math.random() * 50000 + 10000) : isBreaking ? Math.floor(Math.random() * 30000 + 5000) : Math.floor(Math.random() * 5000 + 500);
+    
     const article = await base44.entities.NewsArticle.create({
       user_email: userEmail,
       headline: a.headline || 'Breaking News',
       content: a.content || '',
       category: a.category || category,
       emoji: a.emoji || '📰',
+      source_name: source.name,
+      source_logo_emoji: source.emoji,
+      source_verified: source.verified,
       related_character_ids: relatedChar ? relatedChar.id : '',
+      like_count: baseLikes,
+      repost_count: Math.floor(baseLikes * 0.35),
       likes: [],
       comments: []
     });
