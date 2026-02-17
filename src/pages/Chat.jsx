@@ -191,28 +191,32 @@ export default function Chat() {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  // Mark unread assistant messages as read when opening the chat (limited to avoid rate limits)
+  // Mark ALL unread assistant messages as read when opening the chat
   const markedRef = useRef(new Set());
+  const markingInProgressRef = useRef(false);
   useEffect(() => {
-    if (!messages.length || !characterId) return;
+    if (!messages.length || !characterId || markingInProgressRef.current) return;
     const unreadAssistantMsgs = messages.filter(m => m.role === 'assistant' && m.status !== 'read' && !markedRef.current.has(m.id));
     if (unreadAssistantMsgs.length === 0) return;
     
     // Mark IDs immediately to prevent re-runs
     unreadAssistantMsgs.forEach(m => markedRef.current.add(m.id));
+    markingInProgressRef.current = true;
     
     const markAsRead = async () => {
-      // Only mark the latest 3 as read to reduce API calls
-      const toMark = unreadAssistantMsgs.slice(-3);
-      for (const msg of toMark) {
-        await base44.entities.ChatMessage.update(msg.id, { status: 'read', read_at: new Date().toISOString() }).catch(() => {});
-        await new Promise(r => setTimeout(r, 800));
+      const now = new Date().toISOString();
+      // Mark all unread messages sequentially with delays to avoid rate limits
+      for (const msg of unreadAssistantMsgs) {
+        await base44.entities.ChatMessage.update(msg.id, { status: 'read', read_at: now }).catch(() => {});
+        await new Promise(r => setTimeout(r, 600));
       }
+      markingInProgressRef.current = false;
       queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
+      queryClient.invalidateQueries({ queryKey: ['all-messages'] });
     };
-    // Long delay to avoid competing with other operations
-    const timer = setTimeout(markAsRead, 5000);
-    return () => clearTimeout(timer);
+    // Start marking after a short delay so initial queries settle first
+    const timer = setTimeout(markAsRead, 1500);
+    return () => { clearTimeout(timer); markingInProgressRef.current = false; };
   }, [messages.length, characterId]);
   
   const togglePinMutation = useMutation({
