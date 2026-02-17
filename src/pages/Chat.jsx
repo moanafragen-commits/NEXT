@@ -495,7 +495,7 @@ export default function Chat() {
       <header className={`sticky top-0 z-10 ${equippedTheme.headerBg || 'bg-[#1a1a1a]'} backdrop-blur-xl border-b ${equippedTheme.isLight ? 'border-black/10' : 'border-white/5'}`}>
         <div className="flex items-center gap-3 p-3">
           <Link to={createPageUrl('Home')}>
-            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/10">
+            <Button variant="ghost" size="icon" className={`${equippedTheme.isLight ? 'text-gray-600 hover:text-gray-900 hover:bg-black/10' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
@@ -507,8 +507,8 @@ export default function Chat() {
           />
           
           <Link to={createPageUrl(`CharacterInfo?characterId=${characterId}`)} className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 flex-wrap">
-                <h2 className="font-semibold text-white hover:text-emerald-400 transition-colors">{character.name}</h2>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                    <h2 className={`font-semibold ${equippedTheme.isLight ? 'text-gray-900 hover:text-purple-600' : 'text-white hover:text-emerald-400'} transition-colors`}>{character.name}</h2>
                 {character.illness && (
                   <span className="text-xs px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
                     {getIllnessDisplay(character)?.emoji} {character.illness}
@@ -523,11 +523,11 @@ export default function Chat() {
                 <MotivationBadge motivation={character.current_motivation} progress={character.motivation_progress} />
                 <ActivityBadge characterId={characterId} />
               </div>
-            <p className="text-xs text-gray-400 truncate">
-              {isTyping ? (
-                <span className="text-emerald-400">schreibt...</span>
-              ) : delayStatus ? (
-                <span className="text-amber-400">{delayStatus}</span>
+            <p className={`text-xs ${equippedTheme.isLight ? 'text-gray-500' : 'text-gray-400'} truncate`}>
+                  {isTyping ? (
+                    <span className="text-emerald-400">schreibt...</span>
+                  ) : delayStatus ? (
+                    <span className="text-amber-400">{delayStatus}</span>
               ) : (() => {
                 const avail = getCharacterAvailability(character);
                 if (avail.status === 'online') return <span className="text-emerald-400">online</span>;
