@@ -335,6 +335,9 @@ export default function Chat() {
         }
       }
 
+      // Build group chat context
+      const groupCtx = buildGroupChatContext(groupChats, groupMembers, groupMessages, characterId, allCharacters);
+
       // Build prompt
       const { prompt: basePrompt, allMemories } = buildFullPrompt({
         character,
@@ -349,7 +352,8 @@ export default function Chat() {
         importantDates,
         weatherState,
         activeEvent,
-        currentDream
+        currentDream,
+        groupChatContext: groupCtx
       });
 
       // Add conflict, seasonal, and news context
