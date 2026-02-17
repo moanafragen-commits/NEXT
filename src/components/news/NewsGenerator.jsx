@@ -4,47 +4,108 @@ const NEWS_CATEGORIES = ['entertainment', 'sport', 'klatsch', 'gaming', 'musik',
 
 export async function generateNews(userEmail, characters) {
   // Check if news exists today
-  const existing = await base44.entities.NewsArticle.filter({ user_email: userEmail }, '-created_date', 5);
+  const existing = await base44.entities.NewsArticle.filter({ user_email: userEmail }, '-created_date', 10);
   if (existing.length > 0) {
     const lastDate = new Date(existing[0].created_date).toDateString();
     if (lastDate === new Date().toDateString()) return existing;
   }
 
-  const charNames = characters.slice(0, 5).map(c => `${c.name} (${c.category || 'Charakter'})`).join(', ');
+  // Pick 2-4 characters to feature in the news
+  const shuffled = [...characters].sort(() => Math.random() - 0.5);
+  const featured = shuffled.slice(0, Math.min(4, characters.length));
+  const charDescriptions = featured.map(c => {
+    const parts = [c.name];
+    if (c.occupation) parts.push(`Beruf: ${c.occupation}`);
+    if (c.category) parts.push(`Typ: ${c.category}`);
+    if (c.interests) parts.push(`Interessen: ${c.interests.slice(0, 80)}`);
+    if (c.biography) parts.push(`Bio: ${c.biography.slice(0, 100)}`);
+    return parts.join(', ');
+  }).join('\n');
+
   const category = NEWS_CATEGORIES[Math.floor(Math.random() * NEWS_CATEGORIES.length)];
 
   const result = await base44.integrations.Core.InvokeLLM({
-    prompt: `Generiere eine fiktive In-Game Nachricht für eine Social-Media-Welt.
-Bekannte Personen in dieser Welt: ${charNames}
+    prompt: `Generiere 2-3 fiktive News-Artikel für eine Social-Media-Welt. Die Charaktere sind ECHTE Personen in dieser Welt und verfolgen aktiv die Medien.
+
+BEKANNTE PERSONEN:
+${charDescriptions}
 
 Kategorie: ${category}
-Erstelle eine witzige, dramatische oder überraschende Nachricht die in diese Welt passt.
-Die Nachricht sollte kurz und knackig sein wie eine Push-Benachrichtigung.`,
+
+REGELN:
+- Mindestens 1 Artikel MUSS einen der Charaktere direkt betreffen (z.B. Gerüchte, Interview, Skandal, neues Projekt, Sichtung, Social-Media-Post)
+- Die Artikel sollen realistisch wirken wie echte Promi-News / Branchen-News
+- Kurz und knackig wie Push-Benachrichtigungen / Schlagzeilen
+- Nutze die Biografie und den Beruf der Charaktere für realistische Geschichten
+- Manche Artikel können auch FALSCHE Gerüchte sein oder Klatsch enthalten`,
     response_json_schema: {
       type: "object",
       properties: {
-        headline: { type: "string" },
-        content: { type: "string" },
-        emoji: { type: "string" },
-        related_character_name: { type: "string" }
+        articles: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              headline: { type: "string" },
+              content: { type: "string", description: "2-3 Sätze Inhalt" },
+              emoji: { type: "string" },
+              category: { type: "string", enum: NEWS_CATEGORIES },
+              related_character_name: { type: "string", description: "Name des betroffenen Charakters, leer wenn keiner direkt betroffen" },
+              is_rumor: { type: "boolean", description: "Ob es ein Gerücht/unbestätigter Bericht ist" }
+            }
+          }
+        }
       }
     }
   });
 
-  const relatedChar = characters.find(c => result.related_character_name && c.name.includes(result.related_character_name));
+  const newArticles = [];
+  for (const a of (result.articles || [result])) {
+    const relatedChar = characters.find(c => a.related_character_name && c.name.toLowerCase().includes(a.related_character_name.toLowerCase()));
+    const article = await base44.entities.NewsArticle.create({
+      user_email: userEmail,
+      headline: a.headline || 'Breaking News',
+      content: a.content || '',
+      category: a.category || category,
+      emoji: a.emoji || '📰',
+      related_character_ids: relatedChar ? relatedChar.id : ''
+    });
+    newArticles.push(article);
+  }
 
-  const article = await base44.entities.NewsArticle.create({
-    user_email: userEmail,
-    headline: result.headline,
-    content: result.content,
-    category,
-    emoji: result.emoji || '📰',
-    related_character_ids: relatedChar ? relatedChar.id : ''
-  });
-
-  return [article, ...existing];
+  return [...newArticles, ...existing];
 }
 
+// Build news context for a SPECIFIC character – they know what's reported about them
+export function getNewsContextForCharacter(articles, characterId, characterName) {
+  if (!articles || articles.length === 0) return '';
+
+  const parts = [];
+
+  // Articles about THIS character
+  const aboutMe = articles.filter(a => a.related_character_ids && a.related_character_ids.includes(characterId));
+  if (aboutMe.length > 0) {
+    parts.push('\n\n📰 MEDIENBERICHTE ÜBER DICH (du verfolgst die Nachrichten aktiv!):');
+    for (const a of aboutMe.slice(0, 3)) {
+      parts.push(`- "${a.headline}": ${a.content}`);
+    }
+    parts.push('→ Du WEISST von diesen Berichten! Reagiere darauf: Sei genervt von falschen Gerüchten, stolz auf positive Presse, besorgt über Skandale. Erwähne es wenn es passt, z.B. "Hast du gesehen was die über mich schreiben?" oder "Die Medien drehen wieder durch..."');
+  }
+
+  // General news the character would have seen
+  const otherNews = articles.filter(a => !a.related_character_ids || !a.related_character_ids.includes(characterId)).slice(0, 2);
+  if (otherNews.length > 0) {
+    parts.push('\n📱 AKTUELLE NACHRICHTEN (du hast diese News gesehen):');
+    for (const a of otherNews) {
+      parts.push(`- "${a.headline}": ${a.content}`);
+    }
+    parts.push('→ Du kannst diese News beiläufig erwähnen wenn es zum Gespräch passt, wie ein echter Mensch der Nachrichten liest.');
+  }
+
+  return parts.join('\n');
+}
+
+// Legacy function for backwards compatibility
 export function getNewsContext(articles) {
   if (!articles || articles.length === 0) return '';
   const latest = articles[0];
