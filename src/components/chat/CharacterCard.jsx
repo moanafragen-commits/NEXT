@@ -109,6 +109,12 @@ export default function CharacterCard({ character, lastMessage, unreadCount = 0,
             <span className="text-gray-500">{availability.label}</span>
           ) : lastMessage?.content || character.status || character.greeting || character.personality?.slice(0, 50) + '...'}
         </p>
+        {latestLocation && (
+          <div className="flex items-center gap-1 mt-1">
+            <span className="text-[11px] flex-shrink-0">{latestLocation.emoji || '📍'}</span>
+            <span className="text-[11px] text-gray-500 truncate">{latestLocation.location_name}{latestLocation.description ? ` – ${latestLocation.description}` : ''}</span>
+          </div>
+        )}
         {character.current_song && (
           <div className="flex items-center gap-1.5 mt-1">
             <Music className="w-3 h-3 text-[#1DB954] flex-shrink-0" />
