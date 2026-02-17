@@ -140,27 +140,28 @@ function getCharacterLocations(character) {
   const homeLabel = city || (displayCityName ? `Zuhause in ${displayCityName}` : 'Zuhause');
   const workLabel = job || 'Büro';
 
-  const cafés = cityName 
-    ? [`Café in ${cityName}`, `Starbucks ${cityName}`, `Kleines Eck-Café`]
+  const cn = displayCityName;
+  const cafés = cn 
+    ? [`Café in ${cn}`, `Starbucks ${cn}`, `Kleines Eck-Café`]
     : ['Starbucks', 'Café Luna', 'Coffee House', 'Kleines Eck-Café'];
 
-  const restaurants = cityName
-    ? [`Restaurant in ${cityName}`, `Lieblingsrestaurant`, `Imbiss um die Ecke`]
+  const restaurants = cn
+    ? [`Restaurant in ${cn}`, `Lieblingsrestaurant`, `Imbiss um die Ecke`]
     : ['Pizzeria Bella', 'Sushi Bar', 'Burger Laden', 'Asia Imbiss'];
 
-  const parks = cityName
-    ? [`Stadtpark ${cityName}`, `Park in ${cityName}`, `Am Fluss`]
+  const parks = cn
+    ? [`Stadtpark ${cn}`, `Park in ${cn}`, `Am Fluss`]
     : ['Stadtpark', 'Am See', 'Botanischer Garten'];
 
-  const bars = cityName
-    ? [`Bar in ${cityName}`, `Club in ${cityName}`, `Lieblingsbar`]
+  const bars = cn
+    ? [`Bar in ${cn}`, `Club in ${cn}`, `Lieblingsbar`]
     : ['Cocktailbar', 'Kneipe', 'Skybar'];
 
-  const shops = cityName
-    ? [`Einkaufszentrum ${cityName}`, `Innenstadt ${cityName}`, `Supermarkt`]
+  const shops = cn
+    ? [`Einkaufszentrum ${cn}`, `Innenstadt ${cn}`, `Supermarkt`]
     : ['Einkaufszentrum', 'Innenstadt', 'Supermarkt'];
 
-  return { homeLabel, workLabel, cafés, restaurants, parks, bars, shops, isStudent, isWorkingOut, cityName };
+  return { homeLabel, workLabel, cafés, restaurants, parks, bars, shops, isStudent, isWorkingOut, cityName: cn, homeCityCoords: homeCity?.coords || null };
 }
 
 export function generateRandomLocation(character) {
