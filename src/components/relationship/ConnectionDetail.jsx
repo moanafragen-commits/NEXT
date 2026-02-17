@@ -1,7 +1,9 @@
 import React from 'react';
-import { X, Heart, MessageCircle, Brain, Laugh, BookOpen, Share2, Star, Sparkles } from 'lucide-react';
+import { X, Heart, MessageCircle, Brain, Laugh, BookOpen, Share2, Star, Sparkles, Shield, Flame, ArrowUpRight, ArrowDownRight, Minus, Link2, Eye, Frown, Smile, Zap } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 
 const highlightIcons = {
@@ -90,6 +92,17 @@ export default function ConnectionDetail({ link, characters, onClose }) {
           </Button>
         </div>
 
+        {/* Pet names - how the character calls the user */}
+        {!isCharLink && link.petNames && (
+          <div className="mb-4 p-3 rounded-xl bg-amber-500/[0.06] border border-amber-500/10">
+            <div className="flex items-center gap-2 mb-1">
+              <Heart className="w-3.5 h-3.5 text-amber-400" />
+              <p className="text-[10px] text-amber-400/80 uppercase tracking-wider font-semibold">Nennt dich</p>
+            </div>
+            <p className="text-sm text-amber-200 font-medium">„{link.petNames}"</p>
+          </div>
+        )}
+
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-2 mb-4">
           <StatCard 
@@ -104,6 +117,14 @@ export default function ConnectionDetail({ link, characters, onClose }) {
               value={link.trust}
               icon={<Star className="w-3 h-3 text-amber-400" />}
               color={link.trust >= 7 ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : link.trust >= 4 ? 'bg-gradient-to-r from-amber-500 to-yellow-500' : 'bg-gradient-to-r from-red-500 to-orange-500'}
+            />
+          )}
+          {!isCharLink && (
+            <StatCard 
+              label="Eifersucht" 
+              value={link.jealousy || 3}
+              icon={<Flame className="w-3 h-3 text-orange-400" />}
+              color={link.jealousy >= 7 ? 'bg-gradient-to-r from-red-500 to-orange-500' : link.jealousy >= 4 ? 'bg-gradient-to-r from-amber-500 to-yellow-500' : 'bg-gradient-to-r from-blue-500 to-cyan-500'}
             />
           )}
           <StatCard 
@@ -129,7 +150,60 @@ export default function ConnectionDetail({ link, characters, onClose }) {
                 {link.dynamic}
               </Badge>
             )}
+            {link.mood && (
+              <Badge className="bg-blue-500/10 text-blue-300 border border-blue-500/20 text-xs px-2.5 py-1">
+                🎭 {link.mood}
+              </Badge>
+            )}
+            {link.loveLanguage && (
+              <Badge className="bg-pink-500/10 text-pink-300 border border-pink-500/20 text-xs px-2.5 py-1">
+                💝 {link.loveLanguage}
+              </Badge>
+            )}
+            {link.attachmentStyle && (
+              <Badge className="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-xs px-2.5 py-1">
+                🔗 {link.attachmentStyle}
+              </Badge>
+            )}
           </div>
+        )}
+
+        {/* Relationship Evolution */}
+        {!isCharLink && link.evolution && link.evolution !== 'statisch' && (
+          <div className="mb-4 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+            <div className="flex items-center gap-2">
+              {link.evolution === 'sich_annähernd' || link.evolution === 'sich_vertiefend' ? (
+                <ArrowUpRight className="w-4 h-4 text-emerald-400" />
+              ) : link.evolution === 'sich_entfernend' ? (
+                <ArrowDownRight className="w-4 h-4 text-red-400" />
+              ) : (
+                <Zap className="w-4 h-4 text-amber-400" />
+              )}
+              <div>
+                <p className="text-[10px] text-gray-500 uppercase tracking-wider">Beziehungsentwicklung</p>
+                <p className="text-xs text-white font-medium">
+                  {{
+                    'sich_annähernd': '📈 Ihr nähert euch an',
+                    'sich_entfernend': '📉 Ihr entfernt euch',
+                    'schwankend': '📊 Schwankend – mal nah, mal fern',
+                    'sich_vertiefend': '💫 Tiefe Verbindung wächst',
+                    'kompliziert': '🌀 Es ist kompliziert'
+                  }[link.evolution] || link.evolution}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Quick action: go to chat */}
+        {!isCharLink && char && (
+          <Link 
+            to={createPageUrl(`Chat?characterId=${char.id}`)}
+            className="flex items-center gap-2 p-3 mb-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors"
+          >
+            <MessageCircle className="w-4 h-4 text-emerald-400" />
+            <span className="text-sm text-emerald-300 font-medium">Chat mit {charName} öffnen</span>
+          </Link>
         )}
 
         {/* Highlights */}
