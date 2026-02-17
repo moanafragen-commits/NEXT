@@ -281,6 +281,24 @@ export default function ConnectionDetail({ link, characters, relationshipEvents 
           </div>
         )}
 
+        {/* Compatibility Score */}
+        {!isCharLink && link.trust > 0 && (
+          <div className="mb-4 p-3 rounded-xl bg-gradient-to-r from-emerald-500/[0.05] to-pink-500/[0.05] border border-white/[0.06]">
+            <p className="text-[9px] text-gray-500 uppercase tracking-wider mb-2 font-semibold">Kompatibilität</p>
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-2 rounded-full bg-white/[0.06] overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.min(100, ((link.trust * 0.4) + (Math.min(link.msgCount, 100) / 100 * 30) + (Math.min(link.memCount, 20) / 20 * 30)))}%` }}
+                  transition={{ duration: 1, ease: 'easeOut' }}
+                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-400 to-pink-500"
+                />
+              </div>
+              <span className="text-xs font-bold text-white">{Math.round(link.strength * 10)}%</span>
+            </div>
+          </div>
+        )}
+
         {(!link.highlights || link.highlights.length === 0) && charEvents.length === 0 && (
           <div className="text-center py-6">
             <div className="w-10 h-10 rounded-full bg-white/[0.03] flex items-center justify-center mx-auto mb-2">
