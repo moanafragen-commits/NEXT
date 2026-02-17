@@ -65,6 +65,30 @@ const eventTypeEmojis = {
   vulnerability_shared: '🥺',
 };
 
+const DYNAMIC_LABELS = {
+  'gleichberechtigt': '⚖️ Gleichberechtigt',
+  'dominant': '👑 Dominant',
+  'unterwürfig': '🙇 Unterwürfig',
+  'beschützend': '🛡️ Beschützend',
+  'spielerisch': '🎲 Spielerisch',
+  'romantisch_spannend': '🔥 Romantisch',
+  'kalt_distanziert': '🧊 Distanziert',
+  'neckend_flirtend': '😜 Neckend',
+  'toxisch': '☠️ Toxisch',
+  'heilend': '💚 Heilend',
+  'intellektuell': '🧠 Intellektuell',
+  'leidenschaftlich': '💘 Leidenschaftlich',
+  'vertrauensvoll': '🤝 Vertrauensvoll',
+  'misstrauisch_vorsichtig': '🤨 Vorsichtig',
+};
+
+const ATTACHMENT_LABELS = {
+  'sicher': { label: '🟢 Sicher', desc: 'Fühlt sich wohl mit Nähe & Distanz' },
+  'ängstlich': { label: '🟡 Ängstlich', desc: 'Braucht Bestätigung, Angst vor Verlust' },
+  'vermeidend': { label: '🔴 Vermeidend', desc: 'Meidet zu viel Nähe' },
+  'desorganisiert': { label: '🟠 Desorganisiert', desc: 'Schwankt zwischen Nähe & Flucht' },
+};
+
 export default function ConnectionDetail({ link, characters, relationshipEvents = [], onClose }) {
   if (!link) return null;
 
@@ -74,8 +98,8 @@ export default function ConnectionDetail({ link, characters, relationshipEvents 
   const isCharLink = link.isCharLink;
   const char = toChar || fromChar;
 
-  // Filter events for this character
-  const charEvents = char ? relationshipEvents.filter(e => e.character_id === char.id).slice(0, 5) : [];
+  const charEvents = char ? relationshipEvents.filter(e => e.character_id === char.id).slice(0, 8) : [];
+  const attachmentInfo = ATTACHMENT_LABELS[link.attachmentStyle];
 
   return (
     <motion.div
