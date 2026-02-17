@@ -90,6 +90,7 @@ export default function RelationshipMapCanvas({ characters, memories, messages, 
         relationship: c.initial_relationship || '',
         category: c.category || '',
         mood: c.current_mood || '',
+        petName: c.pet_names || '',
         isUser: false,
         character: c
       });
@@ -114,6 +115,12 @@ export default function RelationshipMapCanvas({ characters, memories, messages, 
       links.push({
         from: 'user', to: c.id, strength: bondStrength, trust, msgCount, memCount,
         relationship: c.initial_relationship || 'Unbekannt', dynamic: c.relationship_dynamic || '',
+        petNames: c.pet_names || '',
+        loveLanguage: c.love_language || '',
+        attachmentStyle: c.attachment_style || '',
+        jealousy: c.jealousy_level || 3,
+        evolution: c.relationship_evolution || 'statisch',
+        mood: c.current_mood || '',
         highlights, character: c
       });
     });
@@ -359,12 +366,18 @@ export default function RelationshipMapCanvas({ characters, memories, messages, 
         ctx.textBaseline = 'middle';
         ctx.fillText(name, pos.x, labelY);
 
-        // Mood/category tag
-        if (!node.isUser && (node.mood || node.category)) {
+        // Pet name (what the character calls the user)
+        if (!node.isUser && node.petName) {
+          const petLabel = `nennt dich „${node.petName.split(',')[0].trim()}"`;
+          ctx.font = 'italic 8px Inter, sans-serif';
+          ctx.fillStyle = 'rgba(251,191,36,0.6)';
+          ctx.fillText(petLabel, pos.x, labelY + 13);
+        } else if (!node.isUser && (node.mood || node.category)) {
+          // Mood/category tag fallback
           const tag = node.mood || node.category;
           ctx.font = '9px Inter, sans-serif';
           ctx.fillStyle = 'rgba(255,255,255,0.35)';
-          ctx.fillText(tag, pos.x, labelY + 14);
+          ctx.fillText(tag, pos.x, labelY + 13);
         }
 
         ctx.textBaseline = 'alphabetic';
