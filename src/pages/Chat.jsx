@@ -714,11 +714,12 @@ export default function Chat() {
       {/* Input */}
       <div className={`shrink-0 ${equippedTheme.inputBg || 'bg-[#1a1a1a]'} backdrop-blur-xl border-t ${equippedTheme.isLight ? 'border-black/10' : 'border-white/5'} p-4`}>
         <ChatInput 
-          onSend={(content, imageUrl) => handleSendMessage(content, imageUrl)}
-          isLoading={false}
-          replyToMessage={replyToMessage}
-          onCancelReply={() => setReplyToMessage(null)}
-        />
+            onSend={(content, imageUrl) => handleSendMessage(content, imageUrl)}
+            isLoading={false}
+            replyToMessage={replyToMessage}
+            onCancelReply={() => setReplyToMessage(null)}
+            theme={equippedTheme}
+          />
       </div>
     </div>
   );
