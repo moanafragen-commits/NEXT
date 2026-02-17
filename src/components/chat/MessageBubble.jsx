@@ -7,7 +7,7 @@ function formatGermanTime(dateStr) {
   const d = new Date(dateStr);
   return d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' });
 }
-import { Check, CheckCheck, Pin, Reply, MoreVertical, Bookmark, Copy } from 'lucide-react';
+import { Check, CheckCheck, Pin, Reply, MoreVertical, Bookmark, Copy, Share2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,6 +20,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import EmojiPicker from './EmojiPicker';
 import QuickReactions from './QuickReactions';
+import ShareToGroupSheet from './ShareToGroupSheet';
 import { toast } from 'sonner';
 
 function renderMessageContent(content, customEmojis) {
@@ -69,6 +70,7 @@ export default function MessageBubble({ message, characterAvatar, characterName,
   const isUser = message.role === 'user';
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${characterName}`;
   const [showActions, setShowActions] = useState(false);
+  const [showShareSheet, setShowShareSheet] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: reactions = [] } = useQuery({
@@ -295,9 +297,33 @@ export default function MessageBubble({ message, characterAvatar, characterName,
               <Copy className="w-4 h-4 mr-2" />
               Kopieren
             </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => setShowShareSheet(true)}
+              className="text-gray-200 hover:bg-white/5 cursor-pointer"
+            >
+              <Share2 className="w-4 h-4 mr-2" />
+              In Gruppe teilen
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )}
+
+      {/* Shared indicator */}
+      {message.shared_to_group_id && (
+        <div className="absolute -bottom-4 right-2 text-[9px] text-teal-400/60 flex items-center gap-0.5">
+          <Share2 className="w-2.5 h-2.5" />
+          <span>Geteilt</span>
+        </div>
+      )}
+
+      {/* Share Sheet */}
+      <ShareToGroupSheet
+        open={showShareSheet}
+        onClose={() => setShowShareSheet(false)}
+        message={message}
+        characterName={characterName}
+        characterId={message.character_id}
+      />
     </div>
   );
 }
