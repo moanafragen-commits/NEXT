@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import EmojiPicker from './EmojiPicker';
 import { base44 } from '@/api/base44Client';
 
-export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelReply }) {
+export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelReply, theme }) {
+  const isLight = theme?.isLight || false;
   const [message, setMessage] = useState('');
   const [imageUrl, setImageUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -49,7 +50,7 @@ export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelR
         </div>
       )}
       {replyToMessage && (
-        <div className="mb-2 p-2 flex items-start gap-2 bg-[#262626]/50 rounded-lg">
+        <div className={`mb-2 p-2 flex items-start gap-2 ${isLight ? 'bg-black/10' : 'bg-[#262626]/50'} rounded-lg`}>
           <div className="flex-1 min-w-0">
             <p className="text-xs text-emerald-400 font-semibold mb-0.5">
               Antwort auf {replyToMessage.role === 'user' ? 'dich' : 'Nachricht'}
@@ -79,7 +80,7 @@ export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelR
           size="icon"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
-          className="text-gray-400 hover:text-white hover:bg-white/10"
+          className={isLight ? 'text-gray-500 hover:text-gray-700 hover:bg-black/10' : 'text-gray-400 hover:text-white hover:bg-white/10'}
         >
           {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Image className="w-5 h-5" />}
         </Button>
@@ -91,7 +92,7 @@ export default function ChatInput({ onSend, isLoading, replyToMessage, onCancelR
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Nachricht schreiben..."
-            className="w-full bg-[#262626] text-white rounded-full px-5 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 placeholder-gray-500"
+            className={`w-full rounded-full px-5 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 ${isLight ? 'bg-white/60 text-gray-900 placeholder-gray-400' : 'bg-[#262626] text-white placeholder-gray-500'}`}
           />
         </div>
         
