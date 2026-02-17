@@ -214,6 +214,31 @@ export default function Feed() {
           }}
         />
 
+        {/* News Banner */}
+        {newsArticles.length > 0 && !activeTrend && (
+          <div className="border-b border-white/[0.05]">
+            <div className="flex items-center justify-between px-4 pt-3 pb-1">
+              <div className="flex items-center gap-2">
+                <Newspaper className="w-4 h-4 text-amber-400" />
+                <span className="text-sm font-bold text-white">Top-Nachrichten</span>
+              </div>
+              <Link to={createPageUrl('NewsFeed')} className="text-xs text-blue-400 hover:text-blue-300">
+                Alle anzeigen →
+              </Link>
+            </div>
+            {newsArticles.slice(0, 2).map(article => (
+              <NewsArticleCard
+                key={article.id}
+                article={article}
+                characters={characters}
+                compact
+                onMarkRead={(id) => markNewsReadMutation.mutate(id)}
+                onShare={(a) => setShareArticle(a)}
+              />
+            ))}
+          </div>
+        )}
+
         {/* Trending Topics */}
         <div className="px-4 py-3">
           <TrendingSidebar activeTrend={activeTrend} onTrendClick={setActiveTrend} posts={posts} likes={likes} comments={comments} characters={characters} getCharacter={getCharacter} />
@@ -294,6 +319,14 @@ export default function Feed() {
           />
         )}
       </AnimatePresence>
+
+      {shareArticle && (
+        <ShareNewsSheet
+          open={!!shareArticle}
+          onClose={() => setShareArticle(null)}
+          article={shareArticle}
+        />
+      )}
 
       <BottomNav user={user} />
     </div>
