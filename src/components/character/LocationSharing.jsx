@@ -54,7 +54,7 @@ const CITY_COORDS = {
 };
 
 function getCityCoordinates(cityName) {
-  if (!cityName) return CITY_COORDS.berlin;
+  if (!cityName) return null;
   const lower = cityName.toLowerCase().replace(/ü/g, 'ue').replace(/ö/g, 'oe').replace(/ä/g, 'ae');
   // Direct match
   for (const [key, coords] of Object.entries(CITY_COORDS)) {
@@ -65,7 +65,49 @@ function getCityCoordinates(cityName) {
   for (const [key, coords] of Object.entries(CITY_COORDS)) {
     if (lowerOriginal.includes(key)) return coords;
   }
-  return CITY_COORDS.berlin;
+  return null;
+}
+
+// Determine the character's home city from their profile info
+function getCharacterHomeCity(character) {
+  // Check living_situation first (e.g. "Wohnung in Los Angeles", "WG in Berlin")
+  const living = character.living_situation || '';
+  const bg = character.background_culture || '';
+  const bio = character.biography || '';
+  const occupation = character.occupation || '';
+  const name = character.name || '';
+  
+  // Combine all text fields to search for city names
+  const allText = `${living} ${bg} ${bio} ${occupation}`.toLowerCase();
+  
+  // Check all known cities
+  for (const [key, coords] of Object.entries(CITY_COORDS)) {
+    if (allText.includes(key)) return { name: key, coords };
+  }
+  
+  // Additional city aliases
+  const cityAliases = {
+    'la': 'los_angeles', 'l.a.': 'los_angeles', 'l.a': 'los_angeles', 'hollywood': 'los_angeles', 'beverly hills': 'los_angeles', 'santa monica': 'los_angeles',
+    'nyc': 'new_york', 'manhattan': 'new_york', 'brooklyn': 'new_york',
+    'tokio': 'tokyo', 'tōkyō': 'tokyo',
+    'mailand': 'rom', 'italia': 'rom',
+    'england': 'london', 'uk': 'london',
+    'frankreich': 'paris', 'france': 'paris',
+    'spanien': 'barcelona', 'spain': 'barcelona',
+    'japan': 'tokyo', 'korea': 'seoul', 'südkorea': 'seoul',
+    'usa': 'los_angeles', 'amerika': 'new_york', 'california': 'los_angeles', 'kalifornien': 'los_angeles',
+    'niederlande': 'amsterdam', 'holland': 'amsterdam',
+    'österreich': 'wien', 'austria': 'wien',
+    'schweiz': 'zürich', 'switzerland': 'zürich',
+  };
+  
+  for (const [alias, cityKey] of Object.entries(cityAliases)) {
+    if (allText.includes(alias)) {
+      return { name: cityKey, coords: CITY_COORDS[cityKey] };
+    }
+  }
+  
+  return null;
 }
 
 function getCharacterLocations(character) {
