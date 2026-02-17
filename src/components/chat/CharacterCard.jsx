@@ -15,6 +15,13 @@ export default function CharacterCard({ character, lastMessage, unreadCount = 0,
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character.name}`;
   const queryClient = useQueryClient();
   const availability = getCharacterAvailability(character);
+
+  const { data: locations = [] } = useQuery({
+    queryKey: ['char-location-card', character.id],
+    queryFn: () => base44.entities.CharacterLocation.filter({ character_id: character.id }, '-created_date', 1),
+    staleTime: 60000,
+  });
+  const latestLocation = locations[0];
   
   const statusColor = availability.status === 'online' 
     ? 'bg-emerald-500' 
