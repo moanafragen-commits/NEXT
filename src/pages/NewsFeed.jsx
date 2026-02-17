@@ -5,17 +5,15 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { ArrowLeft, Newspaper, RefreshCw, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { generateNews } from '@/components/news/NewsGenerator';
 import BottomNav from '@/components/navigation/BottomNav';
-
-const CATEGORY_EMOJI = {
-  breaking: '🔴', entertainment: '🎬', sport: '⚽', politik: '🏛️',
-  wissenschaft: '🔬', klatsch: '💬', wetter: '🌤️', gaming: '🎮', musik: '🎵'
-};
+import NewsArticleCard from '@/components/news/NewsArticleCard';
+import ShareNewsSheet from '@/components/news/ShareNewsSheet';
 
 export default function NewsFeed() {
   const queryClient = useQueryClient();
+  const [shareArticle, setShareArticle] = useState(null);
 
   const { data: user } = useQuery({
     queryKey: ['user'],
@@ -87,44 +85,27 @@ export default function NewsFeed() {
           </div>
         ) : (
           <AnimatePresence>
-            {articles.map((article, i) => (
-              <motion.div
+            {articles.map((article) => (
+              <NewsArticleCard
                 key={article.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                onClick={() => !article.is_read && markReadMutation.mutate(article.id)}
-                className={`p-4 rounded-xl border transition-all cursor-pointer ${
-                  article.is_read 
-                    ? 'bg-white/[0.02] border-white/5' 
-                    : 'bg-white/5 border-emerald-500/20 glow-emerald'
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <span className="text-2xl">{article.emoji || CATEGORY_EMOJI[article.category] || '📰'}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-gray-400 uppercase">
-                        {article.category}
-                      </span>
-                      {!article.is_read && (
-                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                      )}
-                    </div>
-                    <h3 className="font-semibold text-sm text-white">{article.headline}</h3>
-                    <p className="text-xs text-gray-400 mt-1 line-clamp-2">{article.content}</p>
-                    <p className="text-[10px] text-gray-600 mt-2">
-                      {new Date(article.created_date).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
+                article={article}
+                onMarkRead={(id) => markReadMutation.mutate(id)}
+                onShare={(a) => setShareArticle(a)}
+              />
             ))}
           </AnimatePresence>
         )}
       </main>
 
       <BottomNav user={user} />
+
+      {shareArticle && (
+        <ShareNewsSheet
+          open={!!shareArticle}
+          onClose={() => setShareArticle(null)}
+          article={shareArticle}
+        />
+      )}
     </div>
   );
 }
