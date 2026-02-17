@@ -51,42 +51,42 @@ export default function BottomNav({ user }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden w-56 auto-theme-card"
+                className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-[#1a1a1a] rounded-2xl shadow-xl border border-white/10 overflow-hidden w-56"
               >
             <Link
               to={createPageUrl('CreatePost')}
               onClick={() => setShowCreateMenu(false)}
-              className="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors"
-            >
-              <Image className="w-5 h-5 text-black" />
-              <span className="text-sm font-medium">Neuer Beitrag</span>
+              className="flex items-center gap-3 px-4 py-3.5 hover:bg-white/10 transition-colors"
+              >
+              <Image className="w-5 h-5 text-white" />
+              <span className="text-sm font-medium text-white">Neuer Beitrag</span>
             </Link>
-            <div className="h-px bg-gray-100" />
-            <Link
-              to={createPageUrl('Characters') + '?create=true'}
-              onClick={() => setShowCreateMenu(false)}
-              className="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors"
+            <div className="h-px bg-white/10" />
+                          <Link
+                            to={createPageUrl('Characters') + '?create=true'}
+                            onClick={() => setShowCreateMenu(false)}
+                            className="flex items-center gap-3 px-4 py-3.5 hover:bg-white/10 transition-colors"
             >
-              <UserPlus className="w-5 h-5 text-black" />
-              <span className="text-sm font-medium">Neuer Charakter</span>
+              <UserPlus className="w-5 h-5 text-white" />
+              <span className="text-sm font-medium text-white">Neuer Charakter</span>
             </Link>
-            <div className="h-px bg-gray-100" />
-            <Link
-              to={createPageUrl('CharacterChat')}
-              onClick={() => setShowCreateMenu(false)}
-              className="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors"
+            <div className="h-px bg-white/10" />
+                          <Link
+                            to={createPageUrl('CharacterChat')}
+                            onClick={() => setShowCreateMenu(false)}
+                            className="flex items-center gap-3 px-4 py-3.5 hover:bg-white/10 transition-colors"
             >
-              <Users className="w-5 h-5 text-black" />
-              <span className="text-sm font-medium">C2C Chat</span>
+              <Users className="w-5 h-5 text-white" />
+              <span className="text-sm font-medium text-white">C2C Chat</span>
             </Link>
-            <div className="h-px bg-gray-100" />
-            <Link
-              to={createPageUrl('GroupChats')}
-              onClick={() => setShowCreateMenu(false)}
-              className="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors"
+            <div className="h-px bg-white/10" />
+                          <Link
+                            to={createPageUrl('GroupChats')}
+                            onClick={() => setShowCreateMenu(false)}
+                            className="flex items-center gap-3 px-4 py-3.5 hover:bg-white/10 transition-colors"
             >
-              <UsersRound className="w-5 h-5 text-black" />
-              <span className="text-sm font-medium">Gruppenchat</span>
+              <UsersRound className="w-5 h-5 text-white" />
+              <span className="text-sm font-medium text-white">Gruppenchat</span>
             </Link>
             </motion.div>
           </>
