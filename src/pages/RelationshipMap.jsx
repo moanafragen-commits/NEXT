@@ -40,6 +40,11 @@ export default function RelationshipMap() {
     queryFn: () => base44.entities.SharedMemory.list('-created_date', 100)
   });
 
+  const { data: relationshipEvents = [] } = useQuery({
+    queryKey: ['relationship-events'],
+    queryFn: () => base44.entities.RelationshipEvent.list('-created_date', 50)
+  });
+
   const isLoading = charsLoading || msgsLoading || memsLoading;
   const activeCharacters = characters.filter(c => !c.is_archived);
 
@@ -110,6 +115,7 @@ export default function RelationshipMap() {
             <ConnectionDetail
               link={selectedLink}
               characters={characters}
+              relationshipEvents={relationshipEvents}
               onClose={() => setSelectedLink(null)}
             />
           )}
