@@ -79,6 +79,15 @@ export default function BottomNav({ user }) {
               <Users className="w-5 h-5 text-black" />
               <span className="text-sm font-medium">C2C Chat</span>
             </Link>
+            <div className="h-px bg-gray-100" />
+            <Link
+              to={createPageUrl('GroupChats')}
+              onClick={() => setShowCreateMenu(false)}
+              className="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors"
+            >
+              <UsersRound className="w-5 h-5 text-black" />
+              <span className="text-sm font-medium">Gruppenchat</span>
+            </Link>
             </motion.div>
           </>
         )}
