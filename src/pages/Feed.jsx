@@ -189,7 +189,13 @@ export default function Feed() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => queryClient.invalidateQueries({ queryKey: ['posts'] })}
+            onClick={() => {
+              queryClient.invalidateQueries({ queryKey: ['posts'] });
+              queryClient.invalidateQueries({ queryKey: ['likes'] });
+              queryClient.invalidateQueries({ queryKey: ['comments'] });
+              queryClient.invalidateQueries({ queryKey: ['news-feed-articles'] });
+              toast.success('Feed aktualisiert');
+            }}
             className="text-gray-400 hover:text-white hover:bg-white/10 rounded-xl"
           >
             <RefreshCw className="w-5 h-5" />
