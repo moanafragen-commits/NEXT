@@ -224,12 +224,14 @@ REGELN:
     const commentsList = (r.comments || []).map(cm => {
       const char = characters.find(c => c.id === cm.character_id);
       if (!char) return null;
+      const isVerified = char.is_verified || ['Berühmtheit', 'Influencer', 'Sportler', 'Musiker', 'Politiker', 'Wissenschaftler', 'Künstler', 'Unternehmer'].includes(char.category);
       return {
         character_id: cm.character_id,
         character_name: char.name,
         avatar_url: char.avatar_url || '',
         content: cm.content,
-        timestamp: now
+        timestamp: now,
+        is_verified: isVerified
       };
     }).filter(Boolean);
 
