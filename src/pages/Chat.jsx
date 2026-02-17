@@ -538,77 +538,77 @@ export default function Chat() {
           </Link>
 
           <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => {
-              setShowSearch(!showSearch);
-              setSearchQuery('');
-              setShowPinned(false);
-            }}
-            className="text-gray-400 hover:text-white hover:bg-white/10"
-          >
-            <Search className="w-5 h-5" />
-          </Button>
-          
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => {
-              setShowPinned(!showPinned);
-              setShowBookmarked(false);
-              setShowSearch(false);
-              setSearchQuery('');
-            }}
-            className={`text-gray-400 hover:text-white hover:bg-white/10 relative ${showPinned ? 'text-emerald-400' : ''}`}
-          >
-            <Pin className="w-5 h-5" />
-            {pinnedCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-emerald-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
-                {pinnedCount}
-              </span>
-            )}
-          </Button>
+                variant="ghost" 
+                size="icon" 
+                onClick={() => {
+                  setShowSearch(!showSearch);
+                  setSearchQuery('');
+                  setShowPinned(false);
+                }}
+                className={equippedTheme.isLight ? 'text-gray-600 hover:text-gray-900 hover:bg-black/10' : 'text-gray-400 hover:text-white hover:bg-white/10'}
+              >
+                <Search className="w-5 h-5" />
+              </Button>
 
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => {
-              setShowBookmarked(!showBookmarked);
-              setShowPinned(false);
-              setShowSearch(false);
-              setSearchQuery('');
-            }}
-            className={`text-gray-400 hover:text-white hover:bg-white/10 relative ${showBookmarked ? 'text-amber-400' : ''}`}
-          >
-            <Bookmark className={`w-5 h-5 ${showBookmarked ? 'fill-amber-400' : ''}`} />
-            {bookmarkedCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
-                {bookmarkedCount}
-              </span>
-            )}
-          </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => {
+                  setShowPinned(!showPinned);
+                  setShowBookmarked(false);
+                  setShowSearch(false);
+                  setSearchQuery('');
+                }}
+                className={`${equippedTheme.isLight ? 'text-gray-600 hover:text-gray-900 hover:bg-black/10' : 'text-gray-400 hover:text-white hover:bg-white/10'} relative ${showPinned ? 'text-emerald-400' : ''}`}
+              >
+                <Pin className="w-5 h-5" />
+                {pinnedCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-emerald-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
+                    {pinnedCount}
+                  </span>
+                )}
+              </Button>
 
-          <ExportChatButton messages={messages} characterName={character.name} />
-          <ShareChatButton messages={messages} character={character} />
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => {
+                  setShowBookmarked(!showBookmarked);
+                  setShowPinned(false);
+                  setShowSearch(false);
+                  setSearchQuery('');
+                }}
+                className={`${equippedTheme.isLight ? 'text-gray-600 hover:text-gray-900 hover:bg-black/10' : 'text-gray-400 hover:text-white hover:bg-white/10'} relative ${showBookmarked ? 'text-amber-400' : ''}`}
+              >
+                <Bookmark className={`w-5 h-5 ${showBookmarked ? 'fill-amber-400' : ''}`} />
+                {bookmarkedCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
+                    {bookmarkedCount}
+                  </span>
+                )}
+              </Button>
 
-          <Link to={createPageUrl(`CharacterInfo?characterId=${characterId}`)}>
-            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/10">
-              <Info className="w-5 h-5" />
-            </Button>
-          </Link>
+              <ExportChatButton messages={messages} characterName={character.name} />
+              <ShareChatButton messages={messages} character={character} />
+
+              <Link to={createPageUrl(`CharacterInfo?characterId=${characterId}`)}>
+                <Button variant="ghost" size="icon" className={equippedTheme.isLight ? 'text-gray-600 hover:text-gray-900 hover:bg-black/10' : 'text-gray-400 hover:text-white hover:bg-white/10'}>
+                  <Info className="w-5 h-5" />
+                </Button>
+              </Link>
         </div>
         
         {/* Search Bar */}
         {showSearch && (
-          <div className="px-4 pb-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Nachrichten durchsuchen..."
-                className="w-full bg-[#262626] border-0 text-white pl-10 pr-10 rounded-xl placeholder-gray-500 focus-visible:ring-emerald-500/50"
-              />
+            <div className="px-4 pb-3">
+              <div className="relative">
+                <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${equippedTheme.isLight ? 'text-gray-400' : 'text-gray-500'}`} />
+                <Input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Nachrichten durchsuchen..."
+                  className={`w-full border-0 pl-10 pr-10 rounded-xl focus-visible:ring-emerald-500/50 ${equippedTheme.isLight ? 'bg-white/50 text-gray-900 placeholder-gray-400' : 'bg-[#262626] text-white placeholder-gray-500'}`}
+                />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
