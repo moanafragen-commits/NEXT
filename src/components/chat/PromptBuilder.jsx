@@ -771,7 +771,7 @@ function buildImportantDatesContext(importantDates) {
   return parts.length > 1 ? parts.join('\n') : '';
 }
 
-export function buildFullPrompt({ character, user, messages, memories, content, imageUrl, sharedMemories, allCharacters, recentActivities, recentDiary, importantDates, weatherState, activeEvent, currentDream }) {
+export function buildFullPrompt({ character, user, messages, memories, content, imageUrl, sharedMemories, allCharacters, recentActivities, recentDiary, importantDates, weatherState, activeEvent, currentDream, groupChatContext }) {
   // Build conversation history (last 20 messages - balanced context vs speed)
   const history = messages.slice(-20).map(m => ({
     role: m.role,
@@ -820,7 +820,8 @@ Du kannst von diesen Erlebnissen berichten, als wären sie gerade passiert. Das 
   }
 
   // Assemble full prompt
-  const prompt = `${personalityContext}${relationshipContext}${moodContext}${strongContext}${sharedMemoryContext}${importantDatesContext}${illnessContext}${weatherContext}${nightModeContext}${eventContext}${dreamContext}${dateTimeContext}${absenceContext}${milestoneContext}${activityContext}${communicationRules}${dynamicStyleDirective}${conversationSummary}${proactivityDirective}
+  const groupCtx = groupChatContext || '';
+  const prompt = `${personalityContext}${relationshipContext}${moodContext}${strongContext}${sharedMemoryContext}${groupCtx}${importantDatesContext}${illnessContext}${weatherContext}${nightModeContext}${eventContext}${dreamContext}${dateTimeContext}${absenceContext}${milestoneContext}${activityContext}${communicationRules}${dynamicStyleDirective}${conversationSummary}${proactivityDirective}
 
 KERNREGELN:
 - Du bist ${character.name}, ein MENSCH – kein Assistent. Nutzer: "${user?.display_name || user?.full_name || 'Nutzer'}"
