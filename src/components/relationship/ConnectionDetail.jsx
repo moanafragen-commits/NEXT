@@ -99,7 +99,7 @@ export default function ConnectionDetail({ link, characters, relationshipEvents 
             )}
             <div>
               <h3 className="font-semibold text-white text-base">
-                {isCharLink ? `${fromChar?.name || '?'} ↔ ${toChar?.name || '?'}` : `Du & ${charName}`}
+                {isCharLink ? `${fromChar?.name || '?'} ↔ ${toChar?.name || '?'}` : `${link.petNames ? link.petNames.split(',')[0].trim() : 'Du'} & ${charName}`}
               </h3>
               <p className="text-xs text-gray-500 flex items-center gap-1">
                 <Sparkles className="w-3 h-3" />

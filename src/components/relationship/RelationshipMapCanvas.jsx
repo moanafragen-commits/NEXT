@@ -79,7 +79,7 @@ export default function RelationshipMapCanvas({ characters, memories, messages, 
   // Build node + link data
   useEffect(() => {
     const nodes = [
-      { id: 'user', name: user?.full_name || 'Du', avatar: user?.avatar_url, isUser: true }
+      { id: 'user', name: user?.display_name || user?.full_name || 'Du', avatar: user?.avatar_url, isUser: true }
     ];
     characters.forEach(c => {
       nodes.push({
