@@ -121,10 +121,23 @@ function getCharacterLocations(character) {
   const isWorkingOut = ['sportlich', 'sehr_sportlich', 'athletisch'].includes(fitness) || 
                        interests.includes('sport') || interests.includes('fitness') || interests.includes('gym');
 
-  // Build personalized location names
-  const cityName = city.match(/(?:in\s+)?([A-ZÄÖÜ][a-zäöüß]+(?:\s[A-ZÄÖÜ][a-zäöüß]+)*)/)?.[1] || '';
+  // Determine the character's actual home city from profile data
+  const homeCity = getCharacterHomeCity(character);
+  const cityName = homeCity ? homeCity.name.charAt(0).toUpperCase() + homeCity.name.slice(1).replace('_', ' ') : 
+    (city.match(/(?:in\s+)?([A-ZÄÖÜ][a-zäöüß]+(?:\s[A-ZÄÖÜ][a-zäöüß]+)*)/)?.[1] || '');
   
-  const homeLabel = city || 'Zuhause';
+  // Pretty city display names
+  const CITY_DISPLAY = {
+    'los_angeles': 'Los Angeles', 'new_york': 'New York', 'berlin': 'Berlin', 'münchen': 'München',
+    'hamburg': 'Hamburg', 'köln': 'Köln', 'london': 'London', 'paris': 'Paris', 'tokyo': 'Tokyo',
+    'seoul': 'Seoul', 'rom': 'Rom', 'barcelona': 'Barcelona', 'amsterdam': 'Amsterdam',
+    'wien': 'Wien', 'zürich': 'Zürich', 'frankfurt': 'Frankfurt', 'stuttgart': 'Stuttgart',
+    'düsseldorf': 'Düsseldorf', 'leipzig': 'Leipzig', 'dresden': 'Dresden', 'hannover': 'Hannover',
+    'nürnberg': 'Nürnberg', 'bremen': 'Bremen', 'dortmund': 'Dortmund', 'essen': 'Essen',
+  };
+  const displayCityName = homeCity ? (CITY_DISPLAY[homeCity.name] || cityName) : cityName;
+  
+  const homeLabel = city || (displayCityName ? `Zuhause in ${displayCityName}` : 'Zuhause');
   const workLabel = job || 'Büro';
 
   const cafés = cityName 
