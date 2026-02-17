@@ -200,7 +200,7 @@ export default function Feed() {
 
         {/* Trending Topics */}
         <div className="px-4 py-3">
-          <TrendingSidebar activeTrend={activeTrend} onTrendClick={setActiveTrend} />
+          <TrendingSidebar activeTrend={activeTrend} onTrendClick={setActiveTrend} posts={posts} likes={likes} comments={comments} characters={characters} getCharacter={getCharacter} />
         </div>
 
         {/* Posts */}
