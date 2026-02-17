@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Loader2, RefreshCw, TrendingUp } from 'lucide-react';
+import { Loader2, RefreshCw, TrendingUp, Newspaper } from 'lucide-react';
 import { toast } from 'sonner';
 import { AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import FeedPostCard from '@/components/feed/FeedPostCard';
 import FeedCommentSheet from '@/components/feed/FeedCommentSheet';
 import BottomNav from '@/components/navigation/BottomNav';
@@ -11,12 +13,15 @@ import NextHeader from '@/components/navigation/NextHeader';
 import TrendingSidebar from '@/components/feed/TrendingSidebar';
 import GenerateFeedButton from '@/components/feed/GenerateFeedButton';
 import ComposeBox from '@/components/feed/ComposeBox';
+import NewsArticleCard from '@/components/news/NewsArticleCard';
+import ShareNewsSheet from '@/components/news/ShareNewsSheet';
 import { Button } from '@/components/ui/button';
 import { createNotification } from '@/components/notifications/NotificationHelper';
 
 export default function Feed() {
   const [openCommentsPostId, setOpenCommentsPostId] = useState(null);
   const [activeTrend, setActiveTrend] = useState(null);
+  const [shareArticle, setShareArticle] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -37,6 +42,17 @@ export default function Feed() {
   const { data: aiCharacters = [] } = useQuery({
     queryKey: ['ai-characters'],
     queryFn: () => base44.entities.AICharacter.list()
+  });
+
+  const { data: newsArticles = [] } = useQuery({
+    queryKey: ['news-feed-articles', user?.email],
+    queryFn: () => base44.entities.NewsArticle.filter({ user_email: user.email }, '-created_date', 5),
+    enabled: !!user
+  });
+
+  const markNewsReadMutation = useMutation({
+    mutationFn: (id) => base44.entities.NewsArticle.update(id, { is_read: true }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['news-feed-articles'] })
   });
 
   const { data: allMessages = [] } = useQuery({
