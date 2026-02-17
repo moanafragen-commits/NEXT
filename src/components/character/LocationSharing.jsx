@@ -270,14 +270,20 @@ export function generateRandomLocation(character) {
     andere: 'Unterwegs'
   };
 
-  // Generate realistic coordinates based on character's city
-  const cityCoords = getCityCoordinates(loc.cityName);
+  // Generate realistic coordinates based on character's actual home city
+  const cityCoords = loc.homeCityCoords || getCityCoordinates(loc.cityName) || CITY_COORDS.berlin;
   const jitter = () => (Math.random() - 0.5) * 0.03; // ~1.5km radius scatter
   const lat = cityCoords.lat + jitter();
   const lng = cityCoords.lng + jitter();
 
-  // Generate a plausible address
-  const streets = ['Hauptstraße', 'Bahnhofstraße', 'Berliner Straße', 'Marktplatz', 'Schillerstraße', 'Goethestraße', 'Friedrichstraße', 'Lindenallee', 'Parkweg', 'Am Stadtpark', 'Königstraße', 'Mozartstraße', 'Rosenstraße'];
+  // Generate a plausible address – localized for non-German cities
+  const isGerman = cityCoords.lat > 46 && cityCoords.lat < 55 && cityCoords.lng > 5 && cityCoords.lng < 16;
+  const isUS = cityCoords.lng < -50;
+  const streets = isUS
+    ? ['Sunset Blvd', 'Hollywood Blvd', 'Melrose Ave', 'Santa Monica Blvd', 'Vine St', 'Wilshire Blvd', 'Beverly Dr', 'Rodeo Dr', 'La Brea Ave', 'Fairfax Ave', 'Main St', 'Broadway', 'Park Ave', '5th Ave', 'Ocean Ave']
+    : isGerman
+    ? ['Hauptstraße', 'Bahnhofstraße', 'Berliner Straße', 'Marktplatz', 'Schillerstraße', 'Goethestraße', 'Friedrichstraße', 'Lindenallee', 'Parkweg', 'Am Stadtpark']
+    : ['High Street', 'Rue de la Paix', 'Via Roma', 'Gran Via', 'Passeig de Gràcia', 'Keizersgracht', 'Shibuya Crossing'];
   const streetNum = Math.floor(Math.random() * 120) + 1;
   const address = `${pick(streets)} ${streetNum}`;
 
@@ -289,7 +295,7 @@ export function generateRandomLocation(character) {
     shared_at: new Date().toISOString(),
     latitude: lat,
     longitude: lng,
-    city: loc.cityName || 'Berlin',
+    city: loc.cityName || '',
     address
   };
 }
