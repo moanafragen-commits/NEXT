@@ -492,7 +492,7 @@ export default function Chat() {
   return (
     <div className={`h-screen ${equippedTheme.bg || 'bg-[#111]'} flex flex-col overflow-hidden`}>
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-[#1a1a1a] border-b border-white/5">
+      <header className={`sticky top-0 z-10 ${equippedTheme.headerBg || 'bg-[#1a1a1a]'} backdrop-blur-xl border-b ${equippedTheme.isLight ? 'border-black/10' : 'border-white/5'}`}>
         <div className="flex items-center gap-3 p-3">
           <Link to={createPageUrl('Home')}>
             <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/10">
@@ -712,7 +712,7 @@ export default function Chat() {
       </main>
       
       {/* Input */}
-      <div className="shrink-0 bg-[#1a1a1a] border-t border-white/5 p-4">
+      <div className={`shrink-0 ${equippedTheme.inputBg || 'bg-[#1a1a1a]'} backdrop-blur-xl border-t ${equippedTheme.isLight ? 'border-black/10' : 'border-white/5'} p-4`}>
         <ChatInput 
           onSend={(content, imageUrl) => handleSendMessage(content, imageUrl)}
           isLoading={false}

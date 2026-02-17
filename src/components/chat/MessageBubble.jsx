@@ -150,7 +150,7 @@ export default function MessageBubble({ message, characterAvatar, characterName,
           className={`rounded-2xl px-4 py-2.5 relative ${
             isUser 
               ? `${theme?.userBg || 'bg-emerald-600'} text-white rounded-br-md` 
-              : `${theme?.messageBg || 'bg-[#262626]'} text-gray-100 rounded-bl-md`
+              : `${theme?.messageBg || 'bg-[#262626]'} ${theme?.msgText || 'text-gray-100'} rounded-bl-md`
           }`}
         >
           {replyToMessage && (
@@ -178,7 +178,7 @@ export default function MessageBubble({ message, characterAvatar, characterName,
           {renderMessageContent(message.content, customEmojis)}
         </div>
         <div className={`flex items-center gap-1.5 mt-1 ${isUser ? 'justify-end' : 'justify-start'}`}>
-          <span className="text-[10px] text-gray-500">
+          <span className={`text-[10px] ${theme?.timeText || 'text-gray-500'}`}>
             {formatGermanTime(message.created_date)}
           </span>
           {isUser && message.status && (
