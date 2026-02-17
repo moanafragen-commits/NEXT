@@ -117,8 +117,8 @@ export default function BottomNav({ user }) {
             if (item.isCreate) {
               return (
                 <button key={i} onClick={() => setShowCreateMenu(!showCreateMenu)} className="flex items-center justify-center w-10 h-14">
-                  <div className={`w-6 h-6 border-2 border-black rounded-lg flex items-center justify-center transition-transform ${showCreateMenu ? 'rotate-45' : ''}`}>
-                    <Plus className="w-3.5 h-3.5 text-black" strokeWidth={2.5} />
+                  <div className={`w-6 h-6 border-2 border-white rounded-lg flex items-center justify-center transition-transform ${showCreateMenu ? 'rotate-45' : ''}`}>
+                    <Plus className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
                   </div>
                 </button>
               );
