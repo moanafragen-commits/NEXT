@@ -67,10 +67,11 @@ const ROUTE_COLORS = [
   '#ec4899', '#14b8a6', '#f97316', '#6366f1', '#22d3ee'
 ];
 
-export default function AnimatedRoute({ positions, characterIndex, showDot = true }) {
+export default function AnimatedRoute({ positions, stops, characterIndex, showDot = true }) {
   const color = ROUTE_COLORS[characterIndex % ROUTE_COLORS.length];
 
   if (!positions || positions.length < 2) return null;
+  const stopPoints = stops || positions;
 
   return (
     <>
@@ -98,7 +99,7 @@ export default function AnimatedRoute({ positions, characterIndex, showDot = tru
         }}
       />
       {/* Stop dots */}
-      {positions.map((pt, i) => (
+      {stopPoints.map((pt, i) => (
         <CircleMarker
           key={`stop-${i}`}
           center={pt}
@@ -108,7 +109,7 @@ export default function AnimatedRoute({ positions, characterIndex, showDot = tru
             fillColor: i === 0 ? color : '#111',
             fillOpacity: 0.9,
             weight: 2,
-            opacity: 0.5 + (i / positions.length) * 0.5
+            opacity: 0.5 + (i / stopPoints.length) * 0.5
           }}
         />
       ))}

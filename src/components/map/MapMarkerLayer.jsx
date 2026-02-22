@@ -5,6 +5,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 import AnimatedRoute, { ROUTE_COLORS } from './AnimatedRoute';
 import HomeMarker from './HomeMarker';
+import { base44 } from '@/api/base44Client';
 
 function createCharIcon(avatar, emoji, isMoving, color) {
   if (!window.L) return undefined;
@@ -95,13 +96,40 @@ function MapMarker({ character, location, historyLocations, charIndex }) {
   const livePos = useLivePosition(location.latitude, location.longitude);
   const icon = useMemo(() => createCharIcon(avatar, location.emoji, true, color), [avatar, location.emoji, color]);
 
-  const routePoints = useMemo(() => {
+  const historyPoints = useMemo(() => {
     if (!historyLocations || historyLocations.length < 2) return null;
     return historyLocations
       .filter(l => l.latitude && l.longitude)
       .reverse() // oldest first
       .map(l => [l.latitude, l.longitude]);
   }, [historyLocations]);
+
+  const [routePoints, setRoutePoints] = useState(null);
+
+  useEffect(() => {
+    const fetchRoute = async () => {
+      if (!historyPoints) {
+        setRoutePoints(null);
+        return;
+      }
+      
+      const waypoints = historyPoints.map(p => ({ lat: p[0], lng: p[1] }));
+      
+      try {
+        const response = await base44.functions.invoke('getStreetRoute', { waypoints });
+        if (response.data && response.data.polyline) {
+          setRoutePoints(response.data.polyline);
+        } else {
+          setRoutePoints(historyPoints);
+        }
+      } catch (error) {
+        console.error("Error fetching route:", error);
+        setRoutePoints(historyPoints);
+      }
+    };
+    
+    fetchRoute();
+  }, [historyPoints]);
 
   const isAway = character.travel_status && character.travel_status !== 'zuhause';
   const travelLabels = {
@@ -118,7 +146,7 @@ function MapMarker({ character, location, historyLocations, charIndex }) {
     <>
       {/* Animated route */}
       {routePoints && routePoints.length >= 2 && (
-        <AnimatedRoute positions={routePoints} characterIndex={charIndex} showDot={true} />
+        <AnimatedRoute positions={routePoints} stops={historyPoints} characterIndex={charIndex} showDot={true} />
       )}
 
       {/* Home marker */}
