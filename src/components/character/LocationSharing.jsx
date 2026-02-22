@@ -170,6 +170,10 @@ export function generateRandomLocation(character) {
   const interests = (character.interests || '').toLowerCase();
   const sleeping = character.sleeping_pattern || 'normal';
   const isNightOwl = sleeping === 'nachtmensch' || sleeping === 'chaotisch';
+  const travelStatus = character.travel_status || 'zuhause';
+
+  // If character is on tour/urlaub etc., bias heavily towards "unterwegs" and "andere"
+  const isAway = travelStatus !== 'zuhause';
   
   // Build weighted location pools based on time + character traits
   let pool = []; // { type, weight }
@@ -225,6 +229,18 @@ export function generateRandomLocation(character) {
     ];
   }
 
+  // If character is away (tour, urlaub etc.), override pool
+  if (isAway) {
+    pool = [
+      { type: 'unterwegs', weight: 4 },
+      { type: 'restaurant', weight: 2 },
+      { type: 'café', weight: 2 },
+      { type: 'andere', weight: 2 },
+    ];
+    if (travelStatus === 'urlaub') pool.push({ type: 'park', weight: 3 }, { type: 'bar', weight: 2 });
+    if (travelStatus === 'auf_tour') pool.push({ type: 'arbeit', weight: 3 });
+  }
+
   // Hobby-based bonus locations
   if (interests.includes('kunst') || interests.includes('museum')) pool.push({ type: 'andere', weight: 1 });
   
@@ -270,11 +286,26 @@ export function generateRandomLocation(character) {
     andere: 'Unterwegs'
   };
 
-  // Generate realistic coordinates based on character's actual home city
-  const cityCoords = loc.homeCityCoords || getCityCoordinates(loc.cityName) || CITY_COORDS.berlin;
+  // Use home coordinates from character if set, else derive from profile
+  let baseLat, baseLng;
+  if (isAway && character.travel_destination) {
+    // Try to find coords for travel destination
+    const destCoords = getCityCoordinates(character.travel_destination);
+    baseLat = destCoords?.lat;
+    baseLng = destCoords?.lng;
+  }
+  if (!baseLat && character.home_latitude && character.home_longitude) {
+    baseLat = character.home_latitude;
+    baseLng = character.home_longitude;
+  }
+  if (!baseLat) {
+    const cityCoords = loc.homeCityCoords || getCityCoordinates(loc.cityName) || CITY_COORDS.berlin;
+    baseLat = cityCoords.lat;
+    baseLng = cityCoords.lng;
+  }
   const jitter = () => (Math.random() - 0.5) * 0.03; // ~1.5km radius scatter
-  const lat = cityCoords.lat + jitter();
-  const lng = cityCoords.lng + jitter();
+  const lat = baseLat + jitter();
+  const lng = baseLng + jitter();
 
   // Generate a plausible address – localized for non-German cities
   const isGerman = cityCoords.lat > 46 && cityCoords.lat < 55 && cityCoords.lng > 5 && cityCoords.lng < 16;
