@@ -323,16 +323,7 @@ export default function Chat() {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
 
-      // Mark all unread user messages as "read" before typing starts
-      const unreadUserMsgs = latestMessages.filter(m => m.role === 'user' && m.status !== 'read');
-      for (const msg of unreadUserMsgs) {
-        await base44.entities.ChatMessage.update(msg.id, { status: 'read', read_at: new Date().toISOString() }).catch(() => {});
-        if (unreadUserMsgs.length > 1) await new Promise(r => setTimeout(r, 400));
-      }
-      // Refresh messages immediately so blue checkmarks appear before typing
-      if (unreadUserMsgs.length > 0) {
-        await queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
-      }
+      // Note: User messages are now marked as read asynchronously when sent, so we skip it here to avoid rate limits.
 
       setIsTyping(true);
       await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 3000));
