@@ -274,15 +274,20 @@ export default function CharacterMap() {
         )}
 
         {/* Character Chips */}
-        {!showList && !meetupLatLng && locations.length > 0 && (
+        {!showList && !showTimeline && !meetupLatLng && locations.length > 0 && (
           <div className="absolute bottom-20 left-0 right-0 z-[500] px-3">
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {locations.map(loc => {
+              {locations.map((loc, idx) => {
                 const char = activeChars.find(c => c.id === loc.character_id);
                 if (!char) return null;
                 const avatar = char.avatar_url || `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${char.name}`;
                 const isActive = selectedChar?.char?.id === char.id;
                 const histCount = locationHistory[loc.character_id]?.length || 0;
+                const charIds = [...new Set(locations.map(l => l.character_id))];
+                const charIdx = charIds.indexOf(loc.character_id);
+                const routeColor = ROUTE_COLORS[charIdx % ROUTE_COLORS.length];
+                const isAway = char.travel_status && char.travel_status !== 'zuhause';
+                const travelEmojis = { auf_tour: '🎤', urlaub: '🏖️', geschäftsreise: '💼', umzug: '📦', unterwegs: '🚶' };
                 return (
                   <button
                     key={loc.id}
@@ -293,12 +298,17 @@ export default function CharacterMap() {
                         : 'bg-black/70 border-white/10 hover:bg-black/90 hover:border-white/20'
                     }`}
                   >
-                    <img src={avatar} className="w-7 h-7 rounded-full object-cover ring-2 ring-emerald-500/40" />
+                    <div className="relative">
+                      <img src={avatar} className="w-7 h-7 rounded-full object-cover ring-2" style={{ '--tw-ring-color': routeColor + '66' }} />
+                      {isAway && (
+                        <span className="absolute -top-1 -right-1 text-[8px]">{travelEmojis[char.travel_status] || '🚶'}</span>
+                      )}
+                    </div>
                     <div className="text-left">
                       <span className="text-xs font-semibold text-white block leading-tight">{char.name}</span>
                       <span className="text-[10px] text-gray-400 block leading-tight">
                         {loc.emoji} {loc.location_name?.slice(0, 16)}
-                        {histCount > 1 && <span className="ml-1 text-emerald-400/60">• {histCount} Orte</span>}
+                        {histCount > 1 && <span className="ml-1" style={{color: routeColor}}>• {histCount} Orte</span>}
                       </span>
                     </div>
                   </button>
