@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, MapPin, List, Layers, X, MessageCircle, Route } from 'lucide-react';
+import { ArrowLeft, MapPin, List, Layers, X, MessageCircle, Route, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,6 +12,8 @@ import MapMarkerLayer from '@/components/map/MapMarkerLayer';
 import MapCharacterList from '@/components/map/MapCharacterList';
 import MapClickHandler from '@/components/map/MapClickHandler';
 import MeetupInvite from '@/components/map/MeetupInvite';
+import RouteTimeline from '@/components/map/RouteTimeline';
+import { ROUTE_COLORS } from '@/components/map/AnimatedRoute';
 
 const TILE_URLS = {
   dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',

@@ -1,20 +1,23 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-import { Marker, Popup, Polyline, CircleMarker } from 'react-leaflet';
+import { Marker, Popup, CircleMarker } from 'react-leaflet';
 import { createPageUrl } from '@/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
+import AnimatedRoute, { ROUTE_COLORS } from './AnimatedRoute';
+import HomeMarker from './HomeMarker';
 
-function createCharIcon(avatar, emoji, isMoving) {
+function createCharIcon(avatar, emoji, isMoving, color) {
   if (!window.L) return undefined;
+  const borderColor = color || '#10b981';
   return new window.L.DivIcon({
     className: '',
     html: `
       <div class="custom-marker-wrapper" style="position:relative;width:52px;height:62px;">
         <div style="
           width:48px;height:48px;border-radius:50%;
-          border:3px solid #10b981;
+          border:3px solid ${borderColor};
           overflow:hidden;background:#111;
-          box-shadow: 0 0 0 3px rgba(16,185,129,0.15), 0 4px 16px rgba(0,0,0,0.5);
+          box-shadow: 0 0 0 3px ${borderColor}26, 0 4px 16px rgba(0,0,0,0.5);
           ${isMoving ? 'animation: marker-bob 1.5s ease-in-out infinite;' : ''}
         ">
           <img src="${avatar}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'" />
@@ -31,7 +34,7 @@ function createCharIcon(avatar, emoji, isMoving) {
         <div style="
           position:absolute;top:-3px;left:-3px;right:-3px;bottom:-3px;
           border-radius:50%;
-          border:2px solid rgba(16,185,129,0.2);
+          border:2px solid ${borderColor}33;
           animation: pulse-ring 2s ease-out infinite;
           pointer-events:none;
         "></div>
@@ -68,10 +71,8 @@ function useLivePosition(baseLat, baseLng) {
     let running = true;
     const drift = () => {
       if (!running) return;
-      // Tiny random drift (~5-15 meters per tick)
       offsetRef.current.lat += (Math.random() - 0.5) * 0.00008;
       offsetRef.current.lng += (Math.random() - 0.5) * 0.00008;
-      // Clamp drift so marker doesn't wander too far (~200m max)
       offsetRef.current.lat = Math.max(-0.002, Math.min(0.002, offsetRef.current.lat));
       offsetRef.current.lng = Math.max(-0.002, Math.min(0.002, offsetRef.current.lng));
       setPos([baseLat + offsetRef.current.lat, baseLng + offsetRef.current.lng]);
@@ -84,72 +85,72 @@ function useLivePosition(baseLat, baseLng) {
   return pos;
 }
 
-function MapMarker({ character, location, historyLocations }) {
+function MapMarker({ character, location, historyLocations, charIndex }) {
   const avatar = character.avatar_url || `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character.name}`;
   const timeAgo = location.shared_at
     ? formatDistanceToNow(new Date(location.shared_at), { addSuffix: true, locale: de })
     : '';
 
+  const color = ROUTE_COLORS[charIndex % ROUTE_COLORS.length];
   const livePos = useLivePosition(location.latitude, location.longitude);
-  const icon = useMemo(() => createCharIcon(avatar, location.emoji, true), [avatar, location.emoji]);
-  
-  // Route line from history
+  const icon = useMemo(() => createCharIcon(avatar, location.emoji, true, color), [avatar, location.emoji, color]);
+
   const routePoints = useMemo(() => {
     if (!historyLocations || historyLocations.length < 2) return null;
     return historyLocations
       .filter(l => l.latitude && l.longitude)
+      .reverse() // oldest first
       .map(l => [l.latitude, l.longitude]);
   }, [historyLocations]);
+
+  const isAway = character.travel_status && character.travel_status !== 'zuhause';
+  const travelLabels = {
+    auf_tour: '🎤 Auf Tour',
+    urlaub: '🏖️ Im Urlaub',
+    geschäftsreise: '💼 Geschäftsreise',
+    umzug: '📦 Umzug',
+    unterwegs: '🚶 Unterwegs',
+  };
 
   if (!icon) return null;
 
   return (
     <>
-      {/* Route line */}
+      {/* Animated route */}
       {routePoints && routePoints.length >= 2 && (
-        <>
-          <Polyline
-            positions={routePoints}
-            pathOptions={{
-              color: '#10b981',
-              weight: 2.5,
-              opacity: 0.5,
-              dashArray: '8, 8',
-              lineCap: 'round'
-            }}
-          />
-          {/* Past location dots */}
-          {routePoints.slice(1).map((pt, i) => (
-            <CircleMarker
-              key={`hist-${i}`}
-              center={pt}
-              radius={4}
-              pathOptions={{
-                color: '#10b981',
-                fillColor: '#111',
-                fillOpacity: 0.9,
-                weight: 2,
-                opacity: 0.4 + (i / routePoints.length) * 0.4
-              }}
-            />
-          ))}
-        </>
+        <AnimatedRoute positions={routePoints} characterIndex={charIndex} showDot={true} />
       )}
+
+      {/* Home marker */}
+      <HomeMarker character={character} currentLocation={location} />
 
       {/* Live marker */}
       <Marker position={livePos} icon={icon}>
-        <Popup maxWidth={260} minWidth={220}>
+        <Popup maxWidth={280} minWidth={220}>
           <div style={{ fontFamily: 'Inter, -apple-system, sans-serif', padding: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
               <img src={avatar} style={{
                 width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover',
-                border: '2px solid #10b981', boxShadow: '0 0 0 3px rgba(16,185,129,0.1)'
+                border: `2px solid ${color}`, boxShadow: `0 0 0 3px ${color}1a`
               }} />
               <div>
                 <div style={{ fontWeight: 700, fontSize: '14px', color: '#fff', marginBottom: '2px' }}>{character.name}</div>
                 <div style={{ fontSize: '12px', color: '#9ca3af' }}>{location.emoji} {location.location_name}</div>
               </div>
             </div>
+
+            {/* Travel status badge */}
+            {isAway && (
+              <div style={{
+                fontSize: '11px', color: '#f59e0b', background: 'rgba(245,158,11,0.1)',
+                padding: '6px 10px', borderRadius: '8px', marginBottom: '10px',
+                border: '1px solid rgba(245,158,11,0.2)'
+              }}>
+                {travelLabels[character.travel_status] || '🚶 Unterwegs'}
+                {character.travel_destination && ` → ${character.travel_destination}`}
+              </div>
+            )}
+
             {location.description && (
               <div style={{ fontSize: '12px', color: '#d1d5db', marginBottom: '8px', lineHeight: '1.5' }}>{location.description}</div>
             )}
@@ -165,7 +166,7 @@ function MapMarker({ character, location, historyLocations }) {
               )}
               {historyLocations && historyLocations.length > 1 && (
                 <div style={{ fontSize: '10px', color: '#6b7280', marginTop: '4px' }}>
-                  📊 {historyLocations.length} Standorte heute
+                  📊 {historyLocations.length} Standorte • <span style={{color}}>{Math.round((historyLocations.length - 1) * 1.2)}km Route</span>
                 </div>
               )}
             </div>
@@ -173,10 +174,10 @@ function MapMarker({ character, location, historyLocations }) {
               href={createPageUrl(`Chat?characterId=${character.id}`)}
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                padding: '8px 0', background: 'linear-gradient(135deg, #10b981, #14b8a6)',
+                padding: '8px 0', background: `linear-gradient(135deg, ${color}, ${color}cc)`,
                 color: 'white', borderRadius: '10px', textDecoration: 'none',
                 fontWeight: 600, fontSize: '13px',
-                boxShadow: '0 2px 10px rgba(16,185,129,0.25)'
+                boxShadow: `0 2px 10px ${color}40`
               }}
             >
               💬 Chat öffnen
@@ -189,13 +190,20 @@ function MapMarker({ character, location, historyLocations }) {
 }
 
 export default function MapMarkerLayer({ locations, characters, locationHistory }) {
+  // Sort characters for consistent color assignment
+  const charOrder = useMemo(() => {
+    const ids = [...new Set(locations.map(l => l.character_id))];
+    return ids;
+  }, [locations]);
+
   return (
     <>
       {locations.map(loc => {
         const char = characters.find(c => c.id === loc.character_id);
         if (!char) return null;
         const history = locationHistory?.[loc.character_id] || [];
-        return <MapMarker key={loc.id} character={char} location={loc} historyLocations={history} />;
+        const charIndex = charOrder.indexOf(loc.character_id);
+        return <MapMarker key={loc.id} character={char} location={loc} historyLocations={history} charIndex={charIndex} />;
       })}
     </>
   );
