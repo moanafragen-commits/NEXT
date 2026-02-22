@@ -46,6 +46,7 @@ export default function CharacterMap() {
   const [mapStyle, setMapStyle] = useState('dark');
   const [selectedChar, setSelectedChar] = useState(null);
   const [showRoutes, setShowRoutes] = useState(true);
+  const [showTimeline, setShowTimeline] = useState(false);
   const [meetupLatLng, setMeetupLatLng] = useState(null);
 
   const { data: user } = useQuery({
@@ -183,6 +184,15 @@ export default function CharacterMap() {
               title="Routen anzeigen"
             >
               <Route className="w-5 h-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => { setShowTimeline(!showTimeline); setShowList(false); setMeetupLatLng(null); }}
+              className={`bg-black/60 backdrop-blur-xl hover:bg-black/80 rounded-xl h-10 w-10 border border-white/5 ${showTimeline ? 'text-amber-400' : 'text-gray-300 hover:text-white'}`}
+              title="Route Timeline"
+            >
+              <Clock className="w-5 h-5" />
             </Button>
             <Button
               variant="ghost"
