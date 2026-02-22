@@ -271,22 +271,6 @@ export default function Chat() {
 
     // 2. Queue AI response processing
     setPendingMessages(prev => [...prev, { content, imageUrl }]);
-
-    // 3. Mark all user messages as read immediately (blue checkmarks) in background
-    const markUnread = async () => {
-      const msgs = await base44.entities.ChatMessage.filter({ character_id: characterId }, '-created_date', 100);
-      const latestMsgs = msgs.reverse();
-      const unreadUser = latestMsgs.filter(m => m.role === 'user' && m.status !== 'read');
-      const now = new Date().toISOString();
-      for (const msg of unreadUser) {
-        await base44.entities.ChatMessage.update(msg.id, { status: 'read', read_at: now }).catch(() => {});
-        await new Promise(r => setTimeout(r, 500)); // Delay to avoid rate limit
-      }
-      if (unreadUser.length > 0) {
-        queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
-      }
-    };
-    markUnread().catch(() => {});
   };
 
   // Process pending messages one at a time
