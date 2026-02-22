@@ -4,8 +4,10 @@ import LevelBadge from './LevelBadge';
 import CoinDisplay from './CoinDisplay';
 import XPProgressBar from './XPProgressBar';
 import DailyRewardModal from './DailyRewardModal';
-import { Gift } from 'lucide-react';
+import { Gift, Trophy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 export default function TopBar({ userEmail }) {
   const { userLevel, isLoading, canClaimDaily, claimDaily } = useUserLevel(userEmail);
