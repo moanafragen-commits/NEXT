@@ -9,15 +9,16 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { startLat, startLng, endLat, endLng } = await req.json();
+        const { waypoints } = await req.json();
 
-        if (!startLat || !startLng || !endLat || !endLng) {
-            return Response.json({ error: 'Missing start or end coordinates' }, { status: 400 });
+        if (!waypoints || waypoints.length < 2) {
+            return Response.json({ error: 'Missing waypoints' }, { status: 400 });
         }
 
         // Using OSRM public API (no API key required)
         // OSRM expects longitude,latitude
-        const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
+        const coordsString = waypoints.map(w => `${w.lng},${w.lat}`).join(';');
+        const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${coordsString}?overview=full&geometries=geojson`;
 
         const response = await fetch(osrmUrl);
         const data = await response.json();
