@@ -270,7 +270,8 @@ export default function Chat() {
     queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
 
     // 2. Mark all user messages as read immediately (blue checkmarks)
-    const latestMsgs = await base44.entities.ChatMessage.filter({ character_id: characterId }, 'created_date', 100);
+    const msgs = await base44.entities.ChatMessage.filter({ character_id: characterId }, '-created_date', 100);
+    const latestMsgs = msgs.reverse();
     const unreadUser = latestMsgs.filter(m => m.role === 'user' && m.status !== 'read');
     const now = new Date().toISOString();
     for (const msg of unreadUser) {
@@ -294,7 +295,8 @@ export default function Chat() {
 
     const processAIResponse = async () => {
       // Fetch latest messages for context
-      const latestMessages = await base44.entities.ChatMessage.filter({ character_id: characterId }, 'created_date', 100);
+      const msgs = await base44.entities.ChatMessage.filter({ character_id: characterId }, '-created_date', 100);
+      const latestMessages = msgs.reverse();
 
       // Check if more messages are queued – if so, skip delay & just batch into one response
       const remainingCount = pendingMessages.length;
