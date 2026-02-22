@@ -271,6 +271,7 @@ export default function Chat() {
     });
     setReplyToMessage(null);
     queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
+    queryClient.invalidateQueries({ queryKey: ['all-messages'] });
 
     // 2. Queue AI response processing
     setPendingMessages(prev => [...prev, { content, imageUrl }]);
