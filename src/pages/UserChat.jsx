@@ -38,11 +38,11 @@ export default function UserChat() {
       const sent = await base44.entities.UserMessage.filter({
         sender_email: user.email,
         recipient_email: recipientEmail
-      });
+      }, '-created_date', 100);
       const received = await base44.entities.UserMessage.filter({
         sender_email: recipientEmail,
         recipient_email: user.email
-      });
+      }, '-created_date', 100);
       return [...sent, ...received].sort((a, b) => 
         new Date(a.created_date) - new Date(b.created_date)
       );
