@@ -286,182 +286,205 @@ export default function Chat() {
     const currentMsg = pendingMessages[0];
 
     const processAIResponse = async () => {
-      // Fetch latest messages for context
-      const msgs = await base44.entities.ChatMessage.filter({ character_id: characterId }, '-created_date', 100);
-      const latestMessages = msgs.reverse();
+      try {
+        // Fetch latest messages for context
+        const msgs = await base44.entities.ChatMessage.filter({ character_id: characterId }, '-created_date', 100);
+        const latestMessages = msgs.reverse();
 
-      // Check if more messages are queued – if so, skip delay & just batch into one response
-      const remainingCount = pendingMessages.length;
+        // Check if more messages are queued – if so, skip delay & just batch into one response
+        const remainingCount = pendingMessages.length;
 
-      if (remainingCount === 1) {
-        // Only one message – do normal delay + typing
-        const isNag = isRepeatNag(latestMessages, currentMsg.content);
-        const delay = calculateReplyDelay(character, isNag);
-        const reason = getDelayReason(character);
-        setDelayStatus(reason);
-        
-        const typingDelay = Math.min(delay, 60000);
-        const preTypingWait = Math.max(0, delay - typingDelay);
-        
-        if (preTypingWait > 0) {
-          await new Promise(resolve => setTimeout(resolve, preTypingWait));
+        if (remainingCount === 1) {
+          // Only one message – do normal delay + typing
+          const isNag = isRepeatNag(latestMessages, currentMsg.content);
+          const delay = calculateReplyDelay(character, isNag);
+          const reason = getDelayReason(character);
+          setDelayStatus(reason);
+          
+          const typingDelay = Math.min(delay, 60000);
+          const preTypingWait = Math.max(0, delay - typingDelay);
+          
+          if (preTypingWait > 0) {
+            await new Promise(resolve => setTimeout(resolve, preTypingWait));
+          }
+          setDelayStatus(null);
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
-        setDelayStatus(null);
-      } else {
-        await new Promise(resolve => setTimeout(resolve, 500));
-      }
 
-      // Note: User messages are now marked as read asynchronously when sent, so we skip it here to avoid rate limits.
+        // Note: User messages are now marked as read asynchronously when sent, so we skip it here to avoid rate limits.
 
-      setIsTyping(true);
-      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 3000));
+        setIsTyping(true);
+        await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 3000));
 
-      // Consume all pending messages for context
-      const allPending = [...pendingMessages];
-      const combinedContent = allPending.map(m => m.content).join('\n');
-      const lastImage = allPending.reverse().find(m => m.imageUrl)?.imageUrl || null;
+        // Consume all pending messages for context
+        const allPending = [...pendingMessages];
+        const combinedContent = allPending.map(m => m.content).join('\n');
+        const lastImage = allPending.reverse().find(m => m.imageUrl)?.imageUrl || null;
 
-      // Check for conflicts (rare, 8% chance)
-      let conflictCtx = '';
-      if (activeConflict) {
-        conflictCtx = getConflictContext(activeConflict);
-      } else if (Math.random() < 0.08) {
-        const conflict = await checkForConflict(character, latestMessages, user.email).catch(() => null);
-        if (conflict) {
-          setActiveConflict(conflict);
-          conflictCtx = getConflictContext(conflict);
-          queryClient.invalidateQueries({ queryKey: ['active-conflict', characterId] });
-        }
-      }
-
-      // Build group chat context
-      const groupCtx = buildGroupChatContext(groupChats, groupMembers, groupMessages, characterId, allCharacters);
-
-      // Build prompt
-      const { prompt: basePrompt, allMemories } = buildFullPrompt({
-        character,
-        user,
-        messages: latestMessages,
-        memories,
-        content: combinedContent,
-        imageUrl: lastImage,
-        sharedMemories,
-        allCharacters,
-        recentActivities,
-        importantDates,
-        weatherState,
-        activeEvent,
-        currentDream,
-        groupChatContext: groupCtx
-      });
-
-      // Add conflict, seasonal, and news context
-      const seasonalCtx = getSeasonalContext();
-      const newsCtx = getNewsContextForCharacter(newsArticles, characterId, character.name);
-      const prompt = basePrompt + conflictCtx + seasonalCtx + newsCtx;
-
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        response_json_schema: RESPONSE_SCHEMA,
-        file_urls: lastImage ? [lastImage] : undefined
-      });
-      
-      setIsTyping(false);
-      
-      // Build a single character update object to minimize API calls
-      const charUpdates = {};
-      if (response.new_mood && response.new_mood !== character.current_mood) {
-        charUpdates.current_mood = response.new_mood;
-      }
-      if (response.motivation_progress_delta && character.current_motivation) {
-        charUpdates.motivation_progress = Math.min(100, Math.max(0, (character.motivation_progress || 0) + response.motivation_progress_delta));
-      }
-      if (response.relationship_changes) {
-        const rc = response.relationship_changes;
-        if (rc.trust_delta) charUpdates.trust_level = Math.min(10, Math.max(1, (character.trust_level || 5) + rc.trust_delta));
-        if (rc.jealousy_delta) charUpdates.jealousy_level = Math.min(10, Math.max(1, (character.jealousy_level || 3) + rc.jealousy_delta));
-        if (rc.closeness_delta) charUpdates.empathy_level = Math.min(10, Math.max(1, (character.empathy_level || 5) + rc.closeness_delta));
-        if (rc.relationship_phase) {
-          const phaseToEvolution = { 'kennenlernphase': 'sich_annähernd', 'aufbauphase': 'sich_annähernd', 'vertrauensphase': 'sich_vertiefend', 'tiefe_verbindung': 'sich_vertiefend', 'krise': 'sich_entfernend', 'versöhnung': 'sich_annähernd', 'stabil': 'statisch' };
-          if (phaseToEvolution[rc.relationship_phase]) charUpdates.relationship_evolution = phaseToEvolution[rc.relationship_phase];
-        }
-      }
-      if (response.proactive_topic && character.proactive_topics) {
-        charUpdates.current_motivation = response.proactive_topic;
-      }
-      
-      // Single character update call
-      if (Object.keys(charUpdates).length > 0) {
-        await base44.entities.Character.update(characterId, charUpdates);
-        queryClient.invalidateQueries({ queryKey: ['character', characterId] });
-      }
-
-      // Run secondary updates with heavy delays to avoid rate limits
-      const runSecondary = async () => {
-        await new Promise(r => setTimeout(r, 3000));
-
-        // 1. Save new memories (bulk - single call, most important)
-        if (response.new_memories?.length > 0) {
-          const newMems = response.new_memories.filter(memory => {
-            if (!memory.content || memory.importance < 5) return false;
-            return !memories.some(existing => existing.memory_text && memory.content && existing.memory_text.toLowerCase().includes(memory.content.toLowerCase().slice(0, 30)));
-          }).map(memory => ({
-            character_id: characterId, user_email: user.email, memory_text: memory.content, memory_type: memory.memory_type || 'fact', memory_category: memory.memory_category || 'general', importance_level: memory.importance >= 8 ? 'hoch' : memory.importance >= 5 ? 'mittel' : 'niedrig', last_interaction_date: new Date().toISOString(), strength: Math.min(100, memory.importance * 12), recall_count: 0, source: 'ai_extracted'
-          }));
-          if (newMems.length > 0) {
-            await base44.entities.CharacterMemory.bulkCreate(newMems).catch(() => {});
-            queryClient.invalidateQueries({ queryKey: ['memories', characterId, user.email] });
+        // Check for conflicts (rare, 8% chance)
+        let conflictCtx = '';
+        if (activeConflict) {
+          conflictCtx = getConflictContext(activeConflict);
+        } else if (Math.random() < 0.08) {
+          const conflict = await checkForConflict(character, latestMessages, user.email).catch(() => null);
+          if (conflict) {
+            setActiveConflict(conflict);
+            conflictCtx = getConflictContext(conflict);
+            queryClient.invalidateQueries({ queryKey: ['active-conflict', characterId] });
           }
         }
 
-        await new Promise(r => setTimeout(r, 3000));
+        // Build group chat context
+        const groupCtx = buildGroupChatContext(groupChats, groupMembers, groupMessages, characterId, allCharacters);
 
-        // 2. Boost ONE recalled memory (not all)
-        if (response.recalled_memory_ids?.length > 0) {
-          const memId = response.recalled_memory_ids[0];
-          const mem = allMemories.find(m => m.id === memId);
-          if (mem) {
-            await base44.entities.CharacterMemory.update(memId, {
-              strength: Math.min(100, (mem.strength || 50) + 20),
-              recall_count: (mem.recall_count || 0) + 1,
-              last_recalled_date: new Date().toISOString(),
-            }).catch(() => {});
-          }
+        // Build prompt
+        const { prompt: basePrompt, allMemories } = buildFullPrompt({
+          character,
+          user,
+          messages: latestMessages,
+          memories,
+          content: combinedContent,
+          imageUrl: lastImage,
+          sharedMemories,
+          allCharacters,
+          recentActivities,
+          importantDates,
+          weatherState,
+          activeEvent,
+          currentDream,
+          groupChatContext: groupCtx
+        });
+
+        // Add conflict, seasonal, and news context
+        const seasonalCtx = getSeasonalContext();
+        const newsCtx = getNewsContextForCharacter(newsArticles, characterId, character.name);
+        const prompt = basePrompt + conflictCtx + seasonalCtx + newsCtx;
+
+        let response;
+        try {
+          response = await base44.integrations.Core.InvokeLLM({
+            prompt,
+            response_json_schema: RESPONSE_SCHEMA,
+            file_urls: lastImage ? [lastImage] : undefined
+          });
+        } catch (llmError) {
+          console.error("InvokeLLM failed:", llmError);
+          await base44.entities.ChatMessage.create({
+            character_id: characterId,
+            role: 'assistant',
+            content: "*(System: Rate limit erreicht oder Netzwerkfehler. Bitte versuche es gleich noch einmal)*",
+            status: 'delivered'
+          }).catch(() => {});
+          queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
+          queryClient.invalidateQueries({ queryKey: ['all-messages'] });
+          setPendingMessages(prev => prev.slice(allPending.length));
+          setIsTyping(false);
+          return; // Exit early, finally block will reset isProcessingRef
         }
-
-        await new Promise(r => setTimeout(r, 3000));
-
-        // 3. Relationship event (only for significant changes)
-        if (response.relationship_changes?.event_type && response.relationship_changes?.event_description && (response.relationship_changes?.impact_score || 0) >= 3) {
+        
+        setIsTyping(false);
+        
+        // Build a single character update object to minimize API calls
+        const charUpdates = {};
+        if (response.new_mood && response.new_mood !== character.current_mood) {
+          charUpdates.current_mood = response.new_mood;
+        }
+        if (response.motivation_progress_delta && character.current_motivation) {
+          charUpdates.motivation_progress = Math.min(100, Math.max(0, (character.motivation_progress || 0) + response.motivation_progress_delta));
+        }
+        if (response.relationship_changes) {
           const rc = response.relationship_changes;
-          await base44.entities.RelationshipEvent.create({ character_id: characterId, user_email: user.email, event_type: rc.event_type, description: rc.event_description, impact_score: rc.impact_score || 0 }).catch(() => {});
+          if (rc.trust_delta) charUpdates.trust_level = Math.min(10, Math.max(1, (character.trust_level || 5) + rc.trust_delta));
+          if (rc.jealousy_delta) charUpdates.jealousy_level = Math.min(10, Math.max(1, (character.jealousy_level || 3) + rc.jealousy_delta));
+          if (rc.closeness_delta) charUpdates.empathy_level = Math.min(10, Math.max(1, (character.empathy_level || 5) + rc.closeness_delta));
+          if (rc.relationship_phase) {
+            const phaseToEvolution = { 'kennenlernphase': 'sich_annähernd', 'aufbauphase': 'sich_annähernd', 'vertrauensphase': 'sich_vertiefend', 'tiefe_verbindung': 'sich_vertiefend', 'krise': 'sich_entfernend', 'versöhnung': 'sich_annähernd', 'stabil': 'statisch' };
+            if (phaseToEvolution[rc.relationship_phase]) charUpdates.relationship_evolution = phaseToEvolution[rc.relationship_phase];
+          }
+        }
+        if (response.proactive_topic && character.proactive_topics) {
+          charUpdates.current_motivation = response.proactive_topic;
+        }
+        
+        // Single character update call
+        if (Object.keys(charUpdates).length > 0) {
+          await base44.entities.Character.update(characterId, charUpdates).catch(() => {});
+          queryClient.invalidateQueries({ queryKey: ['character', characterId] });
         }
 
-        // Skip shared memory marking and info sharing to reduce calls
-      };
-      // Run non-blocking
-      runSecondary().catch(() => {});
-      
-      // Save AI response
-      await base44.entities.ChatMessage.create({ character_id: characterId, role: 'assistant', content: response.response, status: 'delivered' });
+        // Run secondary updates with heavy delays to avoid rate limits
+        const runSecondary = async () => {
+          await new Promise(r => setTimeout(r, 3000));
 
-      // Mark dream as shared after first AI response
-      if (currentDream && !currentDream.shared_with_user) {
-        markDreamShared(currentDream.id).catch(() => {});
-        setCurrentDream(prev => prev ? { ...prev, shared_with_user: true } : null);
+          // 1. Save new memories (bulk - single call, most important)
+          if (response.new_memories?.length > 0) {
+            const newMems = response.new_memories.filter(memory => {
+              if (!memory.content || memory.importance < 5) return false;
+              return !memories.some(existing => existing.memory_text && memory.content && existing.memory_text.toLowerCase().includes(memory.content.toLowerCase().slice(0, 30)));
+            }).map(memory => ({
+              character_id: characterId, user_email: user.email, memory_text: memory.content, memory_type: memory.memory_type || 'fact', memory_category: memory.memory_category || 'general', importance_level: memory.importance >= 8 ? 'hoch' : memory.importance >= 5 ? 'mittel' : 'niedrig', last_interaction_date: new Date().toISOString(), strength: Math.min(100, memory.importance * 12), recall_count: 0, source: 'ai_extracted'
+            }));
+            if (newMems.length > 0) {
+              await base44.entities.CharacterMemory.bulkCreate(newMems).catch(() => {});
+              queryClient.invalidateQueries({ queryKey: ['memories', characterId, user.email] });
+            }
+          }
+
+          await new Promise(r => setTimeout(r, 3000));
+
+          // 2. Boost ONE recalled memory (not all)
+          if (response.recalled_memory_ids?.length > 0) {
+            const memId = response.recalled_memory_ids[0];
+            const mem = allMemories.find(m => m.id === memId);
+            if (mem) {
+              await base44.entities.CharacterMemory.update(memId, {
+                strength: Math.min(100, (mem.strength || 50) + 20),
+                recall_count: (mem.recall_count || 0) + 1,
+                last_recalled_date: new Date().toISOString(),
+              }).catch(() => {});
+            }
+          }
+
+          await new Promise(r => setTimeout(r, 3000));
+
+          // 3. Relationship event (only for significant changes)
+          if (response.relationship_changes?.event_type && response.relationship_changes?.event_description && (response.relationship_changes?.impact_score || 0) >= 3) {
+            const rc = response.relationship_changes;
+            await base44.entities.RelationshipEvent.create({ character_id: characterId, user_email: user.email, event_type: rc.event_type, description: rc.event_description, impact_score: rc.impact_score || 0 }).catch(() => {});
+          }
+
+          // Skip shared memory marking and info sharing to reduce calls
+        };
+        // Run non-blocking
+        runSecondary().catch(() => {});
+        
+        // Save AI response
+        await base44.entities.ChatMessage.create({ character_id: characterId, role: 'assistant', content: response.response, status: 'delivered' }).catch(() => {});
+
+        // Mark dream as shared after first AI response
+        if (currentDream && !currentDream.shared_with_user) {
+          markDreamShared(currentDream.id).catch(() => {});
+          setCurrentDream(prev => prev ? { ...prev, shared_with_user: true } : null);
+        }
+
+        // Skip diary entry generation to reduce API calls (diary runs separately)
+
+        // Award XP
+        if (addXP) addXP({ xp: XP_REWARDS.send_message + XP_REWARDS.receive_reply, coins: 2 });
+        
+        queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
+        queryClient.invalidateQueries({ queryKey: ['all-messages'] });
+
+        // Remove all processed messages from queue
+        setPendingMessages(prev => prev.slice(allPending.length));
+      } catch (error) {
+        console.error("Error in processAIResponse:", error);
+        setIsTyping(false);
+        setPendingMessages(prev => prev.slice(1)); // Remove the stuck message
+      } finally {
+        isProcessingRef.current = false;
       }
-
-      // Skip diary entry generation to reduce API calls (diary runs separately)
-
-      // Award XP
-      if (addXP) addXP({ xp: XP_REWARDS.send_message + XP_REWARDS.receive_reply, coins: 2 });
-      
-      queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
-      queryClient.invalidateQueries({ queryKey: ['all-messages'] });
-
-      // Remove all processed messages from queue
-      setPendingMessages(prev => prev.slice(allPending.length));
-      isProcessingRef.current = false;
     };
 
     processAIResponse();
