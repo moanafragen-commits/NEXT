@@ -319,6 +319,50 @@ export default function CharacterMap() {
           )}
         </AnimatePresence>
 
+        {/* Timeline Panel */}
+        <AnimatePresence>
+          {showTimeline && (
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+              className="absolute top-0 right-0 bottom-0 z-[500] w-80 bg-[#111]/95 backdrop-blur-2xl border-l border-white/10 flex flex-col"
+            >
+              <div className="flex items-center justify-between px-4 pt-14 pb-3">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-amber-400" />
+                  <h2 className="text-sm font-bold text-white">Routen-Timeline</h2>
+                </div>
+                <Button variant="ghost" size="icon" onClick={() => setShowTimeline(false)} className="text-gray-500 hover:text-white h-8 w-8 rounded-lg">
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="flex-1 overflow-y-auto px-3 pb-4">
+                {Object.entries(locationHistory).map(([charId, history], idx) => {
+                  const char = activeChars.find(c => c.id === charId);
+                  if (!char) return null;
+                  return (
+                    <RouteTimeline
+                      key={charId}
+                      character={char}
+                      history={history}
+                      charIndex={idx}
+                      onFocus={(loc) => {
+                        setFlyTarget({ center: [loc.latitude, loc.longitude], zoom: 16 });
+                        setShowTimeline(false);
+                      }}
+                    />
+                  );
+                })}
+                {Object.keys(locationHistory).length === 0 && (
+                  <p className="text-center text-gray-600 text-sm py-12">Noch keine Routen vorhanden</p>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* List Panel */}
         <AnimatePresence>
           {showList && (
