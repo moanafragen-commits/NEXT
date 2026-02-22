@@ -69,7 +69,10 @@ export default function Chat() {
   
   const { data: messages = [], isLoading } = useQuery({
     queryKey: ['messages', characterId],
-    queryFn: () => base44.entities.ChatMessage.filter({ character_id: characterId }, 'created_date', 100),
+    queryFn: async () => {
+      const msgs = await base44.entities.ChatMessage.filter({ character_id: characterId }, '-created_date', 100);
+      return msgs.reverse();
+    },
     enabled: !!characterId
   });
   
