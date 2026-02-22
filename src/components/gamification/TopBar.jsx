@@ -24,6 +24,12 @@ export default function TopBar({ userEmail }) {
         </div>
         <CoinDisplay coins={userLevel.coins} />
         
+        <Link to={createPageUrl('GamificationHub')}>
+          <button className="p-2 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 transition-colors">
+            <Trophy className="w-4 h-4 text-emerald-400" />
+          </button>
+        </Link>
+        
         <AnimatePresence>
           {canClaimDaily && (
             <motion.button
