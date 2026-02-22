@@ -51,7 +51,7 @@ export default function Home() {
   
   const { data: messages = [] } = useQuery({
     queryKey: ['all-messages'],
-    queryFn: () => base44.entities.ChatMessage.list('-created_date', 100)
+    queryFn: () => base44.entities.ChatMessage.list('-created_date', 500)
   });
 
   const { data: statuses = [] } = useQuery({
@@ -114,14 +114,13 @@ export default function Home() {
   });
   
   const allTags = [...new Set(characters.flatMap(c => c.tags || []))];
-  const charactersWithMessages = new Set(messages.map(m => m.character_id));
 
   const filteredCharacters = characters.filter(c => {
     const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTag = !activeTag || (c.tags || []).includes(activeTag);
     if (viewFilter === 'favorites') return matchesSearch && matchesTag && c.is_favorite && !c.is_blocked;
     if (viewFilter === 'archived') return matchesSearch && matchesTag && c.is_archived && !c.is_blocked;
-    return matchesSearch && matchesTag && !c.is_archived && !c.is_blocked && charactersWithMessages.has(c.id);
+    return matchesSearch && matchesTag && !c.is_archived && !c.is_blocked;
   });
 
   // Sort by last message time
