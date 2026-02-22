@@ -62,7 +62,7 @@ export default function CharacterMap() {
   // Fetch ALL locations (not just latest) for route history
   const { data: allLocations = [], isLoading } = useQuery({
     queryKey: ['all-character-locations-full'],
-    queryFn: () => base44.entities.CharacterLocation.list('-created_date', 500)
+    queryFn: () => base44.entities.CharacterLocation.list('-created_date', 1000)
   });
 
   // Derive latest per character + history map
@@ -72,7 +72,7 @@ export default function CharacterMap() {
     for (const loc of allLocations) {
       if (!loc.latitude || !loc.longitude) continue;
       if (!history[loc.character_id]) history[loc.character_id] = [];
-      if (history[loc.character_id].length < 5) history[loc.character_id].push(loc);
+      if (history[loc.character_id].length < 15) history[loc.character_id].push(loc);
       if (!latest[loc.character_id]) latest[loc.character_id] = loc;
     }
     return { locations: Object.values(latest), locationHistory: history };
