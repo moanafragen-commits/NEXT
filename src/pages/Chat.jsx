@@ -223,14 +223,17 @@ export default function Chat() {
     
     const markAsRead = async () => {
       const now = new Date().toISOString();
-      // Mark all unread messages sequentially with delays to avoid rate limits
-      for (const msg of unreadAssistantMsgs) {
+      // Mark up to 5 unread messages sequentially with delays to avoid rate limits
+      const msgsToMark = unreadAssistantMsgs.slice(0, 5);
+      for (const msg of msgsToMark) {
         await base44.entities.ChatMessage.update(msg.id, { status: 'read', read_at: now }).catch(() => {});
-        await new Promise(r => setTimeout(r, 600));
+        await new Promise(r => setTimeout(r, 1000));
       }
       markingInProgressRef.current = false;
-      queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
-      queryClient.invalidateQueries({ queryKey: ['all-messages'] });
+      if (msgsToMark.length > 0) {
+        queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
+        queryClient.invalidateQueries({ queryKey: ['all-messages'] });
+      }
     };
     // Start marking after a short delay so initial queries settle first
     const timer = setTimeout(markAsRead, 1500);
