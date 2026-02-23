@@ -260,21 +260,42 @@ export default function Chat() {
 
   // Send user message immediately, then queue AI response
   const handleSendMessage = async (content, imageUrl) => {
-    // 1. Save user message immediately
-    await base44.entities.ChatMessage.create({
+    // 1. Optimistic Update
+    const tempId = `temp-${Date.now()}`;
+    const optimisticMsg = {
+      id: tempId,
+      character_id: characterId,
+      role: 'user',
+      content,
+      image_url: imageUrl || null,
+      reply_to_id: replyToMessage?.id || null,
+      status: 'sending',
+      created_date: new Date().toISOString(),
+      is_pinned: false,
+      is_bookmarked: false
+    };
+
+    queryClient.setQueryData(['messages', characterId], (oldData) => {
+      return oldData ? [...oldData, optimisticMsg] : [optimisticMsg];
+    });
+
+    setReplyToMessage(null);
+    setPendingMessages(prev => [...prev, { content, imageUrl }]);
+
+    // 2. Background Sync
+    base44.entities.ChatMessage.create({
       character_id: characterId,
       role: 'user',
       content,
       image_url: imageUrl || null,
       reply_to_id: replyToMessage?.id || null,
       status: 'sent'
+    }).then(() => {
+      queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
+      queryClient.invalidateQueries({ queryKey: ['all-messages'] });
+    }).catch(err => {
+      console.error("Message send failed", err);
     });
-    setReplyToMessage(null);
-    queryClient.invalidateQueries({ queryKey: ['messages', characterId] });
-    queryClient.invalidateQueries({ queryKey: ['all-messages'] });
-
-    // 2. Queue AI response processing
-    setPendingMessages(prev => [...prev, { content, imageUrl }]);
   };
 
   // Process pending messages one at a time
@@ -461,6 +482,12 @@ export default function Chat() {
         
         // Save AI response
         await base44.entities.ChatMessage.create({ character_id: characterId, role: 'assistant', content: response.response, status: 'delivered' }).catch(() => {});
+
+        // Mark latest user message as read
+        const lastUserMsgs = await base44.entities.ChatMessage.filter({ character_id: characterId, role: 'user' }, '-created_date', 1);
+        if (lastUserMsgs.length > 0) {
+           await base44.entities.ChatMessage.update(lastUserMsgs[0].id, { status: 'read', read_at: new Date().toISOString() }).catch(() => {});
+        }
 
         // Mark dream as shared after first AI response
         if (currentDream && !currentDream.shared_with_user) {

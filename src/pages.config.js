@@ -67,6 +67,7 @@ import CreateUserStatus from './pages/CreateUserStatus';
 import Diaries from './pages/Diaries';
 import DreamWorldPage from './pages/DreamWorldPage';
 import Feed from './pages/Feed';
+import GamificationHub from './pages/GamificationHub';
 import GroupChat from './pages/GroupChat';
 import GroupChats from './pages/GroupChats';
 import Home from './pages/Home';
@@ -84,7 +85,6 @@ import UserChat from './pages/UserChat';
 import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
 import UserStatusView from './pages/UserStatusView';
-import GamificationHub from './pages/GamificationHub';
 import __Layout from './Layout.jsx';
 
 
@@ -109,6 +109,7 @@ export const PAGES = {
     "Diaries": Diaries,
     "DreamWorldPage": DreamWorldPage,
     "Feed": Feed,
+    "GamificationHub": GamificationHub,
     "GroupChat": GroupChat,
     "GroupChats": GroupChats,
     "Home": Home,
@@ -126,7 +127,6 @@ export const PAGES = {
     "UserChats": UserChats,
     "UserProfile": UserProfile,
     "UserStatusView": UserStatusView,
-    "GamificationHub": GamificationHub,
 }
 
 export const pagesConfig = {
