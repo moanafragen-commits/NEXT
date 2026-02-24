@@ -70,6 +70,11 @@ function getCityCoordinates(cityName) {
 
 // Determine the character's home city from their profile info
 function getCharacterHomeCity(character) {
+  if (character.home_city) {
+    const coords = getCityCoordinates(character.home_city);
+    if (coords) return { name: character.home_city, coords };
+  }
+
   // Check living_situation first (e.g. "Wohnung in Los Angeles", "WG in Berlin")
   const living = character.living_situation || '';
   const bg = character.background_culture || '';
@@ -123,8 +128,8 @@ function getCharacterLocations(character) {
 
   // Determine the character's actual home city from profile data
   const homeCity = getCharacterHomeCity(character);
-  const cityName = homeCity ? homeCity.name.charAt(0).toUpperCase() + homeCity.name.slice(1).replace('_', ' ') : 
-    (city.match(/(?:in\s+)?([A-ZÄÖÜ][a-zäöüß]+(?:\s[A-ZÄÖÜ][a-zäöüß]+)*)/)?.[1] || '');
+  const cityName = character.home_city || (homeCity ? homeCity.name.charAt(0).toUpperCase() + homeCity.name.slice(1).replace('_', ' ') : 
+    (city.match(/(?:in\s+)?([A-ZÄÖÜ][a-zäöüß]+(?:\s[A-ZÄÖÜ][a-zäöüß]+)*)/)?.[1] || ''));
   
   // Pretty city display names
   const CITY_DISPLAY = {
@@ -137,7 +142,9 @@ function getCharacterLocations(character) {
   };
   const displayCityName = homeCity ? (CITY_DISPLAY[homeCity.name] || cityName) : cityName;
   
-  const homeLabel = city || (displayCityName ? `Zuhause in ${displayCityName}` : 'Zuhause');
+  const homeLabel = character.home_address 
+    ? `Zuhause (${character.home_address})` 
+    : (city || (displayCityName ? `Zuhause in ${displayCityName}` : 'Zuhause'));
   const workLabel = job || 'Büro';
 
   const cn = displayCityName;
@@ -162,6 +169,14 @@ function getCharacterLocations(character) {
     : ['Einkaufszentrum', 'Innenstadt', 'Supermarkt'];
 
   return { homeLabel, workLabel, cafés, restaurants, parks, bars, shops, isStudent, isWorkingOut, cityName: cn, homeCityCoords: homeCity?.coords || null };
+}
+
+// Helper to make the home marker always land on the exact same coordinate for a given character
+function seededJitter(seedStr) {
+  let hash = 0;
+  for (let i = 0; i < seedStr.length; i++) hash = ((hash << 5) - hash) + seedStr.charCodeAt(i);
+  const rand = Math.abs((Math.sin(hash) * 10000) % 1); 
+  return (rand - 0.5) * 0.03;
 }
 
 export function generateRandomLocation(character) {
@@ -303,20 +318,37 @@ export function generateRandomLocation(character) {
     baseLat = cityCoords.lat;
     baseLng = cityCoords.lng;
   }
-  const jitter = () => (Math.random() - 0.5) * 0.03; // ~1.5km radius scatter
-  const lat = baseLat + jitter();
-  const lng = baseLng + jitter();
+  
+  const isHome = type === 'zuhause';
+  let lat = baseLat;
+  let lng = baseLng;
+  let address = isHome && character.home_address ? character.home_address : null;
 
-  // Generate a plausible address – localized for non-German cities
-  const isGerman = cityCoords.lat > 46 && cityCoords.lat < 55 && cityCoords.lng > 5 && cityCoords.lng < 16;
-  const isUS = cityCoords.lng < -50;
-  const streets = isUS
-    ? ['Sunset Blvd', 'Hollywood Blvd', 'Melrose Ave', 'Santa Monica Blvd', 'Vine St', 'Wilshire Blvd', 'Beverly Dr', 'Rodeo Dr', 'La Brea Ave', 'Fairfax Ave', 'Main St', 'Broadway', 'Park Ave', '5th Ave', 'Ocean Ave']
-    : isGerman
-    ? ['Hauptstraße', 'Bahnhofstraße', 'Berliner Straße', 'Marktplatz', 'Schillerstraße', 'Goethestraße', 'Friedrichstraße', 'Lindenallee', 'Parkweg', 'Am Stadtpark']
-    : ['High Street', 'Rue de la Paix', 'Via Roma', 'Gran Via', 'Passeig de Gràcia', 'Keizersgracht', 'Shibuya Crossing'];
-  const streetNum = Math.floor(Math.random() * 120) + 1;
-  const address = `${pick(streets)} ${streetNum}`;
+  if (isHome) {
+    // Make home coordinates deterministic so they don't jump around
+    if (!character.home_latitude) {
+      lat += seededJitter(character.id + 'lat');
+      lng += seededJitter(character.id + 'lng');
+    }
+  } else {
+    // Scatter other locations around the base city
+    const jitter = () => (Math.random() - 0.5) * 0.03; // ~1.5km radius scatter
+    lat += jitter();
+    lng += jitter();
+  }
+
+  // Generate a plausible address – localized for non-German cities if not provided
+  if (!address) {
+    const isGerman = baseLat > 46 && baseLat < 55 && baseLng > 5 && baseLng < 16;
+    const isUS = baseLng < -50;
+    const streets = isUS
+      ? ['Sunset Blvd', 'Hollywood Blvd', 'Melrose Ave', 'Santa Monica Blvd', 'Vine St', 'Wilshire Blvd', 'Beverly Dr', 'Rodeo Dr', 'La Brea Ave', 'Fairfax Ave', 'Main St', 'Broadway', 'Park Ave', '5th Ave', 'Ocean Ave']
+      : isGerman
+      ? ['Hauptstraße', 'Bahnhofstraße', 'Berliner Straße', 'Marktplatz', 'Schillerstraße', 'Goethestraße', 'Friedrichstraße', 'Lindenallee', 'Parkweg', 'Am Stadtpark']
+      : ['High Street', 'Rue de la Paix', 'Via Roma', 'Gran Via', 'Passeig de Gràcia', 'Keizersgracht', 'Shibuya Crossing'];
+    const streetNum = Math.floor(Math.random() * 120) + 1;
+    address = `${pick(streets)} ${streetNum}`;
+  }
 
   return {
     location_name: locationNames[type],

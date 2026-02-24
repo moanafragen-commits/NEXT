@@ -26,6 +26,7 @@ import LocationSharing from '@/components/character/LocationSharing';
 import GesturePanel from '@/components/gestures/GesturePanel';
 import CharacterQuestionCard from '@/components/questions/CharacterQuestionCard';
 import RelationshipItemPanel from '@/components/relationship/RelationshipItemPanel';
+import HomeAddressPanel from '@/components/character/HomeAddressPanel';
 
 export default function CharacterInfo() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -278,8 +279,9 @@ export default function CharacterInfo() {
         <div className="p-6 space-y-4">
           <div className="flex items-center gap-2 text-blue-400">
             <MapPin className="w-5 h-5" />
-            <h3 className="font-semibold">Standort</h3>
+            <h3 className="font-semibold">Standort & Wohnort</h3>
           </div>
+          <HomeAddressPanel character={character} />
           <LocationSharing characterId={characterId} />
         </div>
 
