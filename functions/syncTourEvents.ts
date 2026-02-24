@@ -4,50 +4,76 @@ Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
         
-        const characters = await base44.asServiceRole.entities.Character.list();
+        // 1. Get all active tours
+        const activeTours = await base44.asServiceRole.entities.Tour.filter({ is_active: true });
         const today = new Date().toISOString().split('T')[0];
         
-        for (const char of characters) {
-            const events = await base44.asServiceRole.entities.TourEvent.filter({ character_id: char.id, status: 'geplant' });
-            const todayEvent = events.find(e => e.date.startsWith(today));
+        for (const tour of activeTours) {
+            // Find today's event for this tour
+            const tourEvents = await base44.asServiceRole.entities.TourEvent.filter({ tour_id: tour.id });
+            const todayEvent = tourEvents.find(e => e.date.startsWith(today));
             
             if (todayEvent) {
-                // Character is on tour today
-                if (char.travel_status !== 'auf_tour' || char.travel_destination !== todayEvent.city) {
-                    await base44.asServiceRole.entities.Character.update(char.id, {
-                        travel_status: 'auf_tour',
-                        travel_destination: todayEvent.city
+                // Random Chance of Cancellation (e.g. 1%)
+                if (todayEvent.status === 'geplant' && Math.random() < 0.01) {
+                    const reasons = ["Erkältung", "Stimmbandentzündung", "Technische Probleme", "Unwetter", "Verletzung beim Soundcheck"];
+                    const reason = reasons[Math.floor(Math.random() * reasons.length)];
+                    
+                    // Cancel Event
+                    await base44.asServiceRole.entities.TourEvent.update(todayEvent.id, {
+                        status: 'abgesagt',
+                        cancellation_reason: reason
                     });
+                    
+                    // Notify via Post (Manager or Band)
+                    if (tour.manager_id) {
+                        const manager = await base44.asServiceRole.entities.Character.get(tour.manager_id);
+                        if (manager) {
+                            const prompt = `Du bist der Tour-Manager der Band. Du musst leider mitteilen, dass das Konzert heute in ${todayEvent.city} abgesagt werden muss wegen: ${reason}. Schreibe einen kurzen, professionellen aber bedauernden Social Media Post.`;
+                            const postContent = await base44.asServiceRole.integrations.Core.InvokeLLM({ prompt });
+                            if (postContent) {
+                                await base44.asServiceRole.entities.Post.create({
+                                    character_id: manager.id,
+                                    content: postContent,
+                                    is_user_post: false
+                                });
+                            }
+                        }
+                    }
+                    continue; // Skip moving characters if cancelled
                 }
                 
-                // Random backstage post (15% chance per execution)
-                if (Math.random() < 0.15) {
-                    const prompt = `Du bist ${char.name}. Du bist gerade auf der "${todayEvent.tour_name}" Tour in ${todayEvent.city}. Schreibe einen kurzen, authentischen Social Media Post (Backstage-Einblick, Soundcheck, Vorfreude auf die Show) für deine Fans. Keine Hashtags, nur der Text. Schreibe in deiner typischen Art.`;
-                    
-                    const response = await base44.asServiceRole.integrations.Core.InvokeLLM({ prompt });
-                    
-                    if (response) {
-                        await base44.asServiceRole.entities.Post.create({
-                            character_id: char.id,
-                            content: response,
-                            is_user_post: false,
-                            likes_count: Math.floor(Math.random() * 800) + 50,
-                            comments_count: Math.floor(Math.random() * 80) + 5
-                        });
+                // If not cancelled, move everyone to the city
+                const membersToMove = [...(tour.band_members || [])];
+                if (tour.manager_id) membersToMove.push(tour.manager_id);
+                
+                for (const charId of membersToMove) {
+                    const char = await base44.asServiceRole.entities.Character.get(charId);
+                    if (char) {
+                        // Move to city
+                        if (char.travel_status !== 'auf_tour' || char.travel_destination !== todayEvent.city) {
+                            await base44.asServiceRole.entities.Character.update(char.id, {
+                                travel_status: 'auf_tour',
+                                travel_destination: todayEvent.city
+                            });
+                        }
+                        
+                        // Small chance for backstage post (10% per member)
+                        if (Math.random() < 0.1) {
+                            const prompt = `Du bist ${char.name}. Du bist in ${todayEvent.city} für ein Konzert. Schreibe einen kurzen Hype-Post oder Backstage-Einblick.`;
+                            const content = await base44.asServiceRole.integrations.Core.InvokeLLM({ prompt });
+                             if (content) {
+                                await base44.asServiceRole.entities.Post.create({
+                                    character_id: char.id, content, is_user_post: false, likes_count: Math.floor(Math.random()*500)
+                                });
+                            }
+                        }
                     }
-                }
-            } else {
-                // Not on tour today. If they were on tour, return home.
-                if (char.travel_status === 'auf_tour') {
-                    await base44.asServiceRole.entities.Character.update(char.id, {
-                        travel_status: 'zuhause',
-                        travel_destination: ''
-                    });
                 }
             }
         }
         
-        return Response.json({ success: true, message: "Tour events synced." });
+        return Response.json({ success: true, message: "Tour groups synced." });
     } catch (error) {
         return Response.json({ error: error.message }, { status: 500 });
     }

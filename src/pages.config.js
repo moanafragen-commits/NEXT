@@ -86,6 +86,8 @@ import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
 import UserStatusView from './pages/UserStatusView';
 import TourPlanner from './pages/TourPlanner';
+import Tours from './pages/Tours';
+import TourDetail from './pages/TourDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -129,6 +131,8 @@ export const PAGES = {
     "UserProfile": UserProfile,
     "UserStatusView": UserStatusView,
     "TourPlanner": TourPlanner,
+    "Tours": Tours,
+    "TourDetail": TourDetail,
 }
 
 export const pagesConfig = {
