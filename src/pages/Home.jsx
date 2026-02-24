@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Plus, MessageCircle } from 'lucide-react';
+import { Plus, MessageCircle, MapPin } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import CharacterCard from '@/components/chat/CharacterCard';
 import CreateCharacterModal from '@/components/chat/CreateCharacterModal';
@@ -194,6 +194,15 @@ export default function Home() {
 
       {/* Character List */}
       <main className="pb-20 relative z-[1]">
+        <div className="px-4 py-2 flex justify-end">
+            <Link to={createPageUrl('Tours')}>
+                <Button variant="outline" size="sm" className="bg-[#1a1a1a]/80 backdrop-blur border-white/10 text-white hover:bg-white/10 gap-2">
+                    <MapPin className="w-4 h-4 text-indigo-400" />
+                    Touren & Karte
+                </Button>
+            </Link>
+        </div>
+
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="w-10 h-10 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin" />
