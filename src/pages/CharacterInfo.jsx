@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, BookOpen, MessageCircle, Settings, Sparkles, Plus, Brain, Heart, Target, TrendingUp, Dumbbell, Camera, Upload, Loader2, Music, CalendarHeart, Gift, Home, Trophy, BarChart3, Gamepad2, MapPin, Clock } from 'lucide-react';
+import { ArrowLeft, BookOpen, MessageCircle, Settings, Sparkles, Plus, Brain, Heart, Target, TrendingUp, Dumbbell, Camera, Upload, Loader2, Music, CalendarHeart, Gift, Home, Trophy, BarChart3, Gamepad2, MapPin, Clock, Plane } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -283,6 +283,22 @@ export default function CharacterInfo() {
           </div>
           <HomeAddressPanel character={character} />
           <LocationSharing characterId={characterId} />
+        </div>
+
+        <Separator className="bg-white/5" />
+
+        {/* Tour Planner */}
+        <div className="p-6 space-y-4">
+          <div className="flex items-center gap-2 text-indigo-400">
+            <Plane className="w-5 h-5" />
+            <h3 className="font-semibold">Tour- & Reiseplaner</h3>
+          </div>
+          <Link to={createPageUrl(`TourPlanner?characterId=${characterId}`)}>
+            <Button className="w-full bg-[#262626] hover:bg-[#333] border border-white/5 text-white justify-between h-12">
+              <span>Tourplan verwalten</span>
+              <Plane className="w-4 h-4 text-gray-400" />
+            </Button>
+          </Link>
         </div>
 
         <Separator className="bg-white/5" />
