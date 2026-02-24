@@ -18,7 +18,7 @@ import { ROUTE_COLORS } from '@/components/map/AnimatedRoute';
 const TILE_URLS = {
   dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
   satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-  street: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+  street: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
 };
 
 const STYLE_LABELS = { dark: '🌙 Dark', satellite: '🛰️ Satellit', street: '🗺️ Straße' };
@@ -43,7 +43,7 @@ function MapReady() {
 export default function CharacterMap() {
   const [showList, setShowList] = useState(false);
   const [flyTarget, setFlyTarget] = useState(null);
-  const [mapStyle, setMapStyle] = useState('dark');
+  const [mapStyle, setMapStyle] = useState('street');
   const [selectedChar, setSelectedChar] = useState(null);
   const [showRoutes, setShowRoutes] = useState(true);
   const [showTimeline, setShowTimeline] = useState(false);

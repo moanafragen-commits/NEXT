@@ -57,35 +57,6 @@ function createCharIcon(avatar, emoji, isMoving, color) {
   });
 }
 
-// Simulate slow drift movement for live-tracking feel
-function useLivePosition(baseLat, baseLng) {
-  const [pos, setPos] = useState([baseLat, baseLng]);
-  const offsetRef = useRef({ lat: 0, lng: 0 });
-  const frameRef = useRef(null);
-
-  useEffect(() => {
-    setPos([baseLat, baseLng]);
-    offsetRef.current = { lat: 0, lng: 0 };
-  }, [baseLat, baseLng]);
-
-  useEffect(() => {
-    let running = true;
-    const drift = () => {
-      if (!running) return;
-      offsetRef.current.lat += (Math.random() - 0.5) * 0.00008;
-      offsetRef.current.lng += (Math.random() - 0.5) * 0.00008;
-      offsetRef.current.lat = Math.max(-0.002, Math.min(0.002, offsetRef.current.lat));
-      offsetRef.current.lng = Math.max(-0.002, Math.min(0.002, offsetRef.current.lng));
-      setPos([baseLat + offsetRef.current.lat, baseLng + offsetRef.current.lng]);
-      frameRef.current = setTimeout(drift, 3000 + Math.random() * 4000);
-    };
-    frameRef.current = setTimeout(drift, 2000 + Math.random() * 3000);
-    return () => { running = false; clearTimeout(frameRef.current); };
-  }, [baseLat, baseLng]);
-
-  return pos;
-}
-
 function MapMarker({ character, location, historyLocations, charIndex }) {
   const avatar = character.avatar_url || `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${character.name}`;
   const timeAgo = location.shared_at
@@ -93,8 +64,8 @@ function MapMarker({ character, location, historyLocations, charIndex }) {
     : '';
 
   const color = ROUTE_COLORS[charIndex % ROUTE_COLORS.length];
-  const livePos = useLivePosition(location.latitude, location.longitude);
-  const icon = useMemo(() => createCharIcon(avatar, location.emoji, true, color), [avatar, location.emoji, color]);
+  const livePos = [location.latitude, location.longitude];
+  const icon = useMemo(() => createCharIcon(avatar, location.emoji, false, color), [avatar, location.emoji, color]);
 
   const historyPoints = useMemo(() => {
     if (!historyLocations || historyLocations.length < 2) return null;

@@ -18,7 +18,8 @@ Deno.serve(async (req) => {
         // Using OSRM public API (no API key required)
         // OSRM expects longitude,latitude
         const coordsString = waypoints.map(w => `${w.lng},${w.lat}`).join(';');
-        const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${coordsString}?overview=full&geometries=geojson`;
+        // Using "foot" profile instead of "driving" so routes can go through parks/buildings and are more accurate for characters
+        const osrmUrl = `https://router.project-osrm.org/route/v1/foot/${coordsString}?overview=full&geometries=geojson`;
 
         const response = await fetch(osrmUrl);
         const data = await response.json();
