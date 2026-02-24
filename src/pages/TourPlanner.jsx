@@ -3,12 +3,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Calendar, MapPin, Plus, Trash2, Edit2, Map, Navigation } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Plus, Trash2, Edit2, Map, Navigation, CalendarPlus, Camera } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -29,7 +30,13 @@ export default function TourPlanner() {
     country: '',
     venue: '',
     status: 'geplant',
-    description: ''
+    description: '',
+    sync_calendar: false
+  });
+
+  const { data: user } = useQuery({
+    queryKey: ['user'],
+    queryFn: () => base44.auth.me()
   });
 
   const { data: character } = useQuery({
@@ -65,6 +72,20 @@ export default function TourPlanner() {
         await base44.entities.TourEvent.update(editingEvent.id, payload);
       } else {
         await base44.entities.TourEvent.create(payload);
+        
+        if (data.sync_calendar && user) {
+          await base44.entities.CalendarEntry.create({
+            user_email: user.email,
+            title: `Tour: ${character.name} - ${data.city}`,
+            description: `${data.tour_name} in ${data.venue || 'TBA'}`,
+            date: format(new Date(data.date), 'yyyy-MM-dd'),
+            time: data.time || '20:00',
+            entry_type: 'event',
+            related_character_id: characterId,
+            emoji: '🎤',
+            color: 'purple'
+          });
+        }
       }
     },
     onSuccess: () => {
@@ -83,6 +104,45 @@ export default function TourPlanner() {
     }
   });
 
+  const addToCalendarMutation = useMutation({
+    mutationFn: async (ev) => {
+      if (!user) return;
+      const d = new Date(ev.date);
+      await base44.entities.CalendarEntry.create({
+        user_email: user.email,
+        title: `Tour: ${character.name} - ${ev.city}`,
+        description: `${ev.tour_name} in ${ev.venue || 'TBA'}`,
+        date: format(d, 'yyyy-MM-dd'),
+        time: format(d, 'HH:mm'),
+        entry_type: 'event',
+        related_character_id: characterId,
+        emoji: '🎤',
+        color: 'purple'
+      });
+    },
+    onSuccess: () => {
+      alert("Erfolgreich zum Kalender hinzugefügt!");
+    }
+  });
+
+  const generatePostMutation = useMutation({
+    mutationFn: async (ev) => {
+      const prompt = `Du bist ${character.name}. Du bist gerade auf der "${ev.tour_name}" Tour in ${ev.city}. Schreibe einen authentischen Social Media Post für deine Fans aus dem Backstage-Bereich oder kurz vor der Show. Keine Hashtags, schreibe in deinem typischen Stil.`;
+      const res = await base44.integrations.Core.InvokeLLM({ prompt });
+      if (res) {
+        await base44.entities.Post.create({
+          character_id: characterId,
+          content: res,
+          likes_count: Math.floor(Math.random() * 500) + 10,
+          comments_count: Math.floor(Math.random() * 50) + 2
+        });
+      }
+    },
+    onSuccess: () => {
+      alert("Backstage Post wurde erfolgreich generiert und geteilt!");
+    }
+  });
+
   const resetForm = () => {
     setEditingEvent(null);
     setFormData({
@@ -93,7 +153,8 @@ export default function TourPlanner() {
       country: '',
       venue: '',
       status: 'geplant',
-      description: ''
+      description: '',
+      sync_calendar: false
     });
   };
 
@@ -108,7 +169,8 @@ export default function TourPlanner() {
       country: ev.country || '',
       venue: ev.venue || '',
       status: ev.status || 'geplant',
-      description: ev.description || ''
+      description: ev.description || '',
+      sync_calendar: false
     });
     setIsOpen(true);
   };
@@ -170,6 +232,12 @@ export default function TourPlanner() {
                     </div>
                   </div>
                   <div className="flex sm:flex-col gap-2 justify-end shrink-0">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-pink-400 hover:text-pink-300 hover:bg-pink-500/10" title="Backstage Post generieren" onClick={() => generatePostMutation.mutate(ev)} disabled={generatePostMutation.isPending}>
+                      <Camera className="w-4 h-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10" title="Zum Kalender hinzufügen" onClick={() => addToCalendarMutation.mutate(ev)} disabled={addToCalendarMutation.isPending}>
+                      <CalendarPlus className="w-4 h-4" />
+                    </Button>
                     <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-white" onClick={() => handleEdit(ev)}>
                       <Edit2 className="w-4 h-4" />
                     </Button>
@@ -242,6 +310,17 @@ export default function TourPlanner() {
               <Label>Zusätzliche Infos</Label>
               <Textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="bg-[#111] border-white/10 min-h-[80px]" placeholder="Weitere Details..." />
             </div>
+
+            {!editingEvent && (
+              <div className="flex items-center space-x-2 mt-4 border-t border-white/10 pt-4">
+                <Checkbox 
+                  id="sync" 
+                  checked={formData.sync_calendar} 
+                  onCheckedChange={(c) => setFormData({...formData, sync_calendar: c})} 
+                />
+                <Label htmlFor="sync" className="text-sm font-normal text-gray-300">Auch in meinen Kalender eintragen</Label>
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsOpen(false)} className="border-white/10 text-white hover:bg-white/5">Abbrechen</Button>
