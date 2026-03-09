@@ -81,13 +81,13 @@ import NotificationSettings from './pages/NotificationSettings';
 import Notifications from './pages/Notifications';
 import RelationshipMap from './pages/RelationshipMap';
 import Shop from './pages/Shop';
+import TourDetail from './pages/TourDetail';
+import TourPlanner from './pages/TourPlanner';
+import Tours from './pages/Tours';
 import UserChat from './pages/UserChat';
 import UserChats from './pages/UserChats';
 import UserProfile from './pages/UserProfile';
 import UserStatusView from './pages/UserStatusView';
-import TourPlanner from './pages/TourPlanner';
-import Tours from './pages/Tours';
-import TourDetail from './pages/TourDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -126,13 +126,13 @@ export const PAGES = {
     "Notifications": Notifications,
     "RelationshipMap": RelationshipMap,
     "Shop": Shop,
+    "TourDetail": TourDetail,
+    "TourPlanner": TourPlanner,
+    "Tours": Tours,
     "UserChat": UserChat,
     "UserChats": UserChats,
     "UserProfile": UserProfile,
     "UserStatusView": UserStatusView,
-    "TourPlanner": TourPlanner,
-    "Tours": Tours,
-    "TourDetail": TourDetail,
 }
 
 export const pagesConfig = {

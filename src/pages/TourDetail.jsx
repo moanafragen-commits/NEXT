@@ -46,7 +46,7 @@ export default function TourDetail() {
 
   const [formData, setFormData] = useState({
     tour_name: '', date: '', time: '', city: '', country: '', venue: '',
-    status: 'geplant', description: '', sync_calendar: false
+    status: 'geplant', event_type: 'konzert', description: '', sync_calendar: false
   });
 
   const { data: tour } = useQuery({
@@ -86,6 +86,7 @@ export default function TourDetail() {
         country: data.country,
         venue: data.venue,
         status: data.status,
+        event_type: data.event_type,
         description: data.description,
         latitude: coords[0],
         longitude: coords[1]
@@ -135,6 +136,7 @@ export default function TourDetail() {
       country: ev.country || '',
       venue: ev.venue || '',
       status: ev.status || 'geplant',
+      event_type: ev.event_type || 'konzert',
       description: ev.description || '',
       sync_calendar: false
     });
@@ -146,7 +148,7 @@ export default function TourDetail() {
     setFormData({
       tour_name: tour?.name || '',
       date: '', time: '', city: '', country: '', venue: '',
-      status: 'geplant', description: '', sync_calendar: false
+      status: 'geplant', event_type: 'konzert', description: '', sync_calendar: false
     });
     setIsEventOpen(true);
   };
@@ -204,7 +206,12 @@ export default function TourDetail() {
                       </div>
                       <div>
                         <div className="font-bold text-sm">{ev.city}</div>
-                        <div className="text-xs text-gray-400">{ev.venue}</div>
+                        <div className="text-xs text-gray-400">
+                           {ev.event_type === 'meet_and_greet' ? 'VIP Meet & Greet' :
+                            ev.event_type === 'interview' ? 'Interview' :
+                            ev.event_type === 'autogrammstunde' ? 'Autogrammstunde' :
+                            ev.event_type === 'freier_tag' ? 'Freier Tag' : 'Konzert'} • {ev.venue}
+                        </div>
                       </div>
                     </div>
                     {ev.status === 'abgesagt' && <AlertTriangle className="w-4 h-4 text-red-500" />}
@@ -289,19 +296,27 @@ export default function TourDetail() {
                 {allCharacters.map(char => {
                   const isSelected = (tour.band_members || []).includes(char.id);
                   return (
-                    <div key={char.id} className="flex items-center gap-2">
-                      <Checkbox 
-                        id={`char-${char.id}`}
-                        checked={isSelected}
-                        onCheckedChange={(checked) => {
-                          const current = tour.band_members || [];
-                          const next = checked 
-                            ? [...current, char.id]
-                            : current.filter(id => id !== char.id);
-                          updateMembersMutation.mutate({ band_members: next });
-                        }}
-                      />
-                      <label htmlFor={`char-${char.id}`} className="text-sm cursor-pointer select-none flex-1">{char.name}</label>
+                    <div key={char.id} className="flex items-center justify-between gap-2 p-1">
+                      <div className="flex items-center gap-2">
+                          <Checkbox 
+                            id={`char-${char.id}`}
+                            checked={isSelected}
+                            onCheckedChange={(checked) => {
+                              const current = tour.band_members || [];
+                              const next = checked 
+                                ? [...current, char.id]
+                                : current.filter(id => id !== char.id);
+                              updateMembersMutation.mutate({ band_members: next });
+                            }}
+                          />
+                          <label htmlFor={`char-${char.id}`} className="text-sm cursor-pointer select-none">{char.name}</label>
+                      </div>
+                      {isSelected && (
+                          <div className="flex items-center gap-3 text-xs">
+                              <span className="text-red-400" title="Stresslevel">Stress: {char.tour_stress_level || 0}%</span>
+                              <span className="text-green-400" title="Moral">Moral: {char.tour_morale ?? 100}%</span>
+                          </div>
+                      )}
                     </div>
                   )
                 })}
@@ -323,6 +338,18 @@ export default function TourDetail() {
              </div>
              <div className="space-y-2"><Label>Stadt (für Karte)</Label><Input value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} className="bg-[#111] border-white/10" placeholder="Wichtig für Map-Position" /></div>
              <div className="space-y-2"><Label>Venue</Label><Input value={formData.venue} onChange={e => setFormData({...formData, venue: e.target.value})} className="bg-[#111] border-white/10" /></div>
+             <div className="space-y-2"><Label>Typ</Label>
+               <Select value={formData.event_type} onValueChange={v => setFormData({...formData, event_type: v})}>
+                 <SelectTrigger className="bg-[#111] border-white/10"><SelectValue /></SelectTrigger>
+                 <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
+                   <SelectItem value="konzert">Konzert</SelectItem>
+                   <SelectItem value="meet_and_greet">Meet & Greet</SelectItem>
+                   <SelectItem value="interview">Interview</SelectItem>
+                   <SelectItem value="autogrammstunde">Autogrammstunde</SelectItem>
+                   <SelectItem value="freier_tag">Freier Tag</SelectItem>
+                 </SelectContent>
+               </Select>
+             </div>
              <div className="space-y-2"><Label>Status</Label>
                <Select value={formData.status} onValueChange={v => setFormData({...formData, status: v})}>
                  <SelectTrigger className="bg-[#111] border-white/10"><SelectValue /></SelectTrigger>
