@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Plus, Calendar, Users, Map as MapIcon, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Plus, Calendar, Users, Map as MapIcon, ChevronRight, Trash2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,24 @@ export default function Tours() {
       queryClient.invalidateQueries({ queryKey: ['tours'] });
       setIsCreateOpen(false);
       setNewTourName('');
+    }
+  });
+
+  const deleteTourMutation = useMutation({
+    mutationFn: async (tour) => {
+      const events = await base44.entities.TourEvent.filter({ tour_id: tour.id });
+      await Promise.all(events.map(ev => base44.entities.TourEvent.delete(ev.id)));
+      await base44.entities.Tour.delete(tour.id);
+
+      await base44.entities.Post.create({
+        content: `Die Tour "${tour.name}" wurde soeben offiziell abgesagt und alle Pläne wurden storniert. 😔`,
+        is_user_post: false,
+        likes_count: 0,
+        comments_count: 0
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tours'] });
     }
   });
 
@@ -75,7 +93,22 @@ export default function Tours() {
                       )}
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-gray-500 group-hover:text-white" />
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-500/10 z-10" 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if(window.confirm(`Die Tour "${tour.name}" und alle Termine wirklich löschen?`)) {
+                          deleteTourMutation.mutate(tour);
+                        }
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                    <ChevronRight className="w-5 h-5 text-gray-500 group-hover:text-white" />
+                  </div>
                 </div>
               </Link>
             ))}

@@ -46,7 +46,7 @@ export default function TourDetail() {
 
   const [formData, setFormData] = useState({
     tour_name: '', date: '', time: '', city: '', country: '', venue: '',
-    status: 'geplant', event_type: 'konzert', description: '', sync_calendar: false
+    status: 'geplant', event_type: 'konzert', description: '', cancellation_reason: '', sync_calendar: false
   });
 
   const { data: tour } = useQuery({
@@ -88,12 +88,22 @@ export default function TourDetail() {
         status: data.status,
         event_type: data.event_type,
         description: data.description,
+        cancellation_reason: data.cancellation_reason,
         latitude: coords[0],
         longitude: coords[1]
       };
       
       if (editingEvent) {
         await base44.entities.TourEvent.update(editingEvent.id, payload);
+        
+        if ((data.status === 'abgesagt' || data.status === 'verschoben') && editingEvent.status !== data.status) {
+          await base44.entities.Post.create({
+            content: `🚨 Update zum Tour-Stop in ${data.city}: Das Event wurde ${data.status}. Grund: ${data.cancellation_reason || 'Keine Angaben'}`,
+            is_user_post: false,
+            likes_count: 0,
+            comments_count: 0
+          });
+        }
       } else {
         await base44.entities.TourEvent.create(payload);
         if (data.sync_calendar && user) {
@@ -138,6 +148,7 @@ export default function TourDetail() {
       status: ev.status || 'geplant',
       event_type: ev.event_type || 'konzert',
       description: ev.description || '',
+      cancellation_reason: ev.cancellation_reason || '',
       sync_calendar: false
     });
     setIsEventOpen(true);
@@ -148,7 +159,7 @@ export default function TourDetail() {
     setFormData({
       tour_name: tour?.name || '',
       date: '', time: '', city: '', country: '', venue: '',
-      status: 'geplant', event_type: 'konzert', description: '', sync_calendar: false
+      status: 'geplant', event_type: 'konzert', description: '', cancellation_reason: '', sync_calendar: false
     });
     setIsEventOpen(true);
   };
@@ -361,6 +372,17 @@ export default function TourDetail() {
                  </SelectContent>
                </Select>
              </div>
+             {(formData.status === 'abgesagt' || formData.status === 'verschoben') && (
+               <div className="space-y-2">
+                 <Label>Grund (wird im Feed gepostet)</Label>
+                 <Input 
+                   value={formData.cancellation_reason || ''} 
+                   onChange={e => setFormData({...formData, cancellation_reason: e.target.value})} 
+                   className="bg-[#111] border-white/10" 
+                   placeholder="z.B. Krankheit, Unwetter, Logistik..." 
+                 />
+               </div>
+             )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsEventOpen(false)} className="border-white/10 hover:bg-white/5 text-white">Abbrechen</Button>
