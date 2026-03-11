@@ -18,6 +18,7 @@ export default function GroupChats() {
   const [createStep, setCreateStep] = useState(1); // 1=name, 2=select characters
   const [groupName, setGroupName] = useState('');
   const [groupDescription, setGroupDescription] = useState('');
+  const [isBandGroup, setIsBandGroup] = useState(false);
   const [selectedCharacterIds, setSelectedCharacterIds] = useState([]);
   const queryClient = useQueryClient();
 
@@ -70,7 +71,8 @@ export default function GroupChats() {
       const group = await base44.entities.GroupChat.create({
         name: groupName,
         description: groupDescription,
-        admin_email: user.email
+        admin_email: user.email,
+        is_band_group: isBandGroup
       });
       
       // Add user as member
@@ -116,6 +118,7 @@ export default function GroupChats() {
     setCreateStep(1);
     setGroupName('');
     setGroupDescription('');
+    setIsBandGroup(false);
     setSelectedCharacterIds([]);
   };
 
@@ -211,7 +214,14 @@ export default function GroupChats() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between">
-                              <h3 className="font-semibold truncate">{group.name}</h3>
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <h3 className="font-semibold truncate">{group.name}</h3>
+                                {group.is_band_group && (
+                                  <span className="bg-indigo-500/20 text-indigo-400 text-[10px] px-1.5 py-0.5 rounded flex-shrink-0">
+                                    Offizielle Bandgruppe
+                                  </span>
+                                )}
+                              </div>
                               {lastMsg && (
                                 <span className="text-[10px] text-gray-500 flex-shrink-0 ml-2">
                                   {formatDistanceToNow(new Date(lastMsg.created_date), { addSuffix: true, locale: de })}
@@ -277,6 +287,18 @@ export default function GroupChats() {
                   className="bg-[#262626] border-white/10 text-white"
                 />
               </div>
+              <label className="flex items-center gap-2 cursor-pointer bg-indigo-500/10 p-3 rounded-lg border border-indigo-500/20 mt-2">
+                <input 
+                  type="checkbox" 
+                  checked={isBandGroup} 
+                  onChange={(e) => setIsBandGroup(e.target.checked)}
+                  className="rounded border-indigo-500/30 bg-[#1a1a1a] text-indigo-500 focus:ring-indigo-500"
+                />
+                <div>
+                  <div className="text-sm text-indigo-300 font-medium">Als Offizielle Bandgruppe markieren</div>
+                  <div className="text-[11px] text-indigo-400/70">Nur für Bandmitglieder und Crew</div>
+                </div>
+              </label>
               <DialogFooter>
                 <Button variant="ghost" onClick={resetCreateModal}>Abbrechen</Button>
                 <Button

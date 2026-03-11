@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function ComposeBox({ user, characters }) {
   const [text, setText] = useState('');
   const [expanded, setExpanded] = useState(false);
+  const [isHype, setIsHype] = useState(false);
   const queryClient = useQueryClient();
 
   const postMutation = useMutation({
@@ -16,6 +17,9 @@ export default function ComposeBox({ user, characters }) {
       if (!content) return;
 
       // Create user post
+      const initialLikes = isHype ? Math.floor(Math.random() * 50000) + 10000 : 0;
+      const initialComments = isHype ? Math.floor(Math.random() * 5000) + 1000 : 0;
+
       const post = await base44.entities.Post.create({
         content,
         character_id: '',
@@ -23,8 +27,9 @@ export default function ComposeBox({ user, characters }) {
         is_user_post: true,
         user_display_name: user?.display_name || user?.full_name || 'Du',
         user_avatar_url: user?.avatar_url || '',
-        likes_count: 0,
-        comments_count: 0
+        likes_count: initialLikes,
+        comments_count: initialComments,
+        is_hype_post: isHype
       });
 
       // Let AI characters react
@@ -135,9 +140,20 @@ Regeln:
                 exit={{ opacity: 0, height: 0 }}
                 className="flex items-center justify-between pt-2 border-t border-white/[0.06]"
               >
-                <span className={`text-xs ${text.length > 250 ? 'text-amber-400' : 'text-gray-500'}`}>
-                  {text.length}/280
-                </span>
+                <div className="flex items-center gap-4">
+                  <span className={`text-xs ${text.length > 250 ? 'text-amber-400' : 'text-gray-500'}`}>
+                    {text.length}/280
+                  </span>
+                  <label className="flex items-center gap-1.5 cursor-pointer text-xs text-amber-400 hover:text-amber-300 transition-colors bg-amber-500/10 px-2 py-1 rounded">
+                    <input 
+                      type="checkbox" 
+                      checked={isHype} 
+                      onChange={(e) => setIsHype(e.target.checked)}
+                      className="rounded border-white/20 bg-[#1a1a1a] text-amber-500 focus:ring-amber-500"
+                    />
+                    🔥 Hype-Boost (Fans simulieren)
+                  </label>
+                </div>
                 <button
                   onClick={() => postMutation.mutate()}
                   disabled={!text.trim() || isPosting}
