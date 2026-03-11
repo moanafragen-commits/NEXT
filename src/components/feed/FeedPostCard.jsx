@@ -256,7 +256,7 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
               <div className="p-1.5 rounded-full group-hover:bg-blue-500/10 transition-colors">
                 <MessageCircle className="w-[18px] h-[18px]" />
               </div>
-              {commentsCount > 0 && <span className="text-[13px]">{formatCount(commentsCount)}</span>}
+              <span className="text-[13px]">{commentsCount > 0 ? formatCount(commentsCount) : '0'}</span>
             </button>
 
             {/* Retweets */}
