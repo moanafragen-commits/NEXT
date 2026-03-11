@@ -156,8 +156,13 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
             ) : (
               <Link to={createPageUrl(`Chat?characterId=${character?.id}`)} className="flex items-center gap-1 min-w-0">
                 <span className="text-[15px] font-bold truncate text-white">{charName}</span>
-                {isVerified && (
+                {isVerified && !character?.is_band_account && (
                   <BadgeCheck className={`w-[16px] h-[16px] flex-shrink-0 ${isNews ? 'text-amber-500 fill-amber-500' : isPublicFigure ? 'text-purple-500 fill-purple-500' : 'text-blue-500 fill-blue-500'}`} />
+                )}
+                {character?.is_band_account && (
+                  <span className="bg-indigo-500/20 text-indigo-400 text-[10px] px-1.5 py-0.5 rounded flex-shrink-0 font-bold tracking-wider">
+                    OFFICIAL BAND
+                  </span>
                 )}
               </Link>
             )}
