@@ -161,6 +161,11 @@ export default function FeedPostCard({ post, character, isLiked, onLike, onOpenC
                 )}
               </Link>
             )}
+            {post.is_hype_post && (
+              <span className="bg-amber-500/20 text-amber-500 text-[10px] px-1.5 py-0.5 rounded flex-shrink-0 font-bold tracking-wider">
+                HYPE
+              </span>
+            )}
             <span className="text-gray-500 text-[13px] truncate">{charUsername}</span>
             <span className="text-gray-600 text-[13px] flex-shrink-0">· {timeAgo}</span>
             <div className="ml-auto flex-shrink-0 flex items-center gap-1">
