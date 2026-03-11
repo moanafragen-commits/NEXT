@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Plus, Calendar, Users, MapPin, Trash2, Edit2, AlertTriangle, CheckCircle2, UserCircle, Crown } from 'lucide-react';
+import { ArrowLeft, Plus, Calendar, Users, MapPin, Trash2, Edit2, AlertTriangle, CheckCircle2, UserCircle, Crown, DollarSign } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -194,8 +194,15 @@ export default function TourDetail() {
             <Button size="sm" variant="outline" className="flex-1 border-white/10 text-white hover:bg-white/5" onClick={() => setIsMembersOpen(true)}>
               <Users className="w-4 h-4 mr-2" /> Crew
             </Button>
-            <Button size="sm" className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white" onClick={handleOpenNewEvent}>
-              <Plus className="w-4 h-4 mr-2" /> Termin
+            <Link to={createPageUrl(`TourFinance?tourId=${tour.id}`)} className="flex-1">
+              <Button size="sm" variant="outline" className="w-full border-white/10 text-white hover:bg-white/5">
+                <DollarSign className="w-4 h-4 mr-2" /> Finanzen
+              </Button>
+            </Link>
+          </div>
+          <div className="flex gap-2 mt-2">
+            <Button size="sm" className="w-full bg-indigo-600 hover:bg-indigo-500 text-white" onClick={handleOpenNewEvent}>
+              <Plus className="w-4 h-4 mr-2" /> Neuer Termin
             </Button>
           </div>
         </header>
