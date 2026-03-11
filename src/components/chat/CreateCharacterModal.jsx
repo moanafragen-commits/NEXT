@@ -287,7 +287,8 @@ const DEFAULT_FORM_DATA = {
     world_setting: 'real_modern',
     npcs_in_life: '',
     // Verifizierung
-    is_verified: false
+    is_verified: false,
+    is_band_account: false
 };
 
 export default function CreateCharacterModal({ open, onClose, onCreated, editCharacter }) {
@@ -802,44 +803,62 @@ Schreibe in der dritten Person. Maximal 200 Wörter. Auf Deutsch.`,
                 />
               </div>
 
-              {/* Verifizierung / Blauer Haken */}
-              <div className="p-3 bg-[#262626] rounded-xl border border-white/5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <BadgeCheck className="w-5 h-5 text-blue-500" />
-                    <div>
-                      <Label className="text-gray-300">Verifiziert (Blauer Haken)</Label>
-                      <p className="text-[11px] text-gray-500 mt-0.5">Für berühmte Personen, Bands, Marken etc.</p>
+              {/* Verifizierung & Band Account */}
+              <div className="space-y-2">
+                <div className="p-3 bg-[#262626] rounded-xl border border-white/5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <BadgeCheck className="w-5 h-5 text-blue-500" />
+                      <div>
+                        <Label className="text-gray-300">Verifiziert (Blauer Haken)</Label>
+                        <p className="text-[11px] text-gray-500 mt-0.5">Für berühmte Personen, Marken etc.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={checkVerified}
+                        disabled={!formData.name || isCheckingVerified}
+                        className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 text-xs"
+                      >
+                        {isCheckingVerified ? (
+                          <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
+                        ) : (
+                          <Sparkles className="w-3.5 h-3.5 mr-1" />
+                        )}
+                        KI prüfen
+                      </Button>
+                      <Switch
+                        checked={formData.is_verified}
+                        onCheckedChange={(val) => setFormData(prev => ({ ...prev, is_verified: val }))}
+                      />
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={checkVerified}
-                      disabled={!formData.name || isCheckingVerified}
-                      className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 text-xs"
-                    >
-                      {isCheckingVerified ? (
-                        <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
-                      ) : (
-                        <Sparkles className="w-3.5 h-3.5 mr-1" />
-                      )}
-                      KI prüfen
-                    </Button>
+                  {formData.is_verified && (
+                    <div className="mt-2 flex items-center gap-1.5 text-xs text-blue-400">
+                      <BadgeCheck className="w-3.5 h-3.5 fill-blue-500" />
+                      Dieser Charakter erhält den blauen Haken im Feed
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Music className="w-5 h-5 text-indigo-400" />
+                      <div>
+                        <Label className="text-indigo-300">Offizieller Band-Account</Label>
+                        <p className="text-[11px] text-indigo-400/70 mt-0.5">Z.B. für Linkin Park, um News zu posten</p>
+                      </div>
+                    </div>
                     <Switch
-                      checked={formData.is_verified}
-                      onCheckedChange={(val) => setFormData(prev => ({ ...prev, is_verified: val }))}
+                      checked={formData.is_band_account}
+                      onCheckedChange={(val) => setFormData(prev => ({ ...prev, is_band_account: val }))}
                     />
                   </div>
                 </div>
-                {formData.is_verified && (
-                  <div className="mt-2 flex items-center gap-1.5 text-xs text-blue-400">
-                    <BadgeCheck className="w-3.5 h-3.5 fill-blue-500" />
-                    Dieser Charakter erhält den blauen Haken im Feed
-                  </div>
-                )}
               </div>
               
               {/* Personality Section */}
