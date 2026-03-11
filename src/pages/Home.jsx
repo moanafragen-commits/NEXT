@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Plus, MessageCircle, MapPin } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { Button } from "@/components/ui/button";
 import CharacterCard from '@/components/chat/CharacterCard';
 import CreateCharacterModal from '@/components/chat/CreateCharacterModal';
