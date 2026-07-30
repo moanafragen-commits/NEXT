@@ -1,0 +1,43 @@
+{
+  "name": "GroupChat",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name des Gruppenchats"
+    },
+    "description": {
+      "type": "string",
+      "description": "Beschreibung der Gruppe"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "Gruppenbild URL"
+    },
+    "admin_email": {
+      "type": "string",
+      "description": "Email des Admins/Erstellers"
+    },
+    "theme": {
+      "type": "string",
+      "description": "Gruppen-Kontext/Thema f\u00fcr KI"
+    },
+    "ai_personality": {
+      "type": "string",
+      "description": "Wie sollen KI-Charaktere in dieser Gruppe agieren"
+    },
+    "message_rules": {
+      "type": "string",
+      "description": "Regeln f\u00fcr die Gruppe"
+    },
+    "is_band_group": {
+      "type": "boolean",
+      "default": false,
+      "description": "Ist dies eine offizielle Bandgruppe"
+    }
+  },
+  "required": [
+    "name",
+    "admin_email"
+  ]
+}

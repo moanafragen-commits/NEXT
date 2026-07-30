@@ -1,0 +1,56 @@
+{
+  "name": "Notification",
+  "type": "object",
+  "properties": {
+    "recipient_email": {
+      "type": "string",
+      "description": "Email des Empf\u00e4ngers"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "like",
+        "comment",
+        "repost",
+        "dm",
+        "mention",
+        "follow"
+      ],
+      "description": "Art der Benachrichtigung"
+    },
+    "actor_name": {
+      "type": "string",
+      "description": "Name des Ausl\u00f6sers"
+    },
+    "actor_avatar": {
+      "type": "string",
+      "description": "Avatar-URL des Ausl\u00f6sers"
+    },
+    "actor_username": {
+      "type": "string",
+      "description": "@handle des Ausl\u00f6sers"
+    },
+    "post_id": {
+      "type": "string",
+      "description": "Zugeh\u00f6riger Post (optional)"
+    },
+    "post_preview": {
+      "type": "string",
+      "description": "Vorschau des Posts"
+    },
+    "message_preview": {
+      "type": "string",
+      "description": "Vorschau der Nachricht (bei DM)"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false,
+      "description": "Wurde die Benachrichtigung gelesen"
+    }
+  },
+  "required": [
+    "recipient_email",
+    "type",
+    "actor_name"
+  ]
+}

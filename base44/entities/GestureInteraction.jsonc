@@ -1,0 +1,44 @@
+{
+  "name": "GestureInteraction",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "gesture_type": {
+      "type": "string",
+      "enum": [
+        "umarmung",
+        "kuss_stirn",
+        "kuss_wange",
+        "kuss_mund",
+        "hand_halten",
+        "high_five",
+        "streicheln",
+        "kuscheln",
+        "tanz",
+        "schulter_klopfen"
+      ],
+      "description": "Art der Geste"
+    },
+    "character_reaction": {
+      "type": "string",
+      "description": "Reaktion des Charakters"
+    },
+    "mood_effect": {
+      "type": "string",
+      "description": "Stimmungs\u00e4nderung"
+    },
+    "emoji": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "character_id",
+    "user_email",
+    "gesture_type"
+  ]
+}

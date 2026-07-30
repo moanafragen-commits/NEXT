@@ -1,0 +1,32 @@
+{
+  "name": "CharacterStatus",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "ID des Charakters"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Bild URL"
+    },
+    "caption": {
+      "type": "string",
+      "description": "Bildunterschrift"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "L\u00e4uft nach 24h ab"
+    },
+    "views_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Anzahl Aufrufe"
+    }
+  },
+  "required": [
+    "character_id",
+    "image_url"
+  ]
+}

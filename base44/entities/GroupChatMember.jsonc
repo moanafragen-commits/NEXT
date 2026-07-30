@@ -1,0 +1,27 @@
+{
+  "name": "GroupChatMember",
+  "type": "object",
+  "properties": {
+    "group_id": {
+      "type": "string",
+      "description": "ID des Gruppenchats"
+    },
+    "member_type": {
+      "type": "string",
+      "enum": [
+        "user",
+        "character"
+      ],
+      "description": "Typ des Mitglieds"
+    },
+    "member_id": {
+      "type": "string",
+      "description": "User Email oder Character ID"
+    }
+  },
+  "required": [
+    "group_id",
+    "member_type",
+    "member_id"
+  ]
+}

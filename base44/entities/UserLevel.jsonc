@@ -1,0 +1,53 @@
+{
+  "name": "UserLevel",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email des Users"
+    },
+    "xp": {
+      "type": "number",
+      "default": 0,
+      "description": "Erfahrungspunkte"
+    },
+    "level": {
+      "type": "number",
+      "default": 1,
+      "description": "Aktuelles Level"
+    },
+    "coins": {
+      "type": "number",
+      "default": 100,
+      "description": "W\u00e4hrung (Coins)"
+    },
+    "total_messages_sent": {
+      "type": "number",
+      "default": 0,
+      "description": "Gesamte gesendete Nachrichten"
+    },
+    "total_characters_created": {
+      "type": "number",
+      "default": 0,
+      "description": "Gesamte erstellte Charaktere"
+    },
+    "last_daily_claim": {
+      "type": "string",
+      "format": "date",
+      "description": "Letzter t\u00e4glicher Login-Claim"
+    },
+    "daily_streak": {
+      "type": "number",
+      "default": 0,
+      "description": "T\u00e4gliche Login-Streak"
+    },
+    "longest_streak": {
+      "type": "number",
+      "default": 0,
+      "description": "L\u00e4ngste Streak"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

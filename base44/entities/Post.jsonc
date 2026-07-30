@@ -1,0 +1,51 @@
+{
+  "name": "Post",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "ID des Charakters der gepostet hat (leer bei User-Posts)"
+    },
+    "content": {
+      "type": "string",
+      "description": "Post-Text / Caption"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Bild-URL des Posts"
+    },
+    "likes_count": {
+      "type": "number",
+      "default": 0
+    },
+    "comments_count": {
+      "type": "number",
+      "default": 0
+    },
+    "image_prompt": {
+      "type": "string",
+      "description": "Der Prompt mit dem das Bild generiert wurde"
+    },
+    "is_user_post": {
+      "type": "boolean",
+      "default": false,
+      "description": "Ob der Post vom User selbst stammt"
+    },
+    "user_display_name": {
+      "type": "string",
+      "description": "Anzeigename des Users (bei User-Posts)"
+    },
+    "user_avatar_url": {
+      "type": "string",
+      "description": "Avatar-URL des Users (bei User-Posts)"
+    },
+    "is_hype_post": {
+      "type": "boolean",
+      "default": false,
+      "description": "Ob dies ein simulierter Hype-Post ist"
+    }
+  },
+  "required": [
+    "content"
+  ]
+}

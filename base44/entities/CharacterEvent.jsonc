@@ -1,0 +1,69 @@
+{
+  "name": "CharacterEvent",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "Charakter-ID"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Besitzer"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "birthday",
+        "moved",
+        "new_job",
+        "breakup",
+        "new_friend",
+        "sick",
+        "recovered",
+        "achievement",
+        "mood_swing",
+        "surprise",
+        "confession",
+        "gift_received",
+        "travel",
+        "crisis",
+        "celebration"
+      ],
+      "description": "Art des Events"
+    },
+    "title": {
+      "type": "string",
+      "description": "Event-Titel"
+    },
+    "description": {
+      "type": "string",
+      "description": "Beschreibung"
+    },
+    "emoji": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "impact": {
+      "type": "string",
+      "enum": [
+        "positive",
+        "negative",
+        "neutral"
+      ],
+      "default": "neutral"
+    }
+  },
+  "required": [
+    "character_id",
+    "user_email",
+    "event_type",
+    "title"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "name": "CharacterConversation",
+  "type": "object",
+  "properties": {
+    "character_a_id": {
+      "type": "string",
+      "description": "Erster Charakter"
+    },
+    "character_b_id": {
+      "type": "string",
+      "description": "Zweiter Charakter"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Besitzer der Charaktere"
+    },
+    "topic": {
+      "type": "string",
+      "description": "Thema des Gespr\u00e4chs"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "paused"
+      ],
+      "default": "active"
+    },
+    "message_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "character_a_id",
+    "character_b_id",
+    "user_email"
+  ]
+}

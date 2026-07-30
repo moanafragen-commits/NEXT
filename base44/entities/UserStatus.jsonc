@@ -1,0 +1,47 @@
+{
+  "name": "UserStatus",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email des Users"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "image",
+        "video"
+      ],
+      "description": "Art des Status"
+    },
+    "content": {
+      "type": "string",
+      "description": "Text-Inhalt oder Medien-URL"
+    },
+    "caption": {
+      "type": "string",
+      "description": "Bildunterschrift"
+    },
+    "background_color": {
+      "type": "string",
+      "description": "Hintergrundfarbe f\u00fcr Text-Status",
+      "default": "#1a1a1a"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "L\u00e4uft ab nach gew\u00e4hlter Zeit"
+    },
+    "views_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Anzahl Aufrufe"
+    }
+  },
+  "required": [
+    "user_email",
+    "type",
+    "content"
+  ]
+}

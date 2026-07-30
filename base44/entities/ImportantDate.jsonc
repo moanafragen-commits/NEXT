@@ -1,0 +1,64 @@
+{
+  "name": "ImportantDate",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "ID des Charakters"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email des Nutzers"
+    },
+    "title": {
+      "type": "string",
+      "description": "Name des Ereignisses z.B. Geburtstag, Hochzeitstag"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Datum des Ereignisses"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "geburtstag_user",
+        "geburtstag_charakter",
+        "hochzeitstag",
+        "zusammengekommen",
+        "erster_kuss",
+        "erstes_date",
+        "geburt_kind",
+        "jahrestag",
+        "kennenlernen",
+        "verlobung",
+        "umzug",
+        "abschluss",
+        "anderes"
+      ],
+      "default": "anderes",
+      "description": "Art des Ereignisses"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optionale Beschreibung oder Erinnerung zum Ereignis"
+    },
+    "recurring": {
+      "type": "boolean",
+      "default": true,
+      "description": "Wiederholt sich j\u00e4hrlich"
+    },
+    "reminder_days_before": {
+      "type": "number",
+      "default": 0,
+      "description": "Tage vorher erinnern (0 = am Tag selbst)"
+    }
+  },
+  "required": [
+    "character_id",
+    "user_email",
+    "title",
+    "date",
+    "event_type"
+  ]
+}

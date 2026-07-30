@@ -1,0 +1,31 @@
+{
+  "name": "TypingIndicator",
+  "type": "object",
+  "properties": {
+    "conversation_id": {
+      "type": "string",
+      "description": "Chat-ID"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Tippender User"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Name des Tippenden"
+    },
+    "is_typing": {
+      "type": "boolean",
+      "default": true
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Auto-Ablauf nach 5s"
+    }
+  },
+  "required": [
+    "conversation_id",
+    "user_id"
+  ]
+}

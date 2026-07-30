@@ -1,0 +1,31 @@
+{
+  "name": "Message",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "ID des AI-Charakters"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email des Users"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "user",
+        "assistant"
+      ],
+      "description": "Wer hat die Nachricht gesendet"
+    },
+    "content": {
+      "type": "string",
+      "description": "Nachrichteninhalt"
+    }
+  },
+  "required": [
+    "character_id",
+    "role",
+    "content"
+  ]
+}

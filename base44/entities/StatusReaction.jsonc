@@ -1,0 +1,31 @@
+{
+  "name": "StatusReaction",
+  "type": "object",
+  "properties": {
+    "status_id": {
+      "type": "string",
+      "description": "ID des Status-Posts"
+    },
+    "status_type": {
+      "type": "string",
+      "enum": [
+        "character",
+        "user"
+      ],
+      "description": "Typ des Status (Charakter oder User)"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email des reagierenden Users"
+    },
+    "emoji": {
+      "type": "string",
+      "description": "Emoji-Reaktion"
+    }
+  },
+  "required": [
+    "status_id",
+    "user_email",
+    "emoji"
+  ]
+}

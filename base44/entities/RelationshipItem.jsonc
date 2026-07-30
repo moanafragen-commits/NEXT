@@ -1,0 +1,53 @@
+{
+  "name": "RelationshipItem",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "item_type": {
+      "type": "string",
+      "enum": [
+        "ring",
+        "freundschaftsarmband",
+        "halskette",
+        "schl\u00fcssel",
+        "foto",
+        "brief",
+        "talisman",
+        "tattoo",
+        "matching_outfit",
+        "gemeinsames_symbol"
+      ],
+      "description": "Art des Items"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name/Bedeutung des Items"
+    },
+    "description": {
+      "type": "string",
+      "description": "Geschichte dahinter"
+    },
+    "emoji": {
+      "type": "string"
+    },
+    "given_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "is_equipped": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "character_id",
+    "user_email",
+    "item_type",
+    "name"
+  ]
+}

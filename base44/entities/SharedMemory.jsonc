@@ -1,0 +1,58 @@
+{
+  "name": "SharedMemory",
+  "type": "object",
+  "properties": {
+    "source_character_id": {
+      "type": "string",
+      "description": "Charakter der die Info weitergegeben hat"
+    },
+    "target_character_id": {
+      "type": "string",
+      "description": "Charakter der die Info erhalten hat"
+    },
+    "original_memory_id": {
+      "type": "string",
+      "description": "ID der Original-Erinnerung (falls vorhanden)"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "User auf den sich die Info bezieht"
+    },
+    "content": {
+      "type": "string",
+      "description": "Inhalt der weitergegebenen Information"
+    },
+    "share_type": {
+      "type": "string",
+      "enum": [
+        "fact",
+        "rumor",
+        "secret",
+        "gossip",
+        "warning",
+        "praise",
+        "concern"
+      ],
+      "default": "fact",
+      "description": "Art der Weitergabe"
+    },
+    "accuracy": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 80,
+      "description": "Wie genau ist die Info (100=exakt, 0=komplett verf\u00e4lscht)"
+    },
+    "is_used": {
+      "type": "boolean",
+      "default": false,
+      "description": "Wurde die Info bereits im Chat verwendet"
+    }
+  },
+  "required": [
+    "source_character_id",
+    "target_character_id",
+    "user_email",
+    "content"
+  ]
+}

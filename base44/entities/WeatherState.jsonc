@@ -1,0 +1,39 @@
+{
+  "name": "WeatherState",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "weather": {
+      "type": "string",
+      "enum": [
+        "sonnig",
+        "bew\u00f6lkt",
+        "regen",
+        "gewitter",
+        "schnee",
+        "nebel",
+        "windig",
+        "heiter"
+      ],
+      "default": "sonnig"
+    },
+    "temperature": {
+      "type": "number",
+      "description": "Temperatur in Celsius"
+    },
+    "city": {
+      "type": "string",
+      "description": "Stadt"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_email",
+    "weather"
+  ]
+}

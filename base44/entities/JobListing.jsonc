@@ -1,0 +1,89 @@
+{
+  "name": "JobListing",
+  "type": "object",
+  "properties": {
+    "job_title": {
+      "type": "string",
+      "description": "Jobtitel"
+    },
+    "employer": {
+      "type": "string",
+      "description": "Arbeitgeber/Firma"
+    },
+    "manager_name": {
+      "type": "string",
+      "description": "Name des Managers"
+    },
+    "description": {
+      "type": "string",
+      "description": "Ausf\u00fchrliche Jobbeschreibung"
+    },
+    "requirements": {
+      "type": "string",
+      "description": "Anforderungen / Qualifikationen"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "musik",
+        "entertainment",
+        "tech",
+        "sport",
+        "gastronomie",
+        "mode",
+        "medien",
+        "management",
+        "kreativ",
+        "andere"
+      ],
+      "default": "andere"
+    },
+    "salary_coins": {
+      "type": "number",
+      "default": 15,
+      "description": "Coins pro Auftrag"
+    },
+    "xp_reward": {
+      "type": "number",
+      "default": 20,
+      "description": "XP pro Auftrag"
+    },
+    "icon_emoji": {
+      "type": "string",
+      "default": "\ud83d\udcbc"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "einfach",
+        "mittel",
+        "anspruchsvoll",
+        "experte"
+      ],
+      "default": "mittel"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "max_applicants": {
+      "type": "number",
+      "default": 0,
+      "description": "0 = unbegrenzt"
+    },
+    "current_applicants": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "job_title",
+    "employer",
+    "description",
+    "category"
+  ]
+}

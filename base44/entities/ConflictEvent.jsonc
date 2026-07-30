@@ -1,0 +1,63 @@
+{
+  "name": "ConflictEvent",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "Betroffener Charakter"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "trigger": {
+      "type": "string",
+      "description": "Was den Streit ausgel\u00f6st hat"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "leicht",
+        "mittel",
+        "schwer",
+        "kritisch"
+      ],
+      "default": "mittel"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "resolving",
+        "resolved",
+        "escalated"
+      ],
+      "default": "active"
+    },
+    "character_feeling": {
+      "type": "string",
+      "description": "Wie der Charakter sich f\u00fchlt"
+    },
+    "resolution_hint": {
+      "type": "string",
+      "description": "Hinweis wie man den Streit l\u00f6sen kann"
+    },
+    "resolution_text": {
+      "type": "string",
+      "description": "Text nach Vers\u00f6hnung"
+    },
+    "trust_impact": {
+      "type": "number",
+      "default": 0,
+      "description": "Einfluss auf Vertrauen (-5 bis +5)"
+    },
+    "emoji": {
+      "type": "string",
+      "default": "\ud83d\udc94"
+    }
+  },
+  "required": [
+    "character_id",
+    "user_email",
+    "trigger"
+  ]
+}

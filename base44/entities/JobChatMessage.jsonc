@@ -1,0 +1,40 @@
+{
+  "name": "JobChatMessage",
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "description": "Zugeh\u00f6riger Job"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "user",
+        "manager"
+      ],
+      "description": "Wer hat die Nachricht gesendet"
+    },
+    "content": {
+      "type": "string",
+      "description": "Nachrichteninhalt"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "sent",
+        "delivered",
+        "read"
+      ],
+      "default": "sent"
+    }
+  },
+  "required": [
+    "job_id",
+    "user_email",
+    "role",
+    "content"
+  ]
+}

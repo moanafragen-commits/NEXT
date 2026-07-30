@@ -1,0 +1,57 @@
+{
+  "name": "CharacterDiary",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "ID des Charakters"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email des Nutzers"
+    },
+    "entry_type": {
+      "type": "string",
+      "enum": [
+        "after_chat",
+        "daily_thought",
+        "npc_interaction",
+        "dream",
+        "reflection"
+      ],
+      "default": "after_chat",
+      "description": "Art des Eintrags"
+    },
+    "content": {
+      "type": "string",
+      "description": "Tagebucheintrag"
+    },
+    "mood_at_time": {
+      "type": "string",
+      "description": "Stimmung beim Schreiben"
+    },
+    "topics_discussed": {
+      "type": "string",
+      "description": "Besprochene Themen (kommasepariert)"
+    },
+    "emotional_summary": {
+      "type": "string",
+      "description": "Emotionale Zusammenfassung"
+    },
+    "npc_involved": {
+      "type": "string",
+      "description": "Beteiligte NPCs"
+    },
+    "is_secret": {
+      "type": "boolean",
+      "default": false,
+      "description": "Geheimer Eintrag (nur bei hohem Vertrauen sichtbar)"
+    }
+  },
+  "required": [
+    "character_id",
+    "user_email",
+    "content",
+    "entry_type"
+  ]
+}

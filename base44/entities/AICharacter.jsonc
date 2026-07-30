@@ -1,0 +1,57 @@
+{
+  "name": "AICharacter",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name des AI-Charakters"
+    },
+    "username": {
+      "type": "string",
+      "description": "Username (@handle)"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "Profilbild URL"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Kurze Bio"
+    },
+    "personality_prompt": {
+      "type": "string",
+      "description": "System-Prompt f\u00fcr die AI-Pers\u00f6nlichkeit"
+    },
+    "example_dialogues": {
+      "type": "string",
+      "description": "Beispiel-Dialoge f\u00fcr bessere AI-Antworten"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "gamer",
+        "lifestyle",
+        "tech",
+        "humor",
+        "inspiration",
+        "mysterious",
+        "other"
+      ],
+      "default": "other"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Verifizierter Account (blauer Haken)"
+    }
+  },
+  "required": [
+    "name",
+    "username",
+    "personality_prompt"
+  ]
+}

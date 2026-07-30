@@ -1,0 +1,114 @@
+{
+  "name": "CalendarEntry",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "description": "Titel des Termins"
+    },
+    "description": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Datum des Eintrags"
+    },
+    "time": {
+      "type": "string",
+      "description": "Uhrzeit z.B. 14:00"
+    },
+    "entry_type": {
+      "type": "string",
+      "enum": [
+        "termin",
+        "aufgabe",
+        "job_task",
+        "event",
+        "erinnerung",
+        "geburtstag"
+      ],
+      "default": "termin"
+    },
+    "related_job_id": {
+      "type": "string",
+      "description": "Verkn\u00fcpfter Job"
+    },
+    "related_task_id": {
+      "type": "string",
+      "description": "Verkn\u00fcpfte Aufgabe"
+    },
+    "related_character_id": {
+      "type": "string",
+      "description": "Verkn\u00fcpfter Charakter"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "offen",
+        "erledigt",
+        "verpasst",
+        "abgesagt"
+      ],
+      "default": "offen"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "niedrig",
+        "mittel",
+        "hoch",
+        "dringend"
+      ],
+      "default": "mittel"
+    },
+    "reward_coins": {
+      "type": "number",
+      "default": 0
+    },
+    "reward_xp": {
+      "type": "number",
+      "default": 0
+    },
+    "penalty_coins": {
+      "type": "number",
+      "default": 0,
+      "description": "Abzug bei Nichterf\u00fcllung"
+    },
+    "penalty_xp": {
+      "type": "number",
+      "default": 0
+    },
+    "emoji": {
+      "type": "string",
+      "default": "\ud83d\udcc5"
+    },
+    "color": {
+      "type": "string",
+      "default": "emerald",
+      "description": "Farbthema: emerald, purple, amber, red, blue, pink"
+    },
+    "is_recurring": {
+      "type": "boolean",
+      "default": false
+    },
+    "recurrence_pattern": {
+      "type": "string",
+      "enum": [
+        "t\u00e4glich",
+        "w\u00f6chentlich",
+        "monatlich"
+      ],
+      "description": "Wiederholungsmuster"
+    }
+  },
+  "required": [
+    "user_email",
+    "title",
+    "date",
+    "entry_type"
+  ]
+}

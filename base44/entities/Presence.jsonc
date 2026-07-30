@@ -1,0 +1,44 @@
+{
+  "name": "Presence",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User-Email oder Character-ID"
+    },
+    "user_type": {
+      "type": "string",
+      "enum": [
+        "user",
+        "ai"
+      ],
+      "default": "user"
+    },
+    "is_online": {
+      "type": "boolean",
+      "default": false,
+      "description": "Aktueller Online-Status"
+    },
+    "last_seen": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Zuletzt gesehen"
+    },
+    "current_conversation_id": {
+      "type": "string",
+      "description": "Aktuell ge\u00f6ffnete Konversation"
+    },
+    "device": {
+      "type": "string",
+      "enum": [
+        "web",
+        "mobile",
+        "desktop"
+      ],
+      "default": "web"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

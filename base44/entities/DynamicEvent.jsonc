@@ -1,0 +1,141 @@
+{
+  "name": "DynamicEvent",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Betroffener User"
+    },
+    "title": {
+      "type": "string",
+      "description": "Event-Titel"
+    },
+    "description": {
+      "type": "string",
+      "description": "Beschreibung des Events"
+    },
+    "emoji": {
+      "type": "string",
+      "default": "\u26a1"
+    },
+    "event_category": {
+      "type": "string",
+      "enum": [
+        "encounter",
+        "job_challenge",
+        "relationship",
+        "opportunity",
+        "crisis",
+        "discovery",
+        "social",
+        "random"
+      ],
+      "default": "random"
+    },
+    "trigger_source": {
+      "type": "string",
+      "enum": [
+        "player_action",
+        "relationship",
+        "job",
+        "random",
+        "time_based",
+        "milestone"
+      ],
+      "default": "random"
+    },
+    "related_character_id": {
+      "type": "string",
+      "description": "Verkn\u00fcpfter Charakter (optional)"
+    },
+    "related_job_id": {
+      "type": "string",
+      "description": "Verkn\u00fcpfter Job (optional)"
+    },
+    "choices": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "emoji": {
+            "type": "string"
+          },
+          "outcome_description": {
+            "type": "string"
+          },
+          "reward_coins": {
+            "type": "number"
+          },
+          "reward_xp": {
+            "type": "number"
+          },
+          "mood_effect": {
+            "type": "string"
+          },
+          "risk_level": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Auswahlm\u00f6glichkeiten"
+    },
+    "chosen_option": {
+      "type": "number",
+      "description": "Index der gew\u00e4hlten Option (-1 = noch nicht gew\u00e4hlt)"
+    },
+    "outcome_text": {
+      "type": "string",
+      "description": "Ergebnis nach der Wahl"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "resolved",
+        "expired",
+        "dismissed"
+      ],
+      "default": "active"
+    },
+    "impact": {
+      "type": "string",
+      "enum": [
+        "positive",
+        "negative",
+        "neutral",
+        "mixed"
+      ],
+      "default": "neutral"
+    },
+    "urgency": {
+      "type": "string",
+      "enum": [
+        "niedrig",
+        "mittel",
+        "hoch",
+        "kritisch"
+      ],
+      "default": "mittel"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reward_coins": {
+      "type": "number",
+      "default": 0
+    },
+    "reward_xp": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "user_email",
+    "title",
+    "event_category"
+  ]
+}

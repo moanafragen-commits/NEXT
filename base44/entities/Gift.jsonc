@@ -1,0 +1,52 @@
+{
+  "name": "Gift",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "Empf\u00e4nger-Charakter"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Absender"
+    },
+    "gift_type": {
+      "type": "string",
+      "enum": [
+        "blumen",
+        "schokolade",
+        "brief",
+        "teddy",
+        "schmuck",
+        "parf\u00fcm",
+        "buch",
+        "playlist",
+        "essen",
+        "reise",
+        "ring",
+        "herz",
+        "stern",
+        "krone",
+        "diamant"
+      ],
+      "description": "Art des Geschenks"
+    },
+    "message": {
+      "type": "string",
+      "description": "Nachricht zum Geschenk"
+    },
+    "reaction": {
+      "type": "string",
+      "description": "Reaktion des Charakters"
+    },
+    "mood_effect": {
+      "type": "string",
+      "description": "Stimmungs\u00e4nderung"
+    }
+  },
+  "required": [
+    "character_id",
+    "user_email",
+    "gift_type"
+  ]
+}

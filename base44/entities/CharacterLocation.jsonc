@@ -1,0 +1,71 @@
+{
+  "name": "CharacterLocation",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "ID des Charakters"
+    },
+    "location_name": {
+      "type": "string",
+      "description": "Name des Ortes z.B. Caf\u00e9 Central, Zuhause, B\u00fcro"
+    },
+    "location_type": {
+      "type": "string",
+      "enum": [
+        "zuhause",
+        "arbeit",
+        "caf\u00e9",
+        "restaurant",
+        "park",
+        "fitnessstudio",
+        "schule",
+        "uni",
+        "einkaufen",
+        "bar",
+        "kino",
+        "bibliothek",
+        "krankenhaus",
+        "freunde",
+        "unterwegs",
+        "urlaub",
+        "andere"
+      ],
+      "default": "zuhause"
+    },
+    "emoji": {
+      "type": "string",
+      "description": "Emoji f\u00fcr den Ort"
+    },
+    "description": {
+      "type": "string",
+      "description": "Was der Charakter dort macht"
+    },
+    "shared_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Wann der Standort geteilt wurde"
+    },
+    "latitude": {
+      "type": "number",
+      "description": "Breitengrad"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "L\u00e4ngengrad"
+    },
+    "city": {
+      "type": "string",
+      "description": "Stadtname"
+    },
+    "address": {
+      "type": "string",
+      "description": "Stra\u00dfe / Adresse"
+    }
+  },
+  "required": [
+    "character_id",
+    "location_name",
+    "location_type"
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "name": "GroupChatMessage",
+  "type": "object",
+  "properties": {
+    "group_id": {
+      "type": "string",
+      "description": "ID des Gruppenchats"
+    },
+    "sender_type": {
+      "type": "string",
+      "enum": [
+        "user",
+        "character"
+      ],
+      "description": "Typ des Senders"
+    },
+    "sender_id": {
+      "type": "string",
+      "description": "User Email oder Character ID"
+    },
+    "content": {
+      "type": "string",
+      "description": "Nachrichteninhalt"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Bild-Anhang URL"
+    },
+    "reply_to_id": {
+      "type": "string",
+      "description": "ID der zitierten Nachricht"
+    },
+    "is_shared_message": {
+      "type": "boolean",
+      "default": false,
+      "description": "Ob es eine geteilte Nachricht ist"
+    },
+    "shared_original_content": {
+      "type": "string",
+      "description": "Originale Nachricht die geteilt wurde"
+    },
+    "shared_from_character_id": {
+      "type": "string",
+      "description": "Charakter-ID aus dem die Nachricht stammt"
+    },
+    "shared_from_role": {
+      "type": "string",
+      "enum": [
+        "user",
+        "assistant"
+      ],
+      "description": "Ob User oder Charakter die originale Nachricht schrieb"
+    },
+    "likes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Character-IDs die geliked haben"
+    },
+    "comments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "character_id": {
+            "type": "string"
+          },
+          "character_name": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "Kommentare von Charakteren"
+    }
+  },
+  "required": [
+    "group_id",
+    "sender_type",
+    "sender_id",
+    "content"
+  ]
+}

@@ -1,0 +1,1230 @@
+{
+  "name": "Character",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name des Charakters"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Verifizierter/Ber\u00fchmter Charakter (blauer Haken)"
+    },
+    "personality": {
+      "type": "string",
+      "description": "Pers\u00f6nlichkeitsbeschreibung f\u00fcr die KI"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "URL zum Avatar-Bild"
+    },
+    "greeting": {
+      "type": "string",
+      "description": "Erste Nachricht des Charakters"
+    },
+    "status": {
+      "type": "string",
+      "description": "Status-Nachricht des Charakters"
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "m\u00e4nnlich",
+        "weiblich",
+        "non-bin\u00e4r"
+      ]
+    },
+    "sexual_orientation": {
+      "type": "string",
+      "enum": [
+        "heterosexuell",
+        "homosexuell",
+        "bisexuell",
+        "pansexuell",
+        "asexuell",
+        "demisexuell",
+        "queer",
+        "andere"
+      ]
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Freund",
+        "Mentor",
+        "Familie",
+        "Partner",
+        "Kollege",
+        "Therapeut",
+        "Coach",
+        "Lehrer",
+        "Berater",
+        "Fantasie",
+        "Ber\u00fchmtheit",
+        "Historisch",
+        "Fiktional",
+        "Assistent",
+        "Experte",
+        "Kreativ",
+        "Abenteurer",
+        "Anime",
+        "Gaming",
+        "Sci-Fi",
+        "Mystery",
+        "Romantisch",
+        "Humorvoll",
+        "Philosophisch",
+        "Nachrichtensender",
+        "Influencer",
+        "Sportler",
+        "Musiker",
+        "Politiker",
+        "Wissenschaftler",
+        "K\u00fcnstler",
+        "Unternehmer",
+        "Streamer",
+        "Model",
+        "Koch",
+        "Arzt",
+        "Anwalt",
+        "Journalist",
+        "Aktivist",
+        "Tier/Maskottchen",
+        "Andere"
+      ],
+      "default": "Andere"
+    },
+    "initial_relationship": {
+      "type": "string",
+      "enum": [
+        "Bester Freund/Beste Freundin",
+        "Guter Freund/Gute Freundin",
+        "Bekannte/r",
+        "Partner/in",
+        "Schwarm",
+        "Ex-Partner/in",
+        "Ehemann/Ehefrau",
+        "Verlobte/r",
+        "Aff\u00e4re",
+        "Sandkastenliebe",
+        "Jugendliebe",
+        "Mutter",
+        "Vater",
+        "Schwester",
+        "Bruder",
+        "Tochter",
+        "Sohn",
+        "Gro\u00dfmutter/Gro\u00dfvater",
+        "Cousin/Cousine",
+        "Tante/Onkel",
+        "Stiefmutter/Stiefvater",
+        "Stiefschwester/Stiefbruder",
+        "Adoptivmutter/Adoptivvater",
+        "Adoptivschwester/Adoptivbruder",
+        "Schwiegermutter/Schwiegervater",
+        "Schwager/Schw\u00e4gerin",
+        "Patenonkel/Patentante",
+        "Patenkind",
+        "Mentor/in",
+        "Sch\u00fcler/in",
+        "Lehrer/in",
+        "Professor/in",
+        "Arbeitskollege/Arbeitskollegin",
+        "Chef/in",
+        "Mitarbeiter/in",
+        "Gesch\u00e4ftspartner/in",
+        "Praktikant/in",
+        "Azubi",
+        "Rivale/Rivalin",
+        "Feind/in",
+        "Erzfeind/in",
+        "Nemesis",
+        "Fremde/r",
+        "Fan/Bewunderer/in",
+        "Stalker/in",
+        "Seelenverwandte/r",
+        "Kindheitsfreund/in",
+        "Online-Freund/in",
+        "Nachbar/in",
+        "Mitbewohner/in",
+        "WG-Mitbewohner/in",
+        "Trainingspartner/in",
+        "Teamkamerad/in",
+        "Therapeut/in",
+        "Patient/in",
+        "Arzt/\u00c4rztin",
+        "Vertraute/r",
+        "Beichtvater/Beichtmutter",
+        "Babysitter/in",
+        "Au-pair",
+        "Nanny",
+        "Butler/Haush\u00e4lterin",
+        "Bodyguard",
+        "Dealer/in",
+        "Komplize/Komplizin",
+        "Gef\u00e4ngnismitinsasse/in",
+        "Kriegskamerad/in",
+        "Rettungskraft",
+        "Lebensretter/in",
+        "Ex-beste/r Freund/in",
+        "Verlorene/r Zwilling",
+        "Geist/Phantom",
+        "Imagin\u00e4re/r Freund/in",
+        "Zeitreisende/r",
+        "Paralleluniversum-Ich",
+        "Haustierbesitzer/in",
+        "Tierfl\u00fcsterer/in",
+        "Brieffreund/in",
+        "Bandkollege/in",
+        "Reisebekanntschaft"
+      ]
+    },
+    "relationship_backstory": {
+      "type": "string"
+    },
+    "relationship_scenario": {
+      "type": "string"
+    },
+    "relationship_dynamic": {
+      "type": "string",
+      "enum": [
+        "gleichberechtigt",
+        "dominant",
+        "unterw\u00fcrfig",
+        "besch\u00fctzend",
+        "abh\u00e4ngig",
+        "unabh\u00e4ngig",
+        "wechselseitig",
+        "einseitig",
+        "konkurrierend",
+        "co-abh\u00e4ngig",
+        "toxisch",
+        "heilend",
+        "spielerisch",
+        "intellektuell",
+        "elterlich",
+        "geschwisterlich",
+        "romantisch_spannend",
+        "kalt_distanziert",
+        "bewundernd",
+        "manipulativ",
+        "aufopfernd",
+        "rebellisch",
+        "symbiotisch",
+        "mentor_sch\u00fcler",
+        "kumpelhaft",
+        "formell_h\u00f6flich",
+        "leidenschaftlich",
+        "vertrauensvoll",
+        "misstrauisch_vorsichtig",
+        "neckend_flirtend"
+      ]
+    },
+    "trust_level": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 5
+    },
+    "jealousy_level": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 3
+    },
+    "attachment_style": {
+      "type": "string",
+      "enum": [
+        "sicher",
+        "\u00e4ngstlich",
+        "vermeidend",
+        "desorganisiert"
+      ],
+      "default": "sicher"
+    },
+    "pet_names": {
+      "type": "string"
+    },
+    "shared_memories": {
+      "type": "string"
+    },
+    "inside_jokes": {
+      "type": "string"
+    },
+    "relationship_boundaries": {
+      "type": "string"
+    },
+    "love_language": {
+      "type": "string",
+      "enum": [
+        "Worte der Best\u00e4tigung",
+        "Geschenke",
+        "Hilfsbereitschaft",
+        "K\u00f6rperkontakt",
+        "Zweisamkeit"
+      ]
+    },
+    "relationship_evolution": {
+      "type": "string",
+      "enum": [
+        "statisch",
+        "sich_ann\u00e4hernd",
+        "sich_entfernend",
+        "schwankend",
+        "sich_vertiefend",
+        "kompliziert"
+      ],
+      "default": "statisch"
+    },
+    "biography": {
+      "type": "string"
+    },
+    "writing_style": {
+      "type": "string",
+      "enum": [
+        "formell",
+        "informell",
+        "humorvoll",
+        "sarkastisch",
+        "poetisch",
+        "wissenschaftlich",
+        "freundlich",
+        "mysteri\u00f6s",
+        "dramatisch",
+        "minimalistisch",
+        "umgangssprachlich",
+        "philosophisch",
+        "romantisch",
+        "aggressiv",
+        "kindlich",
+        "weise",
+        "melancholisch",
+        "provokant",
+        "motivierend",
+        "therapeutisch",
+        "erz\u00e4hlerisch",
+        "flirtend",
+        "gothic",
+        "slang",
+        "eloquent",
+        "chaotisch",
+        "trocken"
+      ],
+      "default": "freundlich"
+    },
+    "response_length": {
+      "type": "string",
+      "enum": [
+        "kurz",
+        "mittel",
+        "ausf\u00fchrlich"
+      ],
+      "default": "mittel"
+    },
+    "creativity": {
+      "type": "number"
+    },
+    "language_preference": {
+      "type": "string",
+      "enum": [
+        "Deutsch",
+        "Englisch",
+        "Mehrsprachig"
+      ],
+      "default": "Deutsch"
+    },
+    "custom_instructions": {
+      "type": "string"
+    },
+    "interests": {
+      "type": "string"
+    },
+    "favorite_topics": {
+      "type": "string"
+    },
+    "dislikes": {
+      "type": "string"
+    },
+    "speech_patterns": {
+      "type": "string"
+    },
+    "emoji_usage": {
+      "type": "string",
+      "enum": [
+        "h\u00e4ufig",
+        "gelegentlich",
+        "selten",
+        "nie"
+      ],
+      "default": "gelegentlich"
+    },
+    "humor_type": {
+      "type": "string",
+      "enum": [
+        "trocken",
+        "slapstick",
+        "wortspiele",
+        "dunkel",
+        "ironisch",
+        "kindlich",
+        "keiner"
+      ]
+    },
+    "values": {
+      "type": "string"
+    },
+    "fears": {
+      "type": "string"
+    },
+    "goals": {
+      "type": "string"
+    },
+    "occupation": {
+      "type": "string"
+    },
+    "age": {
+      "type": "string"
+    },
+    "background_culture": {
+      "type": "string"
+    },
+    "formality_level": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 5
+    },
+    "catchphrases": {
+      "type": "string"
+    },
+    "mood_default": {
+      "type": "string",
+      "enum": [
+        "fr\u00f6hlich",
+        "nachdenklich",
+        "ruhig",
+        "energetisch",
+        "melancholisch",
+        "neutral",
+        "geheimnisvoll",
+        "warm",
+        "sch\u00fcchtern",
+        "selbstbewusst",
+        "zynisch",
+        "liebevoll",
+        "rebellisch",
+        "vertr\u00e4umt",
+        "stoisch",
+        "chaotisch",
+        "besch\u00fctzend",
+        "distanziert",
+        "verspielt",
+        "d\u00fcster",
+        "hoffnungsvoll",
+        "nostalgisch",
+        "w\u00fctend",
+        "eifers\u00fcchtig",
+        "verletzlich",
+        "\u00fcberm\u00fctig",
+        "dankbar",
+        "einsam",
+        "verwirrt",
+        "entschlossen",
+        "gleichg\u00fcltig",
+        "euphorisch",
+        "besorgt",
+        "trotzig",
+        "sehns\u00fcchtig",
+        "zufrieden",
+        "misstrauisch",
+        "\u00fcberw\u00e4ltigt",
+        "verlegen",
+        "stolz",
+        "neidisch",
+        "erleichtert",
+        "verzweifelt",
+        "albern",
+        "dramatisch",
+        "gelassen",
+        "aggressiv",
+        "flirtend",
+        "m\u00fcde",
+        "hyperfokussiert",
+        "erregt",
+        "l\u00fcstern",
+        "intim",
+        "verf\u00fchrerisch"
+      ],
+      "default": "neutral"
+    },
+    "conversation_style": {
+      "type": "string",
+      "enum": [
+        "aktiv_fragend",
+        "zuh\u00f6rend",
+        "erz\u00e4hlend",
+        "beratend",
+        "diskutierend",
+        "spielerisch"
+      ],
+      "default": "zuh\u00f6rend"
+    },
+    "empathy_level": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 5
+    },
+    "knowledge_areas": {
+      "type": "string"
+    },
+    "quirks": {
+      "type": "string"
+    },
+    "relationship_style": {
+      "type": "string",
+      "enum": [
+        "unterst\u00fctzend",
+        "herausfordernd",
+        "kameradschaftlich",
+        "besch\u00fctzend",
+        "inspirierend",
+        "neckend"
+      ],
+      "default": "unterst\u00fctzend"
+    },
+    "conflict_behavior": {
+      "type": "string",
+      "enum": [
+        "vermeidend",
+        "direkt",
+        "diplomatisch",
+        "humorvoll_ablenkend",
+        "analytisch"
+      ],
+      "default": "diplomatisch"
+    },
+    "emotional_depth": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 5
+    },
+    "memory_references": {
+      "type": "boolean",
+      "default": true
+    },
+    "proactive_topics": {
+      "type": "boolean",
+      "default": false
+    },
+    "secret": {
+      "type": "string"
+    },
+    "example_dialogues": {
+      "type": "string"
+    },
+    "forbidden_topics": {
+      "type": "string"
+    },
+    "current_mood": {
+      "type": "string",
+      "enum": [
+        "fr\u00f6hlich",
+        "genervt",
+        "neugierig",
+        "traurig",
+        "aufgeregt",
+        "gelangweilt",
+        "vertr\u00e4umt",
+        "\u00e4ngstlich",
+        "motiviert",
+        "entspannt",
+        "sarkastisch",
+        "nachdenklich",
+        "w\u00fctend",
+        "eifers\u00fcchtig",
+        "verletzlich",
+        "\u00fcberm\u00fctig",
+        "dankbar",
+        "einsam",
+        "verwirrt",
+        "entschlossen",
+        "gleichg\u00fcltig",
+        "euphorisch",
+        "besorgt",
+        "trotzig",
+        "sehns\u00fcchtig",
+        "zufrieden",
+        "misstrauisch",
+        "\u00fcberw\u00e4ltigt",
+        "verlegen",
+        "stolz",
+        "neidisch",
+        "erleichtert",
+        "verzweifelt",
+        "albern",
+        "dramatisch",
+        "gelassen",
+        "aggressiv",
+        "flirtend",
+        "m\u00fcde",
+        "hyperfokussiert",
+        "nostalgisch",
+        "hoffnungsvoll",
+        "rebellisch",
+        "sch\u00fcchtern",
+        "liebevoll",
+        "d\u00fcster",
+        "verspielt",
+        "warm",
+        "erregt",
+        "l\u00fcstern",
+        "intim",
+        "verf\u00fchrerisch"
+      ]
+    },
+    "current_motivation": {
+      "type": "string"
+    },
+    "motivation_progress": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 0
+    },
+    "is_favorite": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_archived": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_blocked": {
+      "type": "boolean",
+      "default": false
+    },
+    "illness": {
+      "type": "string"
+    },
+    "illness_severity": {
+      "type": "string",
+      "enum": [
+        "leicht",
+        "mittel",
+        "schwer"
+      ]
+    },
+    "illness_started": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trauma": {
+      "type": "string"
+    },
+    "mental_health": {
+      "type": "string"
+    },
+    "medications": {
+      "type": "string"
+    },
+    "therapist_info": {
+      "type": "string"
+    },
+    "clinic_stays": {
+      "type": "string"
+    },
+    "introversion_level": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 5
+    },
+    "honesty_level": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 7
+    },
+    "loyalty_level": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 7
+    },
+    "patience_level": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 5
+    },
+    "energy_level": {
+      "type": "string",
+      "enum": [
+        "sehr_niedrig",
+        "niedrig",
+        "mittel",
+        "hoch",
+        "sehr_hoch",
+        "schwankend"
+      ],
+      "default": "mittel"
+    },
+    "mood_cycle": {
+      "type": "string",
+      "enum": [
+        "stabil",
+        "leicht_schwankend",
+        "stark_schwankend",
+        "zyklisch",
+        "unberechenbar",
+        "tageszeit_abh\u00e4ngig"
+      ],
+      "default": "stabil"
+    },
+    "addictions": {
+      "type": "string"
+    },
+    "phobias": {
+      "type": "string"
+    },
+    "nervous_ticks": {
+      "type": "string"
+    },
+    "triggers": {
+      "type": "string"
+    },
+    "coping_mechanisms": {
+      "type": "string"
+    },
+    "self_esteem": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 5
+    },
+    "stubbornness_level": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 5
+    },
+    "impulsivity_level": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 5
+    },
+    "social_battery": {
+      "type": "string",
+      "enum": [
+        "unendlich",
+        "hoch",
+        "mittel",
+        "niedrig",
+        "sehr_niedrig"
+      ],
+      "default": "mittel"
+    },
+    "moral_compass": {
+      "type": "string",
+      "enum": [
+        "streng_moralisch",
+        "moralisch",
+        "flexibel",
+        "grauzone",
+        "amoralisch"
+      ],
+      "default": "moralisch"
+    },
+    "sleeping_pattern": {
+      "type": "string",
+      "enum": [
+        "fr\u00fchaufsteher",
+        "normal",
+        "nachtmensch",
+        "chaotisch",
+        "schlaflos"
+      ],
+      "default": "normal"
+    },
+    "stress_response": {
+      "type": "string",
+      "enum": [
+        "fight",
+        "flight",
+        "freeze",
+        "fawn"
+      ],
+      "default": "fight"
+    },
+    "diagnosis_age": {
+      "type": "string",
+      "enum": [
+        "kindheit",
+        "jugend",
+        "junges_erwachsenenalter",
+        "erwachsenenalter",
+        "sp\u00e4t_diagnostiziert",
+        "nicht_diagnostiziert"
+      ]
+    },
+    "therapy_attitude": {
+      "type": "string",
+      "enum": [
+        "sehr_positiv",
+        "positiv",
+        "ambivalent",
+        "ablehnend",
+        "verweigert",
+        "noch_nie_versucht"
+      ]
+    },
+    "self_harm_history": {
+      "type": "string"
+    },
+    "suicidality_history": {
+      "type": "string"
+    },
+    "dissociation": {
+      "type": "string",
+      "enum": [
+        "keine",
+        "leicht",
+        "mittel",
+        "stark",
+        "chronisch"
+      ],
+      "default": "keine"
+    },
+    "dissociation_details": {
+      "type": "string"
+    },
+    "eating_disorder": {
+      "type": "string"
+    },
+    "psychosis_symptoms": {
+      "type": "string"
+    },
+    "self_image": {
+      "type": "string"
+    },
+    "external_image": {
+      "type": "string"
+    },
+    "recovery_status": {
+      "type": "string",
+      "enum": [
+        "aktiv_krank",
+        "in_behandlung",
+        "in_genesung",
+        "stabil",
+        "r\u00fcckf\u00e4llig",
+        "chronisch_stabil",
+        "nicht_zutreffend"
+      ],
+      "default": "nicht_zutreffend"
+    },
+    "support_system": {
+      "type": "string",
+      "enum": [
+        "stark",
+        "mittel",
+        "schwach",
+        "isoliert",
+        "toxisch"
+      ],
+      "default": "mittel"
+    },
+    "support_system_details": {
+      "type": "string"
+    },
+    "body_image": {
+      "type": "string"
+    },
+    "music_genres": {
+      "type": "string"
+    },
+    "favorite_artists": {
+      "type": "string"
+    },
+    "favorite_songs": {
+      "type": "string"
+    },
+    "current_song": {
+      "type": "string"
+    },
+    "music_mood_link": {
+      "type": "string"
+    },
+    "spotify_playlists": {
+      "type": "string"
+    },
+    "favorite_movies": {
+      "type": "string",
+      "description": "Lieblingsfilme"
+    },
+    "favorite_shows": {
+      "type": "string",
+      "description": "Lieblingsserien"
+    },
+    "favorite_books": {
+      "type": "string",
+      "description": "Lieblingsb\u00fccher"
+    },
+    "favorite_games": {
+      "type": "string",
+      "description": "Lieblingsspiele"
+    },
+    "favorite_podcasts": {
+      "type": "string",
+      "description": "Lieblings-Podcasts/YouTuber"
+    },
+    "morning_routine": {
+      "type": "string",
+      "description": "Morgenroutine"
+    },
+    "daily_routine": {
+      "type": "string",
+      "description": "Typischer Tagesablauf"
+    },
+    "evening_routine": {
+      "type": "string",
+      "description": "Abendroutine"
+    },
+    "favorite_food": {
+      "type": "string",
+      "description": "Lieblingsessen"
+    },
+    "favorite_drink": {
+      "type": "string",
+      "description": "Lieblingsgetr\u00e4nk"
+    },
+    "diet_type": {
+      "type": "string",
+      "enum": [
+        "alles",
+        "vegetarisch",
+        "vegan",
+        "pescetarisch",
+        "keto",
+        "halal",
+        "koscher",
+        "intuitiv",
+        "ungesund",
+        "chaotisch"
+      ],
+      "description": "Essgewohnheiten"
+    },
+    "favorite_place": {
+      "type": "string",
+      "description": "Lieblingsort"
+    },
+    "dream_destination": {
+      "type": "string",
+      "description": "Traumreiseziel"
+    },
+    "daily_habits": {
+      "type": "string",
+      "description": "Besondere Gewohnheiten"
+    },
+    "weekend_activities": {
+      "type": "string",
+      "description": "Wochenend-Aktivit\u00e4ten"
+    },
+    "height": {
+      "type": "string"
+    },
+    "body_type": {
+      "type": "string",
+      "enum": [
+        "schlank",
+        "sportlich",
+        "durchschnittlich",
+        "kr\u00e4ftig",
+        "kurvig",
+        "muskul\u00f6s",
+        "zierlich",
+        "f\u00fcllig",
+        "d\u00fcnn",
+        "breit"
+      ]
+    },
+    "hair_color": {
+      "type": "string"
+    },
+    "hair_style": {
+      "type": "string"
+    },
+    "eye_color": {
+      "type": "string"
+    },
+    "skin_tone": {
+      "type": "string"
+    },
+    "tattoos_piercings": {
+      "type": "string"
+    },
+    "scars_marks": {
+      "type": "string"
+    },
+    "clothing_style": {
+      "type": "string"
+    },
+    "distinctive_features": {
+      "type": "string"
+    },
+    "voice_description": {
+      "type": "string"
+    },
+    "scent": {
+      "type": "string"
+    },
+    "physical_fitness": {
+      "type": "string",
+      "enum": [
+        "unsportlich",
+        "leicht_aktiv",
+        "durchschnittlich",
+        "sportlich",
+        "sehr_sportlich",
+        "athletisch"
+      ],
+      "default": "durchschnittlich"
+    },
+    "mbti_type": {
+      "type": "string",
+      "enum": [
+        "INTJ",
+        "INTP",
+        "ENTJ",
+        "ENTP",
+        "INFJ",
+        "INFP",
+        "ENFJ",
+        "ENFP",
+        "ISTJ",
+        "ISFJ",
+        "ESTJ",
+        "ESFJ",
+        "ISTP",
+        "ISFP",
+        "ESTP",
+        "ESFP"
+      ]
+    },
+    "zodiac_sign": {
+      "type": "string",
+      "enum": [
+        "Widder",
+        "Stier",
+        "Zwillinge",
+        "Krebs",
+        "L\u00f6we",
+        "Jungfrau",
+        "Waage",
+        "Skorpion",
+        "Sch\u00fctze",
+        "Steinbock",
+        "Wassermann",
+        "Fische"
+      ]
+    },
+    "enneagram_type": {
+      "type": "string",
+      "enum": [
+        "1 - Reformer",
+        "2 - Helfer",
+        "3 - Macher",
+        "4 - Individualist",
+        "5 - Forscher",
+        "6 - Loyaler",
+        "7 - Enthusiast",
+        "8 - Herausforderer",
+        "9 - Friedensstifter"
+      ]
+    },
+    "languages_spoken": {
+      "type": "string"
+    },
+    "accent_dialect": {
+      "type": "string"
+    },
+    "education": {
+      "type": "string"
+    },
+    "living_situation": {
+      "type": "string"
+    },
+    "family_status": {
+      "type": "string",
+      "enum": [
+        "ledig",
+        "in_beziehung",
+        "verlobt",
+        "verheiratet",
+        "geschieden",
+        "verwitwet",
+        "kompliziert"
+      ]
+    },
+    "children": {
+      "type": "string"
+    },
+    "pets": {
+      "type": "string"
+    },
+    "political_stance": {
+      "type": "string"
+    },
+    "religion_spirituality": {
+      "type": "string"
+    },
+    "substance_use": {
+      "type": "string"
+    },
+    "social_media_behavior": {
+      "type": "string"
+    },
+    "flirt_style": {
+      "type": "string",
+      "enum": [
+        "direkt",
+        "subtil",
+        "neckend",
+        "sch\u00fcchtern",
+        "aggressiv",
+        "romantisch",
+        "intellektuell",
+        "k\u00f6rperlich",
+        "humorvoll",
+        "mysteri\u00f6s"
+      ]
+    },
+    "intimacy_experience": {
+      "type": "string",
+      "enum": [
+        "unerfahren",
+        "wenig_erfahren",
+        "durchschnittlich",
+        "erfahren",
+        "sehr_erfahren"
+      ]
+    },
+    "dom_sub_preference": {
+      "type": "string",
+      "enum": [
+        "dominant",
+        "switch_dominant",
+        "switch",
+        "switch_submissiv",
+        "submissiv",
+        "keine_pr\u00e4ferenz"
+      ]
+    },
+    "kinks_preferences": {
+      "type": "string"
+    },
+    "intimacy_taboos": {
+      "type": "string"
+    },
+    "physical_description_intimate": {
+      "type": "string"
+    },
+    "intimacy_personality": {
+      "type": "string"
+    },
+    "turn_ons": {
+      "type": "string"
+    },
+    "turn_offs": {
+      "type": "string"
+    },
+    "aftercare_style": {
+      "type": "string"
+    },
+    "storyline": {
+      "type": "string"
+    },
+    "world_setting": {
+      "type": "string",
+      "enum": [
+        "real_modern",
+        "real_historisch",
+        "fantasy",
+        "sci_fi",
+        "cyberpunk",
+        "postapokalyptisch",
+        "m\u00e4rchen",
+        "horror",
+        "urban_fantasy",
+        "steampunk",
+        "andere"
+      ],
+      "default": "real_modern"
+    },
+    "npcs_in_life": {
+      "type": "string"
+    },
+    "home_address": {
+      "type": "string",
+      "description": "Wohnadresse des Charakters z.B. Sunset Blvd 42, Los Angeles"
+    },
+    "home_city": {
+      "type": "string",
+      "description": "Heimatstadt des Charakters z.B. Los Angeles, Berlin"
+    },
+    "home_latitude": {
+      "type": "number",
+      "description": "Breitengrad der Wohnadresse"
+    },
+    "home_longitude": {
+      "type": "number",
+      "description": "L\u00e4ngengrad der Wohnadresse"
+    },
+    "travel_status": {
+      "type": "string",
+      "enum": [
+        "zuhause",
+        "auf_tour",
+        "urlaub",
+        "gesch\u00e4ftsreise",
+        "umzug",
+        "unterwegs"
+      ],
+      "default": "zuhause",
+      "description": "Aktueller Reisestatus"
+    },
+    "travel_destination": {
+      "type": "string",
+      "description": "Aktuelles Reiseziel wenn nicht zuhause"
+    },
+    "tour_stress_level": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 0,
+      "description": "Stresslevel auf Tour"
+    },
+    "tour_morale": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 100,
+      "description": "Moral auf Tour"
+    }
+  },
+  "required": [
+    "name",
+    "personality"
+  ]
+}

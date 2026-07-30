@@ -1,0 +1,38 @@
+{
+  "name": "DailySchedule",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "ID des Charakters"
+    },
+    "hour": {
+      "type": "number",
+      "description": "Stunde (0-23)"
+    },
+    "activity": {
+      "type": "string",
+      "description": "Was der Charakter zu dieser Zeit macht"
+    },
+    "location": {
+      "type": "string",
+      "description": "Wo der Charakter ist"
+    },
+    "emoji": {
+      "type": "string"
+    },
+    "day_type": {
+      "type": "string",
+      "enum": [
+        "weekday",
+        "weekend"
+      ],
+      "default": "weekday"
+    }
+  },
+  "required": [
+    "character_id",
+    "hour",
+    "activity"
+  ]
+}

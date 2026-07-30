@@ -1,0 +1,68 @@
+{
+  "name": "ShopItem",
+  "type": "object",
+  "properties": {
+    "item_key": {
+      "type": "string",
+      "description": "Eindeutiger Schl\u00fcssel z.B. theme_sunset, frame_fire"
+    },
+    "name": {
+      "type": "string",
+      "description": "Anzeigename"
+    },
+    "description": {
+      "type": "string",
+      "description": "Beschreibung"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "chat_theme",
+        "avatar_frame",
+        "chat_bubble",
+        "name_color",
+        "premium_gift",
+        "voice_effect",
+        "profile_badge",
+        "xp_boost"
+      ],
+      "description": "Kategorie"
+    },
+    "price": {
+      "type": "number",
+      "description": "Preis in Coins"
+    },
+    "preview_image": {
+      "type": "string",
+      "description": "Vorschaubild URL"
+    },
+    "emoji": {
+      "type": "string",
+      "description": "Emoji f\u00fcr die Darstellung"
+    },
+    "rarity": {
+      "type": "string",
+      "enum": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "default": "common"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "meta": {
+      "type": "string",
+      "description": "JSON-String mit zus\u00e4tzlichen Daten (CSS-Klassen, Effekte, etc.)"
+    }
+  },
+  "required": [
+    "item_key",
+    "name",
+    "category",
+    "price"
+  ]
+}

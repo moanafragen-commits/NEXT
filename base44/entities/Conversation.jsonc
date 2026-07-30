@@ -1,0 +1,78 @@
+{
+  "name": "Conversation",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Chat-Titel"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "direct",
+        "group",
+        "ai_character"
+      ],
+      "description": "Konversationstyp"
+    },
+    "participants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "user",
+              "ai"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "avatar_url": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Teilnehmer (User-Emails oder Character-IDs)"
+    },
+    "last_message_preview": {
+      "type": "string",
+      "description": "Vorschau der letzten Nachricht"
+    },
+    "last_message_sender": {
+      "type": "string",
+      "description": "Sender der letzten Nachricht"
+    },
+    "last_message_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Zeitstempel der letzten Nachricht"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "Chat-Avatar (f\u00fcr Gruppen)"
+    },
+    "is_archived": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_muted": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_favorite": {
+      "type": "boolean",
+      "default": false,
+      "description": "Als Favorit markiert"
+    }
+  },
+  "required": [
+    "type",
+    "participants"
+  ]
+}

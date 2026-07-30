@@ -1,0 +1,68 @@
+{
+  "name": "CharacterDream",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "ID des Charakters"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Besitzer"
+    },
+    "dream_content": {
+      "type": "string",
+      "description": "Der Traum aus Sicht des Charakters"
+    },
+    "dream_type": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "alptraum",
+        "luzid",
+        "wiederkehrend",
+        "prophetisch",
+        "nostalgisch",
+        "romantisch",
+        "surreal",
+        "angst"
+      ],
+      "default": "normal"
+    },
+    "mood_on_waking": {
+      "type": "string",
+      "description": "Stimmung nach dem Aufwachen"
+    },
+    "symbols": {
+      "type": "string",
+      "description": "Traumsymbole kommasepariert"
+    },
+    "based_on_memories": {
+      "type": "string",
+      "description": "Welche Erinnerungen den Traum beeinflusst haben"
+    },
+    "intensity": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 5,
+      "description": "Wie intensiv/lebendig der Traum war"
+    },
+    "shared_with_user": {
+      "type": "boolean",
+      "default": false,
+      "description": "Hat der Charakter dem User davon erz\u00e4hlt?"
+    },
+    "dream_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Nacht in der getr\u00e4umt wurde"
+    }
+  },
+  "required": [
+    "character_id",
+    "user_email",
+    "dream_content",
+    "dream_type"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "display_name": {
+      "type": "string",
+      "description": "Angezeigter Name in Chats"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "Profilbild URL"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Kurze Bio"
+    },
+    "status": {
+      "type": "string",
+      "description": "Status-Nachricht",
+      "default": "online"
+    },
+    "status_expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Zeitpunkt, wann der Status automatisch zur\u00fcckgesetzt wird"
+    },
+    "dark_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "Dark Mode aktiviert"
+    },
+    "nsfw_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "NSFW-Modus aktiviert"
+    },
+    "notifications_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Benachrichtigungen aktiviert"
+    },
+    "language": {
+      "type": "string",
+      "default": "Deutsch",
+      "description": "Bevorzugte Sprache"
+    }
+  },
+  "required": []
+}

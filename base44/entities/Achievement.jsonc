@@ -1,0 +1,59 @@
+{
+  "name": "Achievement",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User der das Achievement freigeschaltet hat"
+    },
+    "character_id": {
+      "type": "string",
+      "description": "Zugeh\u00f6riger Charakter (optional)"
+    },
+    "achievement_key": {
+      "type": "string",
+      "description": "Eindeutiger Schl\u00fcssel z.B. first_chat, 100_messages"
+    },
+    "title": {
+      "type": "string",
+      "description": "Anzeigename"
+    },
+    "description": {
+      "type": "string",
+      "description": "Beschreibung"
+    },
+    "emoji": {
+      "type": "string",
+      "description": "Badge-Emoji"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "chat",
+        "beziehung",
+        "erinnerung",
+        "social",
+        "kreativ",
+        "geheim",
+        "meilenstein"
+      ],
+      "default": "meilenstein"
+    },
+    "rarity": {
+      "type": "string",
+      "enum": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "default": "common"
+    }
+  },
+  "required": [
+    "user_email",
+    "achievement_key",
+    "title",
+    "emoji"
+  ]
+}

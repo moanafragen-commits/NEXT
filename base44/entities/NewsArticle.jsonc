@@ -1,0 +1,115 @@
+{
+  "name": "NewsArticle",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "headline": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "breaking",
+        "entertainment",
+        "sport",
+        "politik",
+        "wissenschaft",
+        "klatsch",
+        "wetter",
+        "gaming",
+        "musik"
+      ],
+      "default": "entertainment"
+    },
+    "emoji": {
+      "type": "string",
+      "default": "\ud83d\udcf0"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "source_name": {
+      "type": "string",
+      "description": "Name des Nachrichtensenders z.B. CNN, BBC, Bild",
+      "default": "Breaking News"
+    },
+    "source_logo_emoji": {
+      "type": "string",
+      "description": "Emoji/Icon f\u00fcr die Quelle",
+      "default": "\ud83d\udcf0"
+    },
+    "source_verified": {
+      "type": "boolean",
+      "default": true,
+      "description": "Ob die Nachrichtenquelle verifiziert ist"
+    },
+    "related_character_ids": {
+      "type": "string",
+      "description": "Kommaseparierte Charakter-IDs die davon betroffen sind"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false
+    },
+    "likes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Character-IDs die geliked haben"
+    },
+    "like_names": {
+      "type": "string",
+      "description": "Kommaseparierte Namen der Liker"
+    },
+    "like_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Angezeigte Like-Anzahl (inkl. simulierte)"
+    },
+    "repost_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Angezeigte Repost-Anzahl"
+    },
+    "comments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "character_id": {
+            "type": "string"
+          },
+          "character_name": {
+            "type": "string"
+          },
+          "avatar_url": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "is_verified": {
+            "type": "boolean"
+          }
+        }
+      },
+      "default": [],
+      "description": "Kommentare von Charakteren"
+    }
+  },
+  "required": [
+    "user_email",
+    "headline",
+    "content"
+  ]
+}

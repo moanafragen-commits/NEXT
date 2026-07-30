@@ -1,0 +1,68 @@
+{
+  "name": "TourEvent",
+  "type": "object",
+  "properties": {
+    "tour_id": {
+      "type": "string",
+      "description": "Link to the parent Tour"
+    },
+    "character_id": {
+      "type": "string",
+      "description": "Legacy: specific character if solo tour"
+    },
+    "tour_name": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "city": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "venue": {
+      "type": "string"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "konzert",
+        "meet_and_greet",
+        "interview",
+        "autogrammstunde",
+        "freier_tag"
+      ],
+      "default": "konzert"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "geplant",
+        "stattgefunden",
+        "abgesagt",
+        "verschoben"
+      ],
+      "default": "geplant"
+    },
+    "cancellation_reason": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "latitude": {
+      "type": "number"
+    },
+    "longitude": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "tour_name",
+    "date",
+    "city"
+  ]
+}

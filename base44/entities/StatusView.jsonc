@@ -1,0 +1,18 @@
+{
+  "name": "StatusView",
+  "type": "object",
+  "properties": {
+    "status_id": {
+      "type": "string",
+      "description": "ID des Status"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "User der gesehen hat"
+    }
+  },
+  "required": [
+    "status_id",
+    "user_email"
+  ]
+}

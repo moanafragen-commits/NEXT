@@ -1,0 +1,94 @@
+{
+  "name": "UnifiedMessage",
+  "type": "object",
+  "properties": {
+    "conversation_id": {
+      "type": "string",
+      "description": "Referenz zur Conversation"
+    },
+    "sender_id": {
+      "type": "string",
+      "description": "User-Email oder Character-ID"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "Anzeigename des Senders"
+    },
+    "sender_type": {
+      "type": "string",
+      "enum": [
+        "human",
+        "ai",
+        "system"
+      ],
+      "description": "Typ des Senders"
+    },
+    "text": {
+      "type": "string",
+      "description": "Nachrichtentext"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "sending",
+        "sent",
+        "failed",
+        "delivered",
+        "read"
+      ],
+      "default": "sent",
+      "description": "Zustellungsstatus"
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "image",
+              "video",
+              "audio",
+              "file"
+            ]
+          },
+          "url": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Dateianh\u00e4nge"
+    },
+    "reply_to_id": {
+      "type": "string",
+      "description": "ID der Nachricht auf die geantwortet wird"
+    },
+    "edited": {
+      "type": "boolean",
+      "default": false,
+      "description": "Wurde bearbeitet"
+    },
+    "edited_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Zeitpunkt der Bearbeitung"
+    },
+    "deleted": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "conversation_id",
+    "sender_id",
+    "sender_type",
+    "text"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "CharacterConversationMessage",
+  "type": "object",
+  "properties": {
+    "conversation_id": {
+      "type": "string",
+      "description": "ID der Charakter-Konversation"
+    },
+    "sender_character_id": {
+      "type": "string",
+      "description": "ID des sendenden Charakters"
+    },
+    "content": {
+      "type": "string",
+      "description": "Nachrichteninhalt"
+    }
+  },
+  "required": [
+    "conversation_id",
+    "sender_character_id",
+    "content"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "MessageRead",
+  "type": "object",
+  "properties": {
+    "message_id": {
+      "type": "string",
+      "description": "ID der Nachricht"
+    },
+    "message_type": {
+      "type": "string",
+      "enum": [
+        "user",
+        "group",
+        "character"
+      ],
+      "description": "Typ der Nachricht"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email des Nutzers der gelesen hat"
+    }
+  },
+  "required": [
+    "message_id",
+    "message_type",
+    "user_email"
+  ]
+}

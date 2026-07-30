@@ -1,0 +1,40 @@
+{
+  "name": "SpontaneousMessage",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "ID des Charakters"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Empf\u00e4nger"
+    },
+    "content": {
+      "type": "string",
+      "description": "Nachricht"
+    },
+    "trigger_type": {
+      "type": "string",
+      "enum": [
+        "random_thought",
+        "missing_you",
+        "news",
+        "good_morning",
+        "good_night",
+        "reminder",
+        "reaction_to_event"
+      ],
+      "default": "random_thought"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "character_id",
+    "user_email",
+    "content"
+  ]
+}

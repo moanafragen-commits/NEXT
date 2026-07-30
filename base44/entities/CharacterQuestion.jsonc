@@ -1,0 +1,57 @@
+{
+  "name": "CharacterQuestion",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "question": {
+      "type": "string",
+      "description": "Die Frage die der Charakter stellt"
+    },
+    "user_answer": {
+      "type": "string",
+      "description": "Die Antwort des Users"
+    },
+    "character_reaction": {
+      "type": "string",
+      "description": "Reaktion des Charakters auf die Antwort"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "pers\u00f6nlich",
+        "philosophisch",
+        "lustig",
+        "deep_talk",
+        "alltag",
+        "beziehung",
+        "tr\u00e4ume",
+        "vergangenheit",
+        "zukunft"
+      ],
+      "default": "pers\u00f6nlich"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "answered",
+        "skipped"
+      ],
+      "default": "pending"
+    },
+    "emoji": {
+      "type": "string",
+      "default": "\ud83d\udd2e"
+    }
+  },
+  "required": [
+    "character_id",
+    "user_email",
+    "question"
+  ]
+}

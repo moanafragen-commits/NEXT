@@ -1,0 +1,56 @@
+{
+  "name": "SeasonalEvent",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "z.B. Weihnachten, Valentinstag"
+    },
+    "event_key": {
+      "type": "string",
+      "enum": [
+        "weihnachten",
+        "valentinstag",
+        "halloween",
+        "silvester",
+        "ostern",
+        "sommer_fest",
+        "herbst_fest",
+        "fruehling"
+      ],
+      "description": "Eindeutiger Key"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "emoji": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "special_greetings": {
+      "type": "string",
+      "description": "Spezielle Begr\u00fc\u00dfungen f\u00fcr Charaktere"
+    },
+    "theme_colors": {
+      "type": "string",
+      "description": "z.B. rot,gr\u00fcn f\u00fcr Weihnachten"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "event_key",
+    "start_date",
+    "end_date"
+  ]
+}

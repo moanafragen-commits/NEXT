@@ -1,0 +1,82 @@
+{
+  "name": "Challenge",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "challenge_key": {
+      "type": "string",
+      "description": "Eindeutiger Schl\u00fcssel z.B. send_5_messages"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "emoji": {
+      "type": "string",
+      "default": "\ud83c\udfaf"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly"
+      ],
+      "default": "daily"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "chat",
+        "social",
+        "kreativ",
+        "erkunden"
+      ],
+      "default": "chat"
+    },
+    "target_count": {
+      "type": "number",
+      "default": 1,
+      "description": "Wie oft muss die Aktion ausgef\u00fchrt werden"
+    },
+    "current_count": {
+      "type": "number",
+      "default": 0
+    },
+    "reward_xp": {
+      "type": "number",
+      "default": 25
+    },
+    "reward_coins": {
+      "type": "number",
+      "default": 50
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "claimed",
+        "expired"
+      ],
+      "default": "active"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "assigned_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "user_email",
+    "challenge_key",
+    "title",
+    "target_count"
+  ]
+}

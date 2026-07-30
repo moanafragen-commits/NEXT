@@ -1,0 +1,40 @@
+{
+  "name": "ShopPurchase",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "K\u00e4ufer"
+    },
+    "item_key": {
+      "type": "string",
+      "description": "Gekaufter Item-Key"
+    },
+    "item_name": {
+      "type": "string",
+      "description": "Name des Items"
+    },
+    "category": {
+      "type": "string",
+      "description": "Kategorie"
+    },
+    "price_paid": {
+      "type": "number",
+      "description": "Bezahlter Preis"
+    },
+    "is_equipped": {
+      "type": "boolean",
+      "default": false,
+      "description": "Aktuell ausger\u00fcstet/aktiv"
+    },
+    "equipped_for": {
+      "type": "string",
+      "description": "F\u00fcr welchen Charakter ausger\u00fcstet (character_id, leer = global)"
+    }
+  },
+  "required": [
+    "user_email",
+    "item_key",
+    "price_paid"
+  ]
+}

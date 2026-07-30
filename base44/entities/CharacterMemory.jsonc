@@ -1,0 +1,130 @@
+{
+  "name": "CharacterMemory",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "ID des Charakters"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email des Nutzers"
+    },
+    "memory_type": {
+      "type": "string",
+      "enum": [
+        "fact",
+        "preference",
+        "event",
+        "emotion",
+        "relationship",
+        "goal",
+        "habit",
+        "opinion",
+        "experience"
+      ],
+      "description": "Art der Erinnerung"
+    },
+    "memory_category": {
+      "type": "string",
+      "enum": [
+        "user_preferences",
+        "past_events",
+        "user_goals",
+        "personal_info",
+        "shared_experiences",
+        "inside_jokes",
+        "important_dates",
+        "general"
+      ],
+      "default": "general",
+      "description": "Kategorie der Erinnerung"
+    },
+    "memory_text": {
+      "type": "string",
+      "description": "Inhalt der Erinnerung"
+    },
+    "relation_type": {
+      "type": "string",
+      "enum": [
+        "Freund",
+        "Mentor",
+        "Kollege",
+        "Familie",
+        "Partner",
+        "Bekannter",
+        "Andere"
+      ],
+      "description": "Art der Beziehung zum Charakter"
+    },
+    "importance_level": {
+      "type": "string",
+      "enum": [
+        "hoch",
+        "mittel",
+        "niedrig"
+      ],
+      "default": "mittel",
+      "description": "Wichtigkeit der Erinnerung"
+    },
+    "strength": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 100,
+      "description": "St\u00e4rke der Erinnerung (zerf\u00e4llt \u00fcber Zeit)"
+    },
+    "recall_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Wie oft wurde diese Erinnerung abgerufen"
+    },
+    "last_recalled_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Wann wurde die Erinnerung zuletzt abgerufen"
+    },
+    "last_interaction_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Letzte Interaktion"
+    },
+    "relationship_quality": {
+      "type": "string",
+      "enum": [
+        "Freundschaft",
+        "Vertrauen",
+        "Misstrauen",
+        "Bewunderung",
+        "Rivalit\u00e4t",
+        "Respekt",
+        "Zuneigung",
+        "Distanz",
+        "Neugier"
+      ],
+      "description": "Qualit\u00e4t/Dynamik der Beziehung"
+    },
+    "relationship_level": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 5,
+      "description": "Beziehungsst\u00e4rke (1=sehr schwach, 10=sehr stark)"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "ai_extracted",
+        "ai_refreshed"
+      ],
+      "default": "manual",
+      "description": "Woher stammt die Erinnerung"
+    }
+  },
+  "required": [
+    "character_id",
+    "user_email",
+    "memory_text"
+  ]
+}

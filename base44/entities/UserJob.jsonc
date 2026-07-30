@@ -1,0 +1,75 @@
+{
+  "name": "UserJob",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email des Users"
+    },
+    "job_title": {
+      "type": "string",
+      "description": "Jobtitel z.B. Tour Assistant"
+    },
+    "employer": {
+      "type": "string",
+      "description": "Arbeitgeber z.B. Linkin Park Management"
+    },
+    "manager_name": {
+      "type": "string",
+      "description": "Name des Managers/Vorgesetzten"
+    },
+    "manager_character_id": {
+      "type": "string",
+      "description": "Charakter-ID des Managers (falls als Charakter angelegt)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Jobbeschreibung"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "offen",
+        "aktiv",
+        "pausiert",
+        "beendet"
+      ],
+      "default": "offen"
+    },
+    "salary_coins": {
+      "type": "number",
+      "default": 0,
+      "description": "Gehalt in Coins pro abgeschlossenem Auftrag"
+    },
+    "xp_reward": {
+      "type": "number",
+      "default": 0,
+      "description": "XP pro abgeschlossenem Auftrag"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "musik",
+        "entertainment",
+        "tech",
+        "sport",
+        "gastronomie",
+        "mode",
+        "medien",
+        "management",
+        "kreativ",
+        "andere"
+      ],
+      "default": "andere"
+    },
+    "icon_emoji": {
+      "type": "string",
+      "default": "\ud83d\udcbc"
+    }
+  },
+  "required": [
+    "user_email",
+    "job_title",
+    "employer"
+  ]
+}

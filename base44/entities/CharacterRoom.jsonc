@@ -1,0 +1,71 @@
+{
+  "name": "CharacterRoom",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "ID des Charakters"
+    },
+    "room_style": {
+      "type": "string",
+      "enum": [
+        "modern",
+        "gem\u00fctlich",
+        "minimalistisch",
+        "chaotisch",
+        "vintage",
+        "luxuri\u00f6s",
+        "gothic",
+        "bohemian",
+        "gaming",
+        "k\u00fcnstlerisch",
+        "studentisch",
+        "japanisch"
+      ],
+      "default": "modern"
+    },
+    "room_image_url": {
+      "type": "string",
+      "description": "Generiertes Bild des Zimmers"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "emoji": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Gegenst\u00e4nde im Zimmer"
+    },
+    "description": {
+      "type": "string",
+      "description": "Beschreibung des Zimmers"
+    },
+    "mood_lighting": {
+      "type": "string",
+      "enum": [
+        "warm",
+        "kalt",
+        "neon",
+        "kerzen",
+        "dunkel",
+        "sonnig",
+        "d\u00e4mmerung"
+      ],
+      "default": "warm"
+    }
+  },
+  "required": [
+    "character_id",
+    "room_style"
+  ]
+}

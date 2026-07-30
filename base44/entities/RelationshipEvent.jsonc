@@ -1,0 +1,58 @@
+{
+  "name": "RelationshipEvent",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "ID des Charakters"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email des Users"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "trust_change",
+        "jealousy_change",
+        "relationship_type_change",
+        "mood_shift",
+        "milestone",
+        "conflict",
+        "bonding",
+        "revelation",
+        "boundary_crossed",
+        "memory_formed"
+      ],
+      "description": "Art des Events"
+    },
+    "description": {
+      "type": "string",
+      "description": "Beschreibung des Events"
+    },
+    "attribute_changed": {
+      "type": "string",
+      "description": "Welches Attribut hat sich ge\u00e4ndert"
+    },
+    "old_value": {
+      "type": "string",
+      "description": "Alter Wert"
+    },
+    "new_value": {
+      "type": "string",
+      "description": "Neuer Wert"
+    },
+    "impact_score": {
+      "type": "number",
+      "minimum": -10,
+      "maximum": 10,
+      "description": "Positiver oder negativer Impact auf Beziehung"
+    }
+  },
+  "required": [
+    "character_id",
+    "user_email",
+    "event_type",
+    "description"
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "name": "ChatMessage",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "ID des Charakters"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "user",
+        "assistant"
+      ],
+      "description": "Wer hat die Nachricht gesendet"
+    },
+    "content": {
+      "type": "string",
+      "description": "Nachrichteninhalt"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Bild-Anhang URL"
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Nachricht gepinnt"
+    },
+    "is_bookmarked": {
+      "type": "boolean",
+      "default": false,
+      "description": "Nachricht markiert/gespeichert"
+    },
+    "reply_to_id": {
+      "type": "string",
+      "description": "ID der zitierten Nachricht"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "sending",
+        "sent",
+        "delivered",
+        "read"
+      ],
+      "default": "sent",
+      "description": "Nachrichtenstatus"
+    },
+    "read_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Gelesen am"
+    },
+    "shared_to_group_id": {
+      "type": "string",
+      "description": "Gruppenchat-ID wenn in Gruppe geteilt"
+    }
+  },
+  "required": [
+    "character_id",
+    "role",
+    "content"
+  ]
+}

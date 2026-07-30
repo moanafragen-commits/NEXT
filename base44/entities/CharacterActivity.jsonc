@@ -1,0 +1,47 @@
+{
+  "name": "CharacterActivity",
+  "type": "object",
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "ID des Charakters"
+    },
+    "activity_type": {
+      "type": "string",
+      "enum": [
+        "routine",
+        "npc_interaction",
+        "hobby",
+        "work",
+        "social",
+        "rest",
+        "adventure",
+        "emotional"
+      ],
+      "default": "routine",
+      "description": "Art der Aktivit\u00e4t"
+    },
+    "description": {
+      "type": "string",
+      "description": "Was der Charakter gerade macht/gemacht hat"
+    },
+    "npc_involved": {
+      "type": "string",
+      "description": "Beteiligte NPCs"
+    },
+    "mood_effect": {
+      "type": "string",
+      "description": "Wie hat die Aktivit\u00e4t die Stimmung beeinflusst"
+    },
+    "shareable": {
+      "type": "boolean",
+      "default": true,
+      "description": "Wird der Charakter davon im Chat erz\u00e4hlen"
+    }
+  },
+  "required": [
+    "character_id",
+    "activity_type",
+    "description"
+  ]
+}

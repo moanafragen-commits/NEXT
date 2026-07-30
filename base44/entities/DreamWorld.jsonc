@@ -1,0 +1,77 @@
+{
+  "name": "DreamWorld",
+  "type": "object",
+  "properties": {
+    "dream_id": {
+      "type": "string",
+      "description": "Verkn\u00fcpfter CharacterDream"
+    },
+    "character_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "scene_description": {
+      "type": "string",
+      "description": "Aktuelle Szene im Traum"
+    },
+    "choices": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "emoji": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "chosen_path": {
+      "type": "number",
+      "default": -1
+    },
+    "scene_number": {
+      "type": "number",
+      "default": 1
+    },
+    "max_scenes": {
+      "type": "number",
+      "default": 5
+    },
+    "atmosphere": {
+      "type": "string",
+      "enum": [
+        "mystisch",
+        "bedrohlich",
+        "romantisch",
+        "surreal",
+        "friedlich",
+        "chaotisch",
+        "nostalgisch"
+      ],
+      "default": "mystisch"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "abandoned"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "dream_id",
+    "character_id",
+    "user_email",
+    "scene_description"
+  ]
+}

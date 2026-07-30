@@ -1,0 +1,51 @@
+{
+  "name": "TourFinanceEntry",
+  "type": "object",
+  "properties": {
+    "tour_id": {
+      "type": "string",
+      "description": "ID der Tour"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "income",
+        "expense"
+      ],
+      "description": "Einnahme oder Ausgabe"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "tickets",
+        "merch",
+        "travel",
+        "venue",
+        "crew",
+        "marketing",
+        "other"
+      ],
+      "description": "Kategorie der Buchung"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Betrag"
+    },
+    "description": {
+      "type": "string",
+      "description": "Zus\u00e4tzliche Beschreibung"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Datum der Buchung"
+    }
+  },
+  "required": [
+    "tour_id",
+    "type",
+    "category",
+    "amount",
+    "date"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "CustomEmoji",
+  "type": "object",
+  "properties": {
+    "original_emoji": {
+      "type": "string",
+      "description": "Das Original-Emoji das ersetzt wird (leer bei eigenen Emojis)"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "URL zum hochgeladenen PNG-Bild"
+    },
+    "label": {
+      "type": "string",
+      "description": "Name f\u00fcr das Emoji"
+    }
+  },
+  "required": [
+    "image_url"
+  ]
+}

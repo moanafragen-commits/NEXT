@@ -1,0 +1,85 @@
+{
+  "name": "JobTask",
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "description": "Zugeh\u00f6riger Job"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "description": "Aufgabentitel"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detaillierte Beschreibung"
+    },
+    "from_manager": {
+      "type": "string",
+      "description": "Name des Auftraggebers"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "offen",
+        "in_arbeit",
+        "erledigt",
+        "abgelaufen"
+      ],
+      "default": "offen"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "niedrig",
+        "mittel",
+        "hoch",
+        "dringend"
+      ],
+      "default": "mittel"
+    },
+    "reward_coins": {
+      "type": "number",
+      "default": 10
+    },
+    "reward_xp": {
+      "type": "number",
+      "default": 15
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date-time",
+      "description": "F\u00e4lligkeitsdatum"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "planung",
+        "kommunikation",
+        "logistik",
+        "kreativ",
+        "finanzen",
+        "recherche",
+        "organisation",
+        "andere"
+      ],
+      "default": "andere"
+    },
+    "completion_note": {
+      "type": "string",
+      "description": "Notiz bei Abschluss"
+    },
+    "emoji": {
+      "type": "string",
+      "default": "\ud83d\udccb"
+    }
+  },
+  "required": [
+    "job_id",
+    "user_email",
+    "title"
+  ]
+}
